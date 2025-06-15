@@ -25,7 +25,7 @@
     <!-- News Ticker -->
   <div class="news-ticker">
     <div class="news-item" id="news-item">
-      Free shipping on orders over $50! | New collection coming soon!
+      Free hipping on orders over $50! | New collection coming soon!
     </div>
   </div>
 
