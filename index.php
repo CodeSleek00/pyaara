@@ -279,7 +279,7 @@
                         <i class="fas fa-star star"></i>
                         <i class="fas fa-star star"></i>
                         <i class="fas fa-star star"></i>
-                        <span>(56)</span>
+                        <span>(46)</span>
                     </div>
                     <div class="product-price">
                         <span class="current-price">₹449.00</span>
