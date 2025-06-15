@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .nav-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .nav-container a {
+            display: block;
+            padding: 15px;
+            background-color: #ffffff;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .nav-container a:hover {
+            background-color: #007BFF;
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Navigation Panel</h1>
+
+    <div class="nav-container">
+        <a href="add_product.php">Add Product</a>
+        <a href="add_to_cart.php">Add to Cart</a>
+        <a href="admin_dashboard.php">Admin Dashboard</a>
+        <a href="cart.php">Cart</a>
+        <a href="checkout.php">Checkout</a>
+        <a href="delivery_manager.php">Delivery Manager</a>
+        <a href="index.php">Home (Index)</a>
+        <a href="order_confirmation.php">Order Confirmation</a>
+        <a href="order_dashboard.php">Order Dashboard</a>
+        <a href="process_product_action.php">Process Product</a>
+        <a href="product_detail.php">Product Detail</a>
+        <a href="search_order.php">Search Order</a>
+        <a href="thank_you.php">Thank You</a>
+        <a href="update_order_status.php">Update Order Status</a>
+    </div>
+
+</body>
+</html>
