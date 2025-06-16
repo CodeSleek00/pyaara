@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($product_id <= 0 || $quantity <= 0 || !in_array($size, ['XS','S', 'M', 'L', 'XL','XXL'])) {
         $_SESSION['message'] = "Invalid product data.";
         $_SESSION['message_type'] = "error";
-        header("Location: index.php");
+        header("Location: ../index.php");
         exit();
     }
     
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows === 0) {
         $_SESSION['message'] = "Product not found.";
         $_SESSION['message_type'] = "error";
-        header("Location: index.php");
+        header("Location: ../index.php");
         exit();
     }
     
@@ -81,6 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // If not POST or invalid action, redirect to home
-header("Location: index.php");
+header("Location: ../index.php");
 exit();
 ?>
