@@ -11,7 +11,7 @@
             font-family: 'Outfit', sans-serif;
             background-color:rgb(255, 255, 255);
             color:rgb(0, 0, 0);
-            padding: 0 20px;
+            padding: 20 0px;
         }
 
         header {
