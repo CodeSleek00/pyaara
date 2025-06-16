@@ -11,7 +11,7 @@
             font-family: 'Outfit', sans-serif;
             background-color:rgb(255, 255, 255);
             color:rgb(0, 0, 0);
-            padding: 0 0px;
+            padding: 0 20px;
         }
 
         header {
@@ -30,11 +30,11 @@
             border: none;
             font-size: 1rem;
             cursor: pointer;
-            text-decoration: none;
+            text-decoration: normalizer_normalize;
         }
 
         h1, h2 {
-            color: #fff;
+            color: black;
         }
 
         section {
