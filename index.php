@@ -1069,10 +1069,10 @@
         class="accordion-content overflow-hidden max-h-0 opacity-0 mt-2 space-y-1 text-sm md:text-base font-normal text-gray-600"
         aria-labelledby="accordion4"
       >
-        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-shield-alt mr-2 text-[#d83f40] text-xs"></i> Privacy Policy</p>
-        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-file-contract mr-2 text-[#d83f40] text-xs"></i> Terms &amp; Condition</p>
-        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-exchange-alt mr-2 text-[#d83f40] text-xs"></i> Return &amp; Refund Policy</p>
-        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-truck mr-2 text-[#d83f40] text-xs"></i> Shipping Policy</p>
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/privacy_policy.php"><i class="fas fa-shield-alt mr-2 text-[#d83f40] text-xs"></i> Privacy Policy</p></a>
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/term_&_condition.php"><i class="fas fa-file-contract mr-2 text-[#d83f40] text-xs"></i> Terms &amp; Condition</p></a>
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/return_&refund.php"><i class="fas fa-exchange-alt mr-2 text-[#d83f40] text-xs"></i> Return &amp; Refund Policy</p></a>
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/shipping_policy.php"><i class="fas fa-truck mr-2 text-[#d83f40] text-xs"></i> Shipping Policy</p></a>
       </div>
     </div><!-- Scroll to Top Button -->
   <button
