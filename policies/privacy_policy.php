@@ -10,7 +10,7 @@
             margin: 0;
             font-family: 'Outfit', sans-serif;
             background-color:rgb(255, 255, 255);
-            color: #f5f5f5;
+            color:rgb(0, 0, 0);
             padding: 0 0px;
         }
 
@@ -30,7 +30,7 @@
             border: none;
             font-size: 1rem;
             cursor: pointer;
-            text-decoration: underline;
+            text-decoration: none;
         }
 
         h1, h2 {
