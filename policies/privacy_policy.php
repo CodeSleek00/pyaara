@@ -9,16 +9,16 @@
         body {
             margin: 0;
             font-family: 'Outfit', sans-serif;
-            background-color: #121212;
+            background-color:rgb(255, 255, 255);
             color: #f5f5f5;
-            padding: 0 20px;
+            padding: 0 0px;
         }
 
         header {
             background-color: #1e1e1e;
             display: flex;
             align-items: center;
-            padding: 15px 20px;
+            padding: 0px 0px;
             position: sticky;
             top: 0;
             z-index: 1000;
