@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'];
     
     // Validate inputs
-    if ($product_id <= 0 || $quantity <= 0 || !in_array($size, ['S', 'M', 'L', 'XL','XXL'])) {
+    if ($product_id <= 0 || $quantity <= 0 || !in_array($size, ['XS','S', 'M', 'L', 'XL','XXL'])) {
         $_SESSION['message'] = "Invalid product data.";
         $_SESSION['message_type'] = "error";
         header("Location: index.php");
