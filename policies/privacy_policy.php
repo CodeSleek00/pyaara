@@ -11,14 +11,14 @@
             font-family: 'Outfit', sans-serif;
             background-color:rgb(255, 255, 255);
             color:rgb(0, 0, 0);
-            padding: 20 0px;
+            padding: 0 0px;
         }
 
         header {
             background-color: #1e1e1e;
             display: flex;
             align-items: center;
-            padding: 0px 0px;
+            padding: 0px 10px;
             position: sticky;
             top: 0;
             z-index: 1000;
