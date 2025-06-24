@@ -540,8 +540,8 @@
                         <span>(35)</span>
                     </div>
                     <div class="product-price">
-                        <span class="current-price">₹649.00</span>
-                        <span class="old-price">₹449.00</span>
+                        <span class="current-price">₹449.00</span>
+                        <span class="old-price">₹649.00</span>
                     </div>
                      <button  class="to-cart" onclick="window.location.href='orders/product_detail.php?id=27'">
                         Buy Now
@@ -785,8 +785,8 @@
                         <span>(28)</span>
                     </div>
                     <div class="product-price">
-                        <span class="current-price">₹669.00</span>
-                        <span class="old-price">₹499.00</span>
+                        <span class="current-price">₹469.00</span>
+                        <span class="old-price">₹699.00</span>
                     </div>
                     <button  class="to-cart" onclick="window.location.href='orders/product_detail.php?id=35'">
                         Buy Now
@@ -895,8 +895,8 @@
                         <span>(28)</span>
                     </div>
                     <div class="product-price">
-                        <span class="current-price">₹669.00</span>
-                        <span class="old-price">₹499.00</span>
+                        <span class="current-price">₹469.00</span>
+                        <span class="old-price">₹699.00</span>
                     </div>
                     <button  class="to-cart" onclick="window.location.href='orders/product_detail.php?id=35'">
                         Buy Now
