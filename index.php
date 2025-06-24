@@ -206,7 +206,7 @@
         <div class="products-grid">
             <!-- Product cards will be duplicated here for desktop -->
             <!-- Product 1 -->
-            <div class="product-card">
+            <div class="product-card"  onclick="window.location.href='orders/product_detail.php?id=23'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 012.jpg" alt="Graphic T-Shirt">
@@ -236,7 +236,7 @@
             </div>
             
             <!-- Product 2 -->
-            <div class="product-card">
+            <div class="product-card"  onclick="window.location.href='orders/product_detail.php?id=25'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 014.jpg" alt="Plain T-Shirt">
@@ -264,7 +264,7 @@
             </div>
             
             <!-- Product 3 -->
-            <div class="product-card">
+            <div class="product-card"  onclick="window.location.href='orders/product_detail.php?id=14'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 003.jpg" alt="Striped T-Shirt">
@@ -292,7 +292,7 @@
             </div>
             
             <!-- Product 4 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=27'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 016.jpg" alt="Slogan T-Shirt">
@@ -325,7 +325,7 @@
             <div class="scroller-inner">
                 <!-- Product cards will be duplicated here for infinite scroll -->
                 <!-- Product 1 -->
-                <div class="product-card">
+                <div class="product-card"  onclick="window.location.href='orders/product_detail.php?id=23'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 012.jpg" alt="Graphic T-Shirt">
@@ -360,7 +360,7 @@
                     <img src="images/jpg 014.jpg" alt="Plain T-Shirt">
                    
                 </div>
-                <div class="product-info">
+                <div class="product-info" onclick="window.location.href='orders/product_detail.php?id=25'">
                     <span class="product-category">T-Shirts</span>
                     <h3 class="product-title">Yummy In The Tummy</h3>
                     <div class="rating">
@@ -381,7 +381,7 @@
                 </div>
             </div>    
                <!-- Product 3 -->
-            <div class="product-card">
+            <div class="product-card"  onclick="window.location.href='orders/product_detail.php?id=14'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 003.jpg" alt="Striped T-Shirt">
@@ -409,7 +409,7 @@
             </div>
             
             <!-- Product 4 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=27'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 016.jpg" alt="Slogan T-Shirt">
@@ -437,7 +437,7 @@
             </div>  
                 <!-- Duplicate products for infinite effect -->
                 <!-- Product 1 (Duplicate) -->
-                 <div class="product-card">
+                 <div class="product-card"  onclick="window.location.href='orders/product_detail.php?id=23'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 012.jpg" alt="Graphic T-Shirt">
@@ -466,7 +466,7 @@
                 </div>
             </div>
             <!-- Product 2 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=25'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 014.jpg" alt="Plain T-Shirt">
@@ -494,7 +494,7 @@
             </div> 
                 <!-- Product 3 (Duplicate) -->
                    <!-- Product 3 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=14'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 003.jpg" alt="Striped T-Shirt">
@@ -522,7 +522,7 @@
             </div>
             
             <!-- Product 4 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=27'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 016.jpg" alt="Slogan T-Shirt">
@@ -623,7 +623,7 @@
         <div class="products-grid">
             <!-- Product cards will be duplicated here for desktop -->
             <!-- Product 1 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=37'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 028 Black.jpg" alt="Graphic T-Shirt">
@@ -651,7 +651,7 @@
             </div>
             
             <!-- Product 2 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=35'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 026 White.jpg" alt="Plain T-Shirt">
@@ -679,7 +679,7 @@
             </div>
             
             <!-- Product 3 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=33'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 025.jpg" alt="Striped T-Shirt">
@@ -707,7 +707,7 @@
             </div>
             
             <!-- Product 4 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=36'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 027.jpg" alt="Slogan T-Shirt">
@@ -739,7 +739,7 @@
         <div class="products-scroller">
             <div class="scroller-inner">
                 <!-- Product cards will be duplicated here for infinite scroll -->
-                <div class="product-card">
+                <div class="product-card"  onclick="window.location.href='orders/product_detail.php?id=37'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 028 Black.jpg" alt="Graphic T-Shirt">
@@ -767,7 +767,7 @@
             </div>
             
             <!-- Product 2 -->
-            <div class="product-card">
+            <div class="product-card"  onclick="window.location.href='orders/product_detail.php?id=35'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 026 White.jpg" alt="Plain T-Shirt">
@@ -795,7 +795,7 @@
             </div>
             
             <!-- Product 3 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=33'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 025.jpg" alt="Striped T-Shirt">
@@ -823,7 +823,7 @@
             </div>
             
             <!-- Product 4 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=36'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 027.jpg" alt="Slogan T-Shirt">
@@ -849,7 +849,7 @@
                     </button>
                 </div>
             </div>
-                 <div class="product-card">
+                 <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=37'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 028 Black.jpg" alt="Graphic T-Shirt">
@@ -877,7 +877,7 @@
             </div>
             
             <!-- Product 2 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=35'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 026 White.jpg" alt="Plain T-Shirt">
@@ -905,7 +905,7 @@
             </div>
             
             <!-- Product 3 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=33'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 025.jpg" alt="Striped T-Shirt">
@@ -933,7 +933,7 @@
             </div>
             
             <!-- Product 4 -->
-            <div class="product-card">
+            <div class="product-card" onclick="window.location.href='orders/product_detail.php?id=36'">
                 <span class="product-badge">New</span>
                 <div class="product-image">
                     <img src="images/jpg 027.jpg" alt="Slogan T-Shirt">
