@@ -159,7 +159,7 @@ $products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY i
               </div>
               <div class="product-actions">
                 <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Buy Now</a>
-                <button class="btn btn-primary share-btn" data-link="https://yourdomain.com/product_detail.php?id=<?php echo $row['id']; ?>"><i class="fas fa-share-alt"></i> Share</button>
+                <button class="btn btn-primary share-btn" data-link="https://pyaara.in/product_detail.php?id=<?php echo $row['id']; ?>"><i class="fas fa-share-alt"></i> Share</button>
               </div>
             </div>
           </div>
