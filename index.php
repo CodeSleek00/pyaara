@@ -968,7 +968,7 @@
     <h1
       class="text-white text-center text-2xl md:text-3xl leading-tight font-semibold max-w-[320px] sm:max-w-[380px] md:max-w-3xl"
     >
-      e In India, For The World
+      Made In India, For The World
     </h1>
   </div>
   
