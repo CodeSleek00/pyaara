@@ -98,7 +98,7 @@
           <li class="dropdown">
             <a href="#">Women's</a>
             <div class="dropdown-content">
-               <a href="cutie.php">Cutiesssss</a>
+               <a href="orders/cutie.php">Cutiesssss</a>
               <a href="orders/oversized.php">Oversized</a>
               <a href="orders/exclusive.php">Exclusive</a>
             </div>
@@ -132,7 +132,7 @@
           <li class="mobile-dropdown">
             <a href="#">Women's</a>
             <div class="mobile-dropdown-content">
-              <a href="cutie.php">Cutiesssss</a>
+              <a href="orders/cutie.php">Cutiesssss</a>
               <a href="orders/oversized.php">Oversized</a>
               <a href="orders/exclusive.php">Exclusive</a>
             </div>
