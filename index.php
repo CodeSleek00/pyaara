@@ -1001,9 +1001,8 @@
         class="accordion-content overflow-hidden max-h-0 opacity-0 mt-2 text-sm md:text-base font-normal text-gray-600"
         aria-labelledby="accordion1"
       >
-        <p class="mb-1"><i class="fas fa-envelope mr-2 text-[#d83f40] text-xs"></i> Email: contact@pyaaraclothing.com</p>
-        <p class="mb-1"><i class="fas fa-phone mr-2 text-[#d83f40] text-xs"></i> Phone: +91 78394 60427</p>
-        <p><i class="fas fa-headset mr-2 text-[#d83f40] text-xs"></i> Support: contact@pyaaraclothing.com</p>
+        <p class="mb-1"><i class="fas fa-envelope mr-2 text-[#d83f40] text-xs"></i> Email: pyaara001@gmail.com</p>
+        <p><i class="fas fa-headset mr-2 text-[#d83f40] text-xs"></i> Support: pyaara001@gmail.com</p>
       </div>
     </div>
 
@@ -1024,9 +1023,8 @@
         class="accordion-content overflow-hidden max-h-0 opacity-0 mt-2 text-sm md:text-base font-normal text-gray-600"
         aria-labelledby="accordion2"
       >
-        <p class="mb-1"><i class="fas fa-map-marker-alt mr-2 text-[#d83f40] text-xs"></i> PGI</p>
-        <p class="mb-1 pl-6">Lucknow, IN 226025</p>
-        <p class="pl-6">India</p>
+        <p class="mb-1"><i class="fas fa-map-marker-alt mr-2 text-[#d83f40] text-xs"></i> Suraksha Enclave, Udyan-2, Eldeco, Lucknow-226029</p>
+        <p class="mb-1 pl-6"></p>
       </div>
     </div>
 
@@ -1047,9 +1045,7 @@
         class="accordion-content overflow-hidden max-h-0 opacity-0 mt-2 text-sm md:text-base font-normal text-gray-600"
         aria-labelledby="accordion3"
       >
-        <p class="mb-1 hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-info-circle mr-2 text-[#d83f40] text-xs"></i> About Us</p>
-        <p class="mb-1 hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-briefcase mr-2 text-[#d83f40] text-xs"></i> Careers</p>
-        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-newspaper mr-2 text-[#d83f40] text-xs"></i> Press</p>
+        <p class="mb-1 hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-info-circle mr-2 text-[#d83f40] text-xs"></i><a href="policies/aboutus.php"> About Us</a></p>
       </div>
     </div>
 
