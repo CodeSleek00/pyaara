@@ -185,9 +185,9 @@
   <!-- 📱 MOBILE HERO SECTION -->
   <section class="hero-mobile">
     <div class="carousel" id="mobile-carousel">
-      <img src="images/Anime hero section (1).jpg" alt="T-shirt Portrait 1">
-      <img src="images/Hero section.jpg" alt="T-shirt Portrait 2">
-      <img src="images/Exclusive hero section.jpg" alt="T-shirt Portrait 3">
+      <img src="images/hero-mobile1.jpg" alt="T-shirt Portrait 1">
+      <img src="images/hero-mobile2.jpg" alt="T-shirt Portrait 2">
+      <img src="images/hero-mobile3.jpg" alt="T-shirt Portrait 3">
     </div>
     <div class="click-overlay" id="mobile-overlay"></div>
   </section>
@@ -1045,7 +1045,7 @@
         class="accordion-content overflow-hidden max-h-0 opacity-0 mt-2 text-sm md:text-base font-normal text-gray-600"
         aria-labelledby="accordion3"
       >
-        <p class="mb-1 hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-info-circle mr-2 text-[#d83f40] text-xs"></i><a href="policies/aboutus.php"> About Us</a></p>
+        <p class="mb-1 hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-info-circle mr-2 text-[#d83f40] text-xs"></i><a href="policies/aboutus.php"> About Us</a>  </p>
       </div>
     </div>
 
