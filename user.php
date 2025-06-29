@@ -79,7 +79,7 @@
   </a>
 
   <!-- Help Center -->
-  <<a href="mailto:pyaara001@gmail.com" class="flex items-center justify-between border border-gray-300 rounded-lg px-4 py-2 hover:shadow-sm clickable-button hover:border-accent">
+  <a href="mailto:pyaara001@gmail.com" class="flex items-center justify-between border border-gray-300 rounded-lg px-4 py-2 hover:shadow-sm clickable-button hover:border-accent">
     <div class="flex items-center space-x-3">
       <i class="fas fa-question-circle text-red-600 text-lg"></i>
       <span class="font-semibold text-gray-800 select-none text-sm">Help Center</span>
