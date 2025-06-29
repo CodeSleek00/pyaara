@@ -1,41 +1,31 @@
 <?php
-require('vendor/autoload.php'); // This loads Razorpay SDK
-use Razorpay\Api\Api;
-
 session_start();
 
-// Replace with your actual Razorpay credentials
-$key_id = 'rzp_live_pA6jgjncp78sq7';
+// Your Razorpay credentials
 $key_secret = 'N7INcRU4l61iijQ2sOjL5YTs';
 
-$api = new Api($key_id, $key_secret);
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $razorpay_payment_id = $_POST['razorpay_payment_id'] ?? '';
     $razorpay_order_id = $_POST['razorpay_order_id'] ?? '';
+    $razorpay_payment_id = $_POST['razorpay_payment_id'] ?? '';
     $razorpay_signature = $_POST['razorpay_signature'] ?? '';
 
-    $attributes = [
-        'razorpay_order_id' => $razorpay_order_id,
-        'razorpay_payment_id' => $razorpay_payment_id,
-        'razorpay_signature' => $razorpay_signature
-    ];
+    // Signature string for HMAC
+    $generated_signature = hash_hmac('sha256', $razorpay_order_id . "|" . $razorpay_payment_id, $key_secret);
 
-    try {
-        $api->utility->verifyPaymentSignature($attributes);
-
-        // ✅ Signature is valid — mark order as paid in your DB
-        // Example: update orders set status = 'Paid' where order_id = $razorpay_order_id
-
+    if (hash_equals($generated_signature, $razorpay_signature)) {
+        // ✅ Payment Verified
         $_SESSION['message'] = "Payment verified successfully!";
         $_SESSION['message_type'] = "success";
-        header("Location: thank_you.php?order_id=" . $razorpay_order_id);
-        exit();
 
-    } catch (\Razorpay\Api\Errors\SignatureVerificationError $e) {
-        $_SESSION['message'] = "Payment verification failed: " . $e->getMessage();
+        // Redirect to thank you page with order ID
+        header("Location: thank_you.php?order_id=" . urlencode($razorpay_order_id));
+        exit();
+    } else {
+        // ❌ Payment Failed
+        $_SESSION['message'] = "Payment verification failed!";
         $_SESSION['message_type'] = "error";
         header("Location: checkout.php");
         exit();
     }
 }
+?>
