@@ -113,8 +113,8 @@ if (isset($_GET['buy_now'])) {
                 'order_id' => $order_id,
                 'amount' => $calculated_total_amount * 100, // Razorpay expects amount in paise
                 'currency' => 'INR',
-                'key' => 'YOUR_RAZORPAY_KEY_ID', // Replace with your Razorpay key
-                'name' => 'My Awesome Store',
+                'key' => 'rzp_live_pA6jgjncp78sq7', // Replace with your Razorpay key
+                'name' => 'Pyaara',
                 'description' => 'Order Payment',
                 'prefill' => [
                     'name' => $first_name . ' ' . $last_name,
@@ -550,10 +550,23 @@ if (isset($_GET['buy_now'])) {
                                 name: data.name,
                                 description: data.description,
                                 order_id: data.order_id,
-                                handler: function(response) {
-                                    // On successful payment, submit the form normally
+                                handler: function (response) {
+                                    const form = document.createElement('form');
+                                    form.method = 'POST';
+                                    form.action = 'verify_razorpay.php';
+
+                                    ['razorpay_payment_id', 'razorpay_order_id', 'razorpay_signature'].forEach((field) => {
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.name = field;
+                                        input.value = response[field];
+                                        form.appendChild(input);
+                                    });
+
+                                    document.body.appendChild(form);
                                     form.submit();
-                                },
+                                }
+                                ,
                                 prefill: data.prefill,
                                 notes: data.notes,
                                 theme: data.theme
