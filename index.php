@@ -9,6 +9,29 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Add these meta tags -->
+    <meta name="description" content="Pyaara - Premium quality anime and exclusive t-shirts for men and women. Shop our latest collections with great discounts and free shipping on orders over $50.">
+    <meta name="keywords" content="anime t-shirts, exclusive t-shirts, men's fashion, women's fashion, oversized t-shirts, F1 racing t-shirts, Indian clothing brand">
+    <meta name="author" content="Pyaara">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Pyaara - Premium Quality T-Shirts & Apparel">
+    <meta property="og:description" content="Shop the latest collection of anime and exclusive t-shirts for men and women at Pyaara.">
+    <meta property="og:image" content="https://pyaara.in/images/Pyaara-Site-Svg.svg">
+    <meta property="og:url" content="https://pyaara.in">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pyaara - Premium Quality T-Shirts & Apparel">
+    <meta name="twitter:description" content="Shop the latest collection of anime and exclusive t-shirts for men and women at Pyaara.">
+    <meta name="twitter:image" content="https://pyaara.in.com/images/Pyaara-Site-Svg.svg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://pyaara.in" />
+    
+    <!-- Rest of your head content -->
     <style>
         .mobile-header-logo-only {
             display: none;
