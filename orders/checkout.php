@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($payment_method === 'Razorpay') {
         $key_id = 'rzp_live_pA6jgjncp78sq7';
-        $key_secret = 'YOUR_SECRET_KEY';
+        $key_secret = 'N7INcRU4l61iijQ2sOjL5YTs';
         $amount_paise = $calculated_total_amount * 100;
 
         $order_data = [
