@@ -92,7 +92,48 @@ if (isset($_GET['buy_now'])) {
             exit();
         }
 
-        $order_id = uniqid('ORDER_'); // Generate a unique order ID
+        $receipt_id = uniqid('ORDER_'); // Generate a unique order ID
+        // Razorpay credentials
+$key_id = 'rzp_live_pA6jgjncp78sq7';
+$key_secret = 'N7INcRU4l61iijQ2sOjL5YTs'; // ✅ Replace with your actual Razorpay secret
+
+$amount_paise = $calculated_total_amount * 100; // Convert to paise
+
+// Prepare Razorpay order data
+$order_data = [
+    'amount' => $amount_paise,
+    'currency' => 'INR',
+    'receipt' => $receipt_id,
+    'payment_capture' => 1
+];
+
+$json_data = json_encode($order_data);
+
+// Create Razorpay order via API
+$ch = curl_init('https://api.razorpay.com/v1/orders');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_USERPWD, "$key_id:$key_secret");
+curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+
+$response = curl_exec($ch);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+// Parse response
+$response_data = json_decode($response, true);
+
+if ($http_code !== 200 || !isset($response_data['id'])) {
+    $_SESSION['message'] = "Razorpay order creation failed.";
+    $_SESSION['message_type'] = "error";
+    header("Location: checkout.php");
+    exit();
+}
+
+$razorpay_order_id = $response_data['id']; // ✅ This is Razorpay's real order ID
+
 
         // If payment method is Razorpay, we'll handle it via AJAX later
         if ($payment_method === 'Razorpay') {
