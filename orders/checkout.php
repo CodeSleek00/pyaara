@@ -1,4 +1,6 @@
 <?php
+require('vendor/autoload.php'); // Load Razorpay SDK
+use Razorpay\Api\Api;
     include 'db_connect.php';
 // At the top of checkout.php, after the database connection
 $user_session_id = session_id();
@@ -94,43 +96,56 @@ if (isset($_GET['buy_now'])) {
 
         // If payment method is Razorpay, we'll handle it via AJAX later
         if ($payment_method === 'Razorpay') {
-            // Store the order details in session for Razorpay processing
-            $_SESSION['razorpay_order'] = [
-                'order_id' => $order_id,
-                'first_name' => $first_name,
-                'last_name' => $last_name,
-                'phone_number' => $phone_number,
-                'shipping_address' => $shipping_address,
-                'payment_method' => $payment_method,
-                'total_amount' => $calculated_total_amount,
-                'items' => []
-            ];
-            
-            // Return JSON response for Razorpay
-            header('Content-Type: application/json');
-            echo json_encode([
-                'status' => 'razorpay',
-                'order_id' => $order_id,
-                'amount' => $calculated_total_amount * 100, // Razorpay expects amount in paise
-                'currency' => 'INR',
-                'key' => 'rzp_live_pA6jgjncp78sq7', // Replace with your Razorpay key
-                'name' => 'Pyaara',
-                'description' => 'Order Payment',
-                'prefill' => [
-                    'name' => $first_name . ' ' . $last_name,
-                    'email' => '', // You might want to collect email if not already
-                    'contact' => $phone_number
-                ],
-                'notes' => [
-                    'address' => $shipping_address,
-                    'merchant_order_id' => $order_id
-                ],
-                'theme' => [
-                    'color' => '#3399cc'
-                ]
-            ]);
-            exit();
-        }
+    
+
+    $api = new Api('rzp_live_pA6jgjncp78sq7', 'N7INcRU4l61iijQ2sOjL5YTs'); // Replace with your real key and secret
+
+    $razorpay_order = $api->order->create([
+        'receipt' => $order_id,
+        'amount' => $calculated_total_amount * 100, // in paise
+        'currency' => 'INR'
+    ]);
+
+    $real_razorpay_order_id = $razorpay_order['id'];
+
+    // Save the order in session (optional but useful)
+    $_SESSION['razorpay_order'] = [
+        'order_id' => $order_id,
+        'razorpay_order_id' => $real_razorpay_order_id,
+        'first_name' => $first_name,
+        'last_name' => $last_name,
+        'phone_number' => $phone_number,
+        'shipping_address' => $shipping_address,
+        'payment_method' => $payment_method,
+        'total_amount' => $calculated_total_amount,
+        'items' => []
+    ];
+
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'razorpay',
+        'order_id' => $real_razorpay_order_id,
+        'amount' => $calculated_total_amount * 100,
+        'currency' => 'INR',
+        'key' => 'rzp_live_pA6jgjncp78sq7',
+        'name' => 'Pyaara',
+        'description' => 'Order Payment',
+        'prefill' => [
+            'name' => $first_name . ' ' . $last_name,
+            'email' => '', // Add email if available
+            'contact' => $phone_number
+        ],
+        'notes' => [
+            'address' => $shipping_address,
+            'merchant_order_id' => $order_id
+        ],
+        'theme' => [
+            'color' => '#3399cc'
+        ]
+    ]);
+    exit();
+}
+
 
         // For COD, proceed with normal order processing
         // Insert into orders table
