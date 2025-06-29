@@ -1,7 +1,9 @@
 <?php
+    session_start();
     include 'db_connect.php';
 // At the top of checkout.php, after the database connection
 $user_session_id = session_id();
+$checkout_items=[];
 
 // Check if this is a direct buy now request (you might want to add a flag)
 if (isset($_GET['buy_now'])) {
