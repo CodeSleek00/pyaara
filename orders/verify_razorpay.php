@@ -1,31 +1,24 @@
 <?php
 session_start();
+include 'db_connect.php';
 
-// Your Razorpay credentials
-$key_secret = 'N7INcRU4l61iijQ2sOjL5YTs';
+// Razorpay secret
+$secret = "YOUR_SECRET_KEY";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $razorpay_order_id = $_POST['razorpay_order_id'] ?? '';
-    $razorpay_payment_id = $_POST['razorpay_payment_id'] ?? '';
-    $razorpay_signature = $_POST['razorpay_signature'] ?? '';
+// Collect post data
+$razorpay_order_id = $_POST['razorpay_order_id'];
+$razorpay_payment_id = $_POST['razorpay_payment_id'];
+$razorpay_signature = $_POST['razorpay_signature'];
 
-    // Signature string for HMAC
-    $generated_signature = hash_hmac('sha256', $razorpay_order_id . "|" . $razorpay_payment_id, $key_secret);
+// Generate expected signature
+$generated_signature = hash_hmac('sha256', $razorpay_order_id . '|' . $razorpay_payment_id, $secret);
 
-    if (hash_equals($generated_signature, $razorpay_signature)) {
-        // ✅ Payment Verified
-        $_SESSION['message'] = "Payment verified successfully!";
-        $_SESSION['message_type'] = "success";
-
-        // Redirect to thank you page with order ID
-        header("Location: thank_you.php?order_id=" . urlencode($razorpay_order_id));
-        exit();
-    } else {
-        // ❌ Payment Failed
-        $_SESSION['message'] = "Payment verification failed!";
-        $_SESSION['message_type'] = "error";
-        header("Location: checkout.php");
-        exit();
-    }
+// Verify signature
+if ($generated_signature === $razorpay_signature) {
+    // Payment success - store order in DB
+    echo "<h2>Payment Successful</h2><p>Order ID: $razorpay_order_id</p>";
+    // Save to orders table, etc.
+} else {
+    echo "<h2>Payment Failed!</h2><p>Signature verification failed.</p>";
 }
 ?>
