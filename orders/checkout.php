@@ -91,9 +91,6 @@ if (isset($_GET['buy_now'])) {
         }
 
         $order_id = uniqid('ORDER_'); // Generate a unique order ID
-        $api = new Api($key_id, $secret);
-
-$api->order->create(array('receipt' => 'receipt_'.time(), 'amount' =>  $calculated_total_amount*100, 'currency' => 'INR', 'notes'=> array('key1'=> 'value3','key2'=> 'value2')));
 
         // If payment method is Razorpay, we'll handle it via AJAX later
         if ($payment_method === 'Razorpay') {
