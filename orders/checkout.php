@@ -1,5 +1,5 @@
 <?php
-require('vendor/autoload.php'); // Load Razorpay SDK
+require('../vendor/autoload.php'); // Load Razorpay SDK
 use Razorpay\Api\Api;
     include 'db_connect.php';
 // At the top of checkout.php, after the database connection
