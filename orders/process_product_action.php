@@ -62,22 +62,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
         
     } elseif ($action === 'buy_now') {
-        // For Razorpay integration, we'll store the product in session and redirect to checkout
+        // Clear current cart (optional - you might want to keep existing items)
+        $stmt = $conn->prepare("DELETE FROM cart WHERE user_session_id = ?");
+        $stmt->bind_param("s", $user_session_id);
+        $stmt->execute();
+        $stmt->close();
         
-        // Store product details in session for checkout
-        $_SESSION['buy_now_product'] = [
-            'product_id' => $product_id,
-            'name' => $product['name'],
-            'image' => $product['image'],
-            'quantity' => $quantity,
-            'size' => $size,
-            'price' => ($product['discount_price'] > 0 && $product['discount_price'] < $product['original_price']) 
-                        ? $product['discount_price'] 
-                        : $product['original_price']
-        ];
+        // Add only this product to cart
+        $stmt = $conn->prepare("INSERT INTO cart (user_session_id, product_id, quantity, size) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("siis", $user_session_id, $product_id, $quantity, $size);
+        $stmt->execute();
+        $stmt->close();
         
-        // Redirect directly to Razorpay checkout
-        header("Location: razorpay_checkout.php");
+        // Redirect directly to checkout
+        header("Location: checkout.php");
         exit();
     }
 }
