@@ -1025,6 +1025,9 @@
       >
         <p class="mb-1"><i class="fas fa-envelope mr-2 text-[#d83f40] text-xs"></i> Email: pyaara001@gmail.com</p>
         <p><i class="fas fa-headset mr-2 text-[#d83f40] text-xs"></i> Support: pyaara001@gmail.com</p>
+        <p><i class="fas fa-phone mr-2 text-[#d83f40] text-xs"></i> <a href="tel:+917839460427">Contact: +91-7839460427</a></p>
+
+        <p><i></i></p>
       </div>
     </div>
 
@@ -1091,6 +1094,8 @@
         <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/privacy_policy.php"><i class="fas fa-shield-alt mr-2 text-[#d83f40] text-xs"></i> Privacy Policy</p></a>
         <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/term_&_condition.php"><i class="fas fa-file-contract mr-2 text-[#d83f40] text-xs"></i> Terms &amp; Condition</p></a>
         <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/shipping_policy.php"><i class="fas fa-truck mr-2 text-[#d83f40] text-xs"></i> Shipping Policy</p></a>
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/return&refund_policy.php"><i class="fas fa-truck mr-2 text-[#d83f40] text-xs"></i> Return & Refund Policy</p></a>
+        
       </div>
     </div><!-- Scroll to Top Button -->
   <button
