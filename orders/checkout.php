@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 include 'db_connect.php';
 
 $user_session_id = session_id();
