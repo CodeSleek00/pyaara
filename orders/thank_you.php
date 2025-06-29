@@ -34,6 +34,8 @@ if ($order_id_unique) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
+    <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Confirmation</title>
     <link rel="stylesheet" href="style.css">
