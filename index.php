@@ -160,9 +160,9 @@
           <i class="fas fa-shopping-cart"></i>
           <span>Cart</span>
         </a>
-        <a href="#" class="footer-menu-item">
+        <a href="orders/anime.php.php" class="footer-menu-item">
             <i class="fa-solid fa-list"></i> 
-            <span>Category</span>
+            <span>Suggestion</span>
         </a>
         <a href="user.php" class="footer-menu-item">
           <i class="fas fa-user"></i>
