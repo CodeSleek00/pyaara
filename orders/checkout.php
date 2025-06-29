@@ -1,5 +1,5 @@
 <?php
-session_start(); // Start the session at the beginning
+ // Start the session at the beginning
 include 'db_connect.php';
 
 $user_session_id = session_id();
