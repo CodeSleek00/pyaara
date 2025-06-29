@@ -1078,9 +1078,7 @@ if (isset($_SESSION['message'])) {
                 
                 <h4>Domestic Shipping (India)</h4>
                 <ul>
-                    <li><strong>Standard Shipping:</strong> 3-5 business days - ₹50 (Free on orders over ₹2000)</li>
-                    <li><strong>Express Shipping:</strong> 2-3 business days - ₹100</li>
-                    <li><strong>Next Day Delivery:</strong> 1 business day - ₹150 (Order by 12pm IST)</li>
+                    <li><strong>Standard Shipping:</strong> 3-5 business days - ₹49 (Free on online payments)</li>
                 </ul>
                 
                 <h4>International Shipping</h4>
@@ -1091,10 +1089,8 @@ if (isset($_SESSION['message'])) {
                 
                 <h4>Returns & Exchanges</h4>
                 <ul>
-                    <li>30-day return policy from delivery date</li>
-                    <li>Items must be unworn, unwashed, and in original condition with tags attached</li>
-                    <li>Free returns for domestic customers (prepaid return label included)</li>
-                    <li>International customers are responsible for return shipping costs</li>
+                    <li>No Return Policy  </li>
+                    <li>Only Manual Order Cancellation is Available </li>
                 </ul>
             </div>
             
