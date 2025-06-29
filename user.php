@@ -79,7 +79,7 @@
   </a>
 
   <!-- Help Center -->
-  <a href="help-center.html" class="flex items-center justify-between border border-gray-300 rounded-lg px-4 py-2 hover:shadow-sm clickable-button hover:border-accent">
+  <<a href="mailto:pyaara001@gmail.com" class="flex items-center justify-between border border-gray-300 rounded-lg px-4 py-2 hover:shadow-sm clickable-button hover:border-accent">
     <div class="flex items-center space-x-3">
       <i class="fas fa-question-circle text-red-600 text-lg"></i>
       <span class="font-semibold text-gray-800 select-none text-sm">Help Center</span>
@@ -88,7 +88,7 @@
   </a>
 
   <!-- Coupons -->
-  <a href="coupons.html" class="flex items-center justify-between border border-gray-300 rounded-lg px-4 py-2 hover:shadow-sm clickable-button hover:border-accent">
+  <a href="index.php" class="flex items-center justify-between border border-gray-300 rounded-lg px-4 py-2 hover:shadow-sm clickable-button hover:border-accent">
     <div class="flex items-center space-x-3">
       <i class="fas fa-tags text-red-600 text-lg"></i>
       <span class="font-semibold text-gray-800 select-none text-sm">Coupons</span>
@@ -98,7 +98,7 @@
 </div>
 <ul class="divide-y divide-gray-200">
   <li>
-    <a href="privacy-policy.html" class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 clickable-button">
+    <a href="policies/privacy_policy.php" class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 clickable-button">
       <div class="flex items-center space-x-3">
         <i class="fas fa-shield-alt text-red-600 text-lg"></i>
         <div class="text-left">
@@ -131,23 +131,7 @@
     </a>
   </li>
 
-  <li>
-    <a href="rewards.html" class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 clickable-button">
-      <div class="flex items-center space-x-3">
-        <i class="fas fa-gift text-red-600 text-lg"></i>
-        <div class="text-left">
-          <p class="font-semibold text-gray-900 select-none text-sm">
-            Earn &amp; Redeem
-          </p>
-          <p class="text-gray-500 text-xs leading-tight select-text">
-            View prizes and earn rewards
-          </p>
-        </div>
-      </div>
-      <i class="fas fa-chevron-right text-red-600 text-sm"></i>
-    </a>
-  </li>
-
+  
   <li>
     <a href="profile.php" class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 clickable-button">
       <div class="flex items-center space-x-3">
@@ -166,7 +150,7 @@
   </li>
 
   <li>
-    <a href="refund-policy.html" class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 clickable-button">
+    <a href="policies/term_&_condition.php" class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 clickable-button">
       <div class="flex items-center space-x-3">
         <i class="fas fa-undo text-red-600 text-lg"></i>
         <div class="text-left">
@@ -199,23 +183,7 @@
     </a>
   </li>
 
-  <li>
-    <a href="settings.html" class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 clickable-button">
-      <div class="flex items-center space-x-3">
-        <i class="fas fa-cog text-red-600 text-lg"></i>
-        <div class="text-left">
-          <p class="font-semibold text-gray-900 select-none text-sm">
-            Settings
-          </p>
-          <p class="text-gray-500 text-xs leading-tight select-text">
-            Manage Notifications
-          </p>
-        </div>
-      </div>
-      <i class="fas fa-chevron-right text-red-600 text-sm"></i>
-    </a>
-  </li>
-</ul>
+ </ul>
   <script>
     // Check session via cookie
     fetch('session_check.php')
