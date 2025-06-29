@@ -210,39 +210,24 @@ $stmt->close();
 
         if (method === "Razorpay") {
             fetch("razorpay_api.php", {
-                method: "POST",
-                body: form
-            })
-            .then(res => res.json())
-            .then(data => {
-                const options = {
-                    key: data.key,
-                    amount: data.amount,
-                    currency: data.currency,
-                    name: data.name,
-                    description: data.description,
-                    order_id: data.order_id,
-                    handler: function (response) {
-                        const verifyForm = document.createElement("form");
-                        verifyForm.method = "POST";
-                        verifyForm.action = "verify_razorpay.php";
-                        for (const key in response) {
-                            const input = document.createElement("input");
-                            input.type = "hidden";
-                            input.name = key;
-                            input.value = response[key];
-                            verifyForm.appendChild(input);
-                        }
-                        document.body.appendChild(verifyForm);
-                        verifyForm.submit();
-                    }
-                };
-                const rzp = new Razorpay(options);
-                rzp.open();
-            })
-            .catch(err => {
-                alert("Payment failed: " + err.message);
-            });
+    method: "POST",
+    body: new FormData(document.getElementById("checkoutForm"))
+})
+.then(response => {
+    return response.json();  // fails if non-JSON is returned
+})
+.then(data => {
+    if (data.status === "razorpay") {
+        // proceed to open Razorpay
+    } else {
+        alert("Server error: " + data.message);
+    }
+})
+.catch(error => {
+    console.error("Error:", error);
+    alert("Error while initiating payment. Please try again.");
+});
+
         } else {
             this.submit(); // COD
         }
