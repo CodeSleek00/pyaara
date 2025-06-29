@@ -1,8 +1,9 @@
 <?php
+ob_start(); // Start output buffering
 session_start();
 include 'db_connect.php';
 
-// Enable error reporting
+// Error reporting (disable in production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -84,39 +85,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle Razorpay payment
     if ($payment_method === 'Razorpay') {
-        $_SESSION['razorpay_order'] = [
-            'order_id' => $order_id,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'phone_number' => $phone_number,
-            'shipping_address' => $shipping_address,
-            'payment_method' => $payment_method,
-            'total_amount' => $calculated_total_amount
-        ];
+        // Clear any previous output
+        if (ob_get_length()) ob_clean();
         
+        // Set JSON header
         header('Content-Type: application/json');
-        echo json_encode([
-            'status' => 'razorpay',
-            'order_id' => $order_id,
-            'amount' => $calculated_total_amount * 100,
-            'currency' => 'INR',
-            'key' => 'rzp_live_pA6jgjncp78sq7',
-            'name' => 'Your Store Name',
-            'description' => 'Order Payment',
-            'prefill' => [
-                'name' => $first_name . ' ' . $last_name,
-                'email' => '',
-                'contact' => $phone_number
-            ],
-            'notes' => [
-                'address' => $shipping_address,
-                'merchant_order_id' => $order_id
-            ],
-            'theme' => [
-                'color' => '#3399cc'
-            ]
-        ]);
-        exit();
+        
+        try {
+            echo json_encode([
+                'status' => 'razorpay',
+                'order_id' => $order_id,
+                'amount' => $calculated_total_amount * 100,
+                'currency' => 'INR',
+                'key' => 'rzp_live_pA6jgjncp78sq7',
+                'name' => 'Your Store',
+                'description' => 'Order Payment',
+                'prefill' => [
+                    'name' => $first_name . ' ' . $last_name,
+                    'email' => '',
+                    'contact' => $phone_number
+                ],
+                'notes' => [
+                    'address' => $shipping_address,
+                    'merchant_order_id' => $order_id
+                ],
+                'theme' => [
+                    'color' => '#3399cc'
+                ]
+            ]);
+            exit();
+        } catch (Exception $e) {
+            // Clear any output if JSON fails
+            if (ob_get_length()) ob_clean();
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to process payment'
+            ]);
+            exit();
+        }
     }
 
     // Handle COD payment
@@ -179,6 +186,7 @@ if ($result->num_rows > 0) {
 }
 $stmt->close();
 $conn->close();
+ob_end_flush(); // End output buffering and flush
 ?>
 
 <!DOCTYPE html>
@@ -193,7 +201,6 @@ $conn->close();
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
-            --secondary: #f59e0b;
             --light: #f8fafc;
             --dark: #1e293b;
             --gray: #64748b;
@@ -584,10 +591,17 @@ $conn->close();
                 fetch(form.action, {
                     method: 'POST',
                     body: new FormData(form),
-                    headers: { 'Accept': 'application/json' }
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
                 })
                 .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text || 'Server error');
+                        });
+                    }
                     return response.json();
                 })
                 .then(data => {
@@ -645,7 +659,7 @@ $conn->close();
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Payment processing failed. Please try again.');
+                    alert('Payment processing failed: ' + error.message);
                 });
             } else {
                 form.submit();
