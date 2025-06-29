@@ -245,6 +245,8 @@ if (isset($_GET['buy_now'])) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
+        <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
         <title>Checkout</title>
         <link rel="stylesheet" href="style.css">
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
