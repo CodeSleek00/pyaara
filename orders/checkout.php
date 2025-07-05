@@ -332,7 +332,7 @@ if (isset($_GET['buy_now'])) {
                 display: block;
                 width: 100%;
                 padding: 15px;
-                background-color: var(--primary-color);
+                background-color: #45a049;
                 color: var(--white);
                 border: none;
                 border-radius: 5px;
