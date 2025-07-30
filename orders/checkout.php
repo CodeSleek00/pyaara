@@ -98,7 +98,7 @@ if (isset($_GET['buy_now'])) {
         if ($payment_method === 'Razorpay') {
     
 
-    $api = new Api('rzp_live_pA6jgjncp78sq7', 'N7INcRU4l61iijQ2sOjL5YTs'); // Replace with your real key and secret
+    $api = new Api('rzp_test_Ox3tDG4PAJscLL', '8y5toKVa5TXJ2zfOUvXaZnPs'); // Replace with your real key and secret
 
     $razorpay_order = $api->order->create([
         'receipt' => $order_id,
