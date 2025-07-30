@@ -34,17 +34,20 @@ if ($order_id_unique) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
+    <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Confirmation</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+    
     <div class="container">
         <h2>Order Confirmation</h2>
         <?php if ($order_details): ?>
             <div class="order-confirmation-details">
                 <p class="success">Your order has been placed successfully!</p>
+                <p> <font color="red">Please Remember Your Order ID</p></font>
                 <h3>Order ID: <strong style="color: var(--yellow);"><?php echo htmlspecialchars($order_details['order_id']); ?></strong></h3>
                 <p><strong>Customer Name:</strong> <?php echo htmlspecialchars($order_details['first_name'] . ' ' . $order_details['last_name']); ?></p>
                 <p><strong>Phone Number:</strong> <?php echo htmlspecialchars($order_details['phone_number']); ?></p>
@@ -67,7 +70,7 @@ if ($order_id_unique) {
                 </ul>
 
                 <p style="margin-top: 20px;">We will process your order shortly.</p>
-                <a href="../index.php" class="btn btn-primary">Continue Shopping</a>
+                <a href="../index.php"style="text-decoration:none;" class="btn btn-primary">Continue Shopping</a>
             </div>
         <?php else: ?>
             <div class="message error">
@@ -76,6 +79,7 @@ if ($order_id_unique) {
             </div>
         <?php endif; ?>
     </div>
+
 </body>
 </html>
 <?php $conn->close(); ?>
