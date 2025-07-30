@@ -98,7 +98,7 @@ if (isset($_GET['buy_now'])) {
         if ($payment_method === 'Razorpay') {
     
 
-    $api = new Api('rzp_live_pA6jgjncp78sq7', 'N7INcRU4l61iijQ2sOjL5YTs'); // Replace with your real key and secret
+    $api = new Api('rzp_test_TMaKHOLutXGYTH', 'eyvkr7ljPXve2MnuDjHXZQVE'); // Replace with your real key and secret
 
     $razorpay_order = $api->order->create([
         'receipt' => $order_id,
@@ -127,7 +127,7 @@ if (isset($_GET['buy_now'])) {
         'order_id' => $real_razorpay_order_id,
         'amount' => $calculated_total_amount * 100,
         'currency' => 'INR',
-        'key' => 'rzp_live_pA6jgjncp78sq7',
+        'key' => 'rzp_test_TMaKHOLutXGYTH',
         'name' => 'Pyaara',
         'description' => 'Order Payment',
         'prefill' => [
