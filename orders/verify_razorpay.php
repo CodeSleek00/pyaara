@@ -1,5 +1,5 @@
 <?php
-require('vendor/autoload.php'); // This loads Razorpay SDK
+require('../vendor/autoload.php'); // This loads Razorpay SDK
 use Razorpay\Api\Api;
 
 session_start();
