@@ -127,7 +127,7 @@ if (isset($_GET['buy_now'])) {
         'order_id' => $real_razorpay_order_id,
         'amount' => $calculated_total_amount * 100,
         'currency' => 'INR',
-        'key' => 'rzp_live_pA6jgjncp78sq7',
+        'key' => 'rzp_test_Ox3tDG4PAJscLL',
         'name' => 'Pyaara',
         'description' => 'Order Payment',
         'prefill' => [
