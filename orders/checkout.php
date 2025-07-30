@@ -1,245 +1,210 @@
 <?php
 require('../vendor/autoload.php'); // Load Razorpay SDK
 use Razorpay\Api\Api;
-    include 'db_connect.php';
-// At the top of checkout.php, after the database connection
+include 'db_connect.php';
+session_start();
+
 $user_session_id = session_id();
 
-// Check if this is a direct buy now request (you might want to add a flag)
 if (isset($_GET['buy_now'])) {
-    // Ensure the cart has exactly one item
     $stmt = $conn->prepare("SELECT COUNT(*) as count FROM cart WHERE user_session_id = ?");
     $stmt->bind_param("s", $user_session_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-    
     if ($row['count'] != 1) {
-        // If not exactly one item, redirect to cart
         header("Location: cart.php");
         exit();
     }
     $stmt->close();
 }
 
-// Rest of your existing checkout.php code...
-    $user_session_id = session_id();
-    $checkout_items = [];
-    $total_checkout_amount = 0;
-    $cod_fee = 49; // COD fee constant
+$checkout_items = [];
+$total_checkout_amount = 0;
+$cod_fee = 49;
 
-    $message = '';
-    $message_type = '';
-    if (isset($_SESSION['message'])) {
-        $message = $_SESSION['message'];
-        $message_type = isset($_SESSION['message_type']) ? $_SESSION['message_type'] : 'success';
-        unset($_SESSION['message']);
-        unset($_SESSION['message_type']);
-    }
-
-    // --- Logic for POST Request (Form Submission) ---
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $first_name = $conn->real_escape_string($_POST['first_name']);
-        $last_name = $conn->real_escape_string($_POST['last_name']);
-        $phone_number = $conn->real_escape_string($_POST['phone_number']);
-        $shipping_address = $conn->real_escape_string($_POST['shipping_address']);
-        $payment_method = $conn->real_escape_string($_POST['payment_method']);
-        $total_amount_from_form = (float)$_POST['total_amount']; // Get total from hidden field
-
-        // Validate input (basic validation)
-        if (empty($first_name) || empty($last_name) || empty($phone_number) || empty($shipping_address) || empty($payment_method)) {
-            $_SESSION['message'] = "All fields are required.";
-            $_SESSION['message_type'] = "error";
-            header("Location: checkout.php");
-            exit();
-        }
-
-        // Validate payment method
-        if (!in_array($payment_method, ['COD', 'Razorpay'])) {
-            $_SESSION['message'] = "Invalid payment method selected.";
-            $_SESSION['message_type'] = "error";
-            header("Location: checkout.php");
-            exit();
-        }
-
-        // Fetch items from cart again to calculate actual total_amount for security
-        $sql_cart_items = "SELECT c.quantity, p.original_price, p.discount_price
-                        FROM cart c
-                        JOIN products p ON c.product_id = p.id
-                        WHERE c.user_session_id = ?";
-        $stmt_cart = $conn->prepare($sql_cart_items);
-        $stmt_cart->bind_param("s", $user_session_id);
-        $stmt_cart->execute();
-        $result_cart = $stmt_cart->get_result();
-        $calculated_total_amount = 0;
-        while ($row_cart = $result_cart->fetch_assoc()) {
-            $price_to_use = ($row_cart['discount_price'] < $row_cart['original_price'] && $row_cart['discount_price'] > 0) ? $row_cart['discount_price'] : $row_cart['original_price'];
-            $calculated_total_amount += ($price_to_use * $row_cart['quantity']);
-        }
-        
-        // Add COD fee if payment method is COD
-        if ($payment_method === 'COD') {
-            $calculated_total_amount += $cod_fee;
-        }
-        
-        $stmt_cart->close();
-
-        // Basic check against form's total_amount to prevent client-side manipulation
-        if (abs($calculated_total_amount - $total_amount_from_form) > 0.01) { // Allow for float precision
-            $_SESSION['message'] = "Total amount mismatch. Please try again.";
-            $_SESSION['message_type'] = "error";
-            header("Location: checkout.php");
-            exit();
-        }
-
-        $order_id = uniqid('ORDER_'); // Generate a unique order ID
-
-        // If payment method is Razorpay, we'll handle it via AJAX later
-        if ($payment_method === 'Razorpay') {
-    
-
-    $api = new Api('rzp_test_TMaKHOLutXGYTH', 'eyvkr7ljPXve2MnuDjHXZQVE'); // Replace with your real key and secret
-
-    $razorpay_order = $api->order->create([
-        'receipt' => $order_id,
-        'amount' => $calculated_total_amount * 100, // in paise
-        'currency' => 'INR'
-    ]);
-
-    $real_razorpay_order_id = $razorpay_order['id'];
-
-    // Save the order in session (optional but useful)
-    $_SESSION['razorpay_order'] = [
-        'order_id' => $order_id,
-        'razorpay_order_id' => $real_razorpay_order_id,
-        'first_name' => $first_name,
-        'last_name' => $last_name,
-        'phone_number' => $phone_number,
-        'shipping_address' => $shipping_address,
-        'payment_method' => $payment_method,
-        'total_amount' => $calculated_total_amount,
-        'items' => []
-    ];
-
-    header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'razorpay',
-        'order_id' => $real_razorpay_order_id,
-        'amount' => $calculated_total_amount * 100,
-        'currency' => 'INR',
-        'key' => 'rzp_test_TMaKHOLutXGYTH',
-        'name' => 'Pyaara',
-        'description' => 'Order Payment',
-        'prefill' => [
-            'name' => $first_name . ' ' . $last_name,
-            'email' => '', // Add email if available
-            'contact' => $phone_number
-        ],
-        'notes' => [
-            'address' => $shipping_address,
-            'merchant_order_id' => $order_id
-        ],
-        'theme' => [
-            'color' => '#3399cc'
-        ]
-    ]);
-    exit();
+$message = '';
+$message_type = '';
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    $message_type = $_SESSION['message_type'] ?? 'success';
+    unset($_SESSION['message'], $_SESSION['message_type']);
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $first_name = $conn->real_escape_string($_POST['first_name']);
+    $last_name = $conn->real_escape_string($_POST['last_name']);
+    $phone_number = $conn->real_escape_string($_POST['phone_number']);
+    $shipping_address = $conn->real_escape_string($_POST['shipping_address']);
+    $pincode = $conn->real_escape_string($_POST['pincode']);
+    $payment_method = $conn->real_escape_string($_POST['payment_method']);
+    $total_amount_from_form = (float)$_POST['total_amount'];
 
-        // For COD, proceed with normal order processing
-        // Insert into orders table
-        $stmt = $conn->prepare("INSERT INTO orders (order_id, first_name, last_name, phone_number, shipping_address, payment_method, total_amount) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssd", $order_id, $first_name, $last_name, $phone_number, $shipping_address, $payment_method, $calculated_total_amount);
-
-        if ($stmt->execute()) {
-            $last_order_id = $conn->insert_id; // Get the auto-generated ID from the orders table
-
-            // Move items from cart to order_items
-            $sql_cart_to_order = "SELECT product_id, quantity, size FROM cart WHERE user_session_id = ?";
-            $stmt_get_cart = $conn->prepare($sql_cart_to_order);
-            $stmt_get_cart->bind_param("s", $user_session_id);
-            $stmt_get_cart->execute();
-            $result_get_cart = $stmt_get_cart->get_result();
-
-            $stmt_insert_order_item = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
-
-            while ($cart_item = $result_get_cart->fetch_assoc()) {
-                // Fetch product price at the time of order
-                $stmt_product_price = $conn->prepare("SELECT original_price, discount_price FROM products WHERE id = ?");
-                $stmt_product_price->bind_param("i", $cart_item['product_id']);
-                $stmt_product_price->execute();
-                $result_product_price = $stmt_product_price->get_result();
-                $product_price_row = $result_product_price->fetch_assoc();
-                $item_price = ($product_price_row['discount_price'] < $product_price_row['original_price'] && $product_price_row['discount_price'] > 0)
-                            ? $product_price_row['discount_price']
-                            : $product_price_row['original_price'];
-                $stmt_product_price->close();
-
-                $stmt_insert_order_item->bind_param("iiids", $last_order_id, $cart_item['product_id'], $cart_item['quantity'], $item_price, $cart_item['size']);
-                $stmt_insert_order_item->execute();
-                
-                // Add to razorpay session if needed
-                if ($payment_method === 'Razorpay') {
-                    $_SESSION['razorpay_order']['items'][] = [
-                        'product_id' => $cart_item['product_id'],
-                        'quantity' => $cart_item['quantity'],
-                        'price' => $item_price,
-                        'size' => $cart_item['size']
-                    ];
-                }
-            }
-            $stmt_get_cart->close();
-            $stmt_insert_order_item->close();
-
-            // Clear the entire session's cart after a successful order
-            $clear_cart_stmt = $conn->prepare("DELETE FROM cart WHERE user_session_id = ?");
-            $clear_cart_stmt->bind_param("s", $user_session_id);
-            $clear_cart_stmt->execute();
-            $clear_cart_stmt->close();
-
-            $_SESSION['message'] = "Order placed successfully! Your Order ID: " . $order_id;
-            $_SESSION['message_type'] = "success";
-            header("Location: thank_you.php?order_id=" . $order_id); // Redirect to a thank you page
-            exit();
-
-        } else {
-            $_SESSION['message'] = "Error placing order: " . $stmt->error;
-            $_SESSION['message_type'] = "error";
-            header("Location: checkout.php");
-            exit();
-        }
-        $stmt->close();
+    if (empty($first_name) || empty($last_name) || empty($phone_number) || empty($shipping_address) || empty($pincode) || empty($payment_method)) {
+        $_SESSION['message'] = "All fields are required.";
+        $_SESSION['message_type'] = "error";
+        header("Location: checkout.php");
+        exit();
     }
 
-    // --- Logic for GET Request (Initial Load) ---
-    // Always fetch from the cart now
-    $sql = "SELECT c.product_id, c.quantity, c.size, p.name, p.image, p.original_price, p.discount_price
-            FROM cart c
-            JOIN products p ON c.product_id = p.id
-            WHERE c.user_session_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $user_session_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $price_to_use = ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0) ? $row['discount_price'] : $row['original_price'];
-            $row['price'] = $price_to_use;
-            $checkout_items[] = $row;
-            $total_checkout_amount += ($price_to_use * $row['quantity']);
-        }
-    } else {
-        $_SESSION['message'] = "Your cart is empty. Please add items before checking out.";
+    if (!in_array($payment_method, ['COD', 'Razorpay'])) {
+        $_SESSION['message'] = "Invalid payment method selected.";
         $_SESSION['message_type'] = "error";
-        header("Location: index.php"); // Redirect to home if cart is empty
+        header("Location: checkout.php");
+        exit();
+    }
+
+    $sql_cart_items = "SELECT c.quantity, p.original_price, p.discount_price
+                       FROM cart c
+                       JOIN products p ON c.product_id = p.id
+                       WHERE c.user_session_id = ?";
+    $stmt_cart = $conn->prepare($sql_cart_items);
+    $stmt_cart->bind_param("s", $user_session_id);
+    $stmt_cart->execute();
+    $result_cart = $stmt_cart->get_result();
+    $calculated_total_amount = 0;
+    while ($row_cart = $result_cart->fetch_assoc()) {
+        $price_to_use = ($row_cart['discount_price'] < $row_cart['original_price'] && $row_cart['discount_price'] > 0) ? $row_cart['discount_price'] : $row_cart['original_price'];
+        $calculated_total_amount += ($price_to_use * $row_cart['quantity']);
+    }
+    if ($payment_method === 'COD') {
+        $calculated_total_amount += $cod_fee;
+    }
+    $stmt_cart->close();
+
+    if (abs($calculated_total_amount - $total_amount_from_form) > 0.01) {
+        $_SESSION['message'] = "Total amount mismatch. Please try again.";
+        $_SESSION['message_type'] = "error";
+        header("Location: checkout.php");
+        exit();
+    }
+
+    $order_id = uniqid('ORDER_');
+
+    if ($payment_method === 'Razorpay') {
+        $api = new Api('rzp_test_TMaKHOLutXGYTH', 'eyvkr7ljPXve2MnuDjHXZQVE');
+
+        $razorpay_order = $api->order->create([
+            'receipt' => $order_id,
+            'amount' => $calculated_total_amount * 100,
+            'currency' => 'INR'
+        ]);
+
+        $real_razorpay_order_id = $razorpay_order['id'];
+
+        $_SESSION['razorpay_order'] = [
+            'order_id' => $order_id,
+            'razorpay_order_id' => $real_razorpay_order_id,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'phone_number' => $phone_number,
+            'shipping_address' => $shipping_address,
+            'pincode' => $pincode,
+            'payment_method' => $payment_method,
+            'total_amount' => $calculated_total_amount,
+            'items' => []
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'razorpay',
+            'order_id' => $real_razorpay_order_id,
+            'amount' => $calculated_total_amount * 100,
+            'currency' => 'INR',
+            'key' => 'rzp_test_TMaKHOLutXGYTH',
+            'name' => 'Pyaara',
+            'description' => 'Order Payment',
+            'prefill' => [
+                'name' => $first_name . ' ' . $last_name,
+                'email' => '',
+                'contact' => $phone_number
+            ],
+            'notes' => [
+                'address' => $shipping_address,
+                'pincode' => $pincode,
+                'merchant_order_id' => $order_id
+            ],
+            'theme' => [
+                'color' => '#3399cc'
+            ]
+        ]);
+        exit();
+    }
+
+    $stmt = $conn->prepare("INSERT INTO orders (order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssd", $order_id, $first_name, $last_name, $phone_number, $shipping_address, $pincode, $payment_method, $calculated_total_amount);
+
+    if ($stmt->execute()) {
+        $last_order_id = $conn->insert_id;
+        $stmt_get_cart = $conn->prepare("SELECT product_id, quantity, size FROM cart WHERE user_session_id = ?");
+        $stmt_get_cart->bind_param("s", $user_session_id);
+        $stmt_get_cart->execute();
+        $result_get_cart = $stmt_get_cart->get_result();
+
+        $stmt_insert_order_item = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
+
+        while ($cart_item = $result_get_cart->fetch_assoc()) {
+            $stmt_product_price = $conn->prepare("SELECT original_price, discount_price FROM products WHERE id = ?");
+            $stmt_product_price->bind_param("i", $cart_item['product_id']);
+            $stmt_product_price->execute();
+            $result_product_price = $stmt_product_price->get_result();
+            $product_price_row = $result_product_price->fetch_assoc();
+            $item_price = ($product_price_row['discount_price'] < $product_price_row['original_price'] && $product_price_row['discount_price'] > 0)
+                        ? $product_price_row['discount_price']
+                        : $product_price_row['original_price'];
+            $stmt_product_price->close();
+
+            $stmt_insert_order_item->bind_param("iiids", $last_order_id, $cart_item['product_id'], $cart_item['quantity'], $item_price, $cart_item['size']);
+            $stmt_insert_order_item->execute();
+        }
+
+        $stmt_get_cart->close();
+        $stmt_insert_order_item->close();
+
+        $clear_cart_stmt = $conn->prepare("DELETE FROM cart WHERE user_session_id = ?");
+        $clear_cart_stmt->bind_param("s", $user_session_id);
+        $clear_cart_stmt->execute();
+        $clear_cart_stmt->close();
+
+        $_SESSION['message'] = "Order placed successfully! Your Order ID: " . $order_id;
+        $_SESSION['message_type'] = "success";
+        header("Location: thank_you.php?order_id=" . $order_id);
+        exit();
+    } else {
+        $_SESSION['message'] = "Error placing order: " . $stmt->error;
+        $_SESSION['message_type'] = "error";
+        header("Location: checkout.php");
         exit();
     }
     $stmt->close();
+}
 
-    $conn->close();
-    ?>
+$sql = "SELECT c.product_id, c.quantity, c.size, p.name, p.image, p.original_price, p.discount_price
+        FROM cart c
+        JOIN products p ON c.product_id = p.id
+        WHERE c.user_session_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $user_session_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $price_to_use = ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0) ? $row['discount_price'] : $row['original_price'];
+        $row['price'] = $price_to_use;
+        $checkout_items[] = $row;
+        $total_checkout_amount += ($price_to_use * $row['quantity']);
+    }
+} else {
+    $_SESSION['message'] = "Your cart is empty. Please add items before checking out.";
+    $_SESSION['message_type'] = "error";
+    header("Location: index.php");
+    exit();
+}
+$stmt->close();
+$conn->close();
+?>
+
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -458,6 +423,11 @@ if (isset($_GET['buy_now'])) {
                             <label for="shipping_address">Shipping Address:</label>
                             <textarea id="shipping_address" name="shipping_address" required placeholder="Enter your Address"></textarea>
                         </div>
+                        <div class="form-group">
+                            <label for="pincode">Pincode:</label>
+                            <input type="text" id="pincode" name="pincode" required placeholder="Enter your Pincode" pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode">
+                        </div>
+
 
                         <div class="form-group">
                             <label>Payment Method:</label>
