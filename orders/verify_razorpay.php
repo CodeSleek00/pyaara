@@ -2,8 +2,10 @@
 require('../vendor/autoload.php');
 use Razorpay\Api\Api;
 include 'db_connect.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-session_start();
 
 // Verify Razorpay payment
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
