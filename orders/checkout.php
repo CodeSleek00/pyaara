@@ -2,6 +2,7 @@
 require('../vendor/autoload.php');
 use Razorpay\Api\Api;
 include 'db_connect.php';
+session_start();
 
 $user_session_id = session_id();
 
@@ -18,7 +19,6 @@ if (isset($_GET['buy_now'])) {
     $stmt->close();
 }
 
-$user_session_id = session_id();
 $checkout_items = [];
 $total_checkout_amount = 0;
 $cod_fee = 49;
@@ -28,8 +28,7 @@ $message_type = '';
 if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];
     $message_type = isset($_SESSION['message_type']) ? $_SESSION['message_type'] : 'success';
-    unset($_SESSION['message']);
-    unset($_SESSION['message_type']);
+    unset($_SESSION['message'], $_SESSION['message_type']);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -37,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $last_name = $conn->real_escape_string($_POST['last_name']);
     $phone_number = $conn->real_escape_string($_POST['phone_number']);
     $shipping_address = $conn->real_escape_string($_POST['shipping_address']);
-    $pincode = $conn->real_escape_string($_POST['pincode']); // ✅ NEW
+    $pincode = $conn->real_escape_string($_POST['pincode']);
     $payment_method = $conn->real_escape_string($_POST['payment_method']);
     $total_amount_from_form = (float)$_POST['total_amount'];
 
@@ -55,10 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    $sql_cart_items = "SELECT c.quantity, p.original_price, p.discount_price
-                    FROM cart c
-                    JOIN products p ON c.product_id = p.id
-                    WHERE c.user_session_id = ?";
+    $sql_cart_items = "SELECT c.quantity, p.original_price, p.discount_price FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_session_id = ?";
     $stmt_cart = $conn->prepare($sql_cart_items);
     $stmt_cart->bind_param("s", $user_session_id);
     $stmt_cart->execute();
@@ -68,11 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price_to_use = ($row_cart['discount_price'] < $row_cart['original_price'] && $row_cart['discount_price'] > 0) ? $row_cart['discount_price'] : $row_cart['original_price'];
         $calculated_total_amount += ($price_to_use * $row_cart['quantity']);
     }
-
     if ($payment_method === 'COD') {
         $calculated_total_amount += $cod_fee;
     }
-
     $stmt_cart->close();
 
     if (abs($calculated_total_amount - $total_amount_from_form) > 0.01) {
@@ -100,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'last_name' => $last_name,
             'phone_number' => $phone_number,
             'shipping_address' => $shipping_address,
-            'pincode' => $pincode, // ✅ NEW
+            'pincode' => $pincode,
             'payment_method' => $payment_method,
             'total_amount' => $calculated_total_amount,
             'items' => []
@@ -122,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ],
             'notes' => [
                 'address' => $shipping_address,
-                'pincode' => $pincode, // ✅ NEW
+                'pincode' => $pincode,
                 'merchant_order_id' => $order_id
             ],
             'theme' => [
@@ -144,31 +138,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_get_cart->execute();
         $result_get_cart = $stmt_get_cart->get_result();
 
-        $stmt_insert_order_item = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
+        $stmt_insert_order_item = $conn->prepare("INSERT INTO order_items (order_id, product_id, product_name, product_image, quantity, price, size) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
         while ($cart_item = $result_get_cart->fetch_assoc()) {
-            $stmt_product_price = $conn->prepare("SELECT original_price, discount_price FROM products WHERE id = ?");
-            $stmt_product_price->bind_param("i", $cart_item['product_id']);
-            $stmt_product_price->execute();
-            $result_product_price = $stmt_product_price->get_result();
-            $product_price_row = $result_product_price->fetch_assoc();
-            $item_price = ($product_price_row['discount_price'] < $product_price_row['original_price'] && $product_price_row['discount_price'] > 0)
-                        ? $product_price_row['discount_price']
-                        : $product_price_row['original_price'];
-            $stmt_product_price->close();
+            $stmt_product = $conn->prepare("SELECT name, image, original_price, discount_price FROM products WHERE id = ?");
+            $stmt_product->bind_param("i", $cart_item['product_id']);
+            $stmt_product->execute();
+            $product_data = $stmt_product->get_result()->fetch_assoc();
+            $stmt_product->close();
 
-            $stmt_insert_order_item->bind_param("iiids", $last_order_id, $cart_item['product_id'], $cart_item['quantity'], $item_price, $cart_item['size']);
+            $product_name = $product_data['name'];
+            $product_image = $product_data['image'];
+            $item_price = ($product_data['discount_price'] < $product_data['original_price'] && $product_data['discount_price'] > 0)
+                        ? $product_data['discount_price']
+                        : $product_data['original_price'];
+
+            $stmt_insert_order_item->bind_param("i ss sids", $last_order_id, $cart_item['product_id'], $product_name, $product_image, $cart_item['quantity'], $item_price, $cart_item['size']);
             $stmt_insert_order_item->execute();
 
             if ($payment_method === 'Razorpay') {
                 $_SESSION['razorpay_order']['items'][] = [
                     'product_id' => $cart_item['product_id'],
+                    'product_name' => $product_name,
+                    'product_image' => $product_image,
                     'quantity' => $cart_item['quantity'],
                     'price' => $item_price,
                     'size' => $cart_item['size']
                 ];
             }
         }
+
         $stmt_get_cart->close();
         $stmt_insert_order_item->close();
 
@@ -191,10 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 }
 
-$sql = "SELECT c.product_id, c.quantity, c.size, p.name, p.image, p.original_price, p.discount_price
-        FROM cart c
-        JOIN products p ON c.product_id = p.id
-        WHERE c.user_session_id = ?";
+$sql = "SELECT c.product_id, c.quantity, c.size, p.name, p.image, p.original_price, p.discount_price FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_session_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $user_session_id);
 $stmt->execute();
@@ -214,9 +210,9 @@ if ($result->num_rows > 0) {
     exit();
 }
 $stmt->close();
-
 $conn->close();
 ?>
+
 
     <!DOCTYPE html>
     <html lang="en">
