@@ -2,7 +2,10 @@
 require('../vendor/autoload.php');
 use Razorpay\Api\Api;
 include 'db_connect.php';
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 
 $user_session_id = session_id();
 
