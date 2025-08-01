@@ -83,49 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $order_id = uniqid('ORDER_');
-// In your checkout.php, replace the Razorpay section with this:
 
-if ($payment_method === 'Razorpay') {
-    // First create the order in your database with 'pending' status
-    $stmt = $conn->prepare("INSERT INTO orders (order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
-    $stmt->bind_param("sssssssd", $order_id, $first_name, $last_name, $phone_number, $shipping_address, $pincode, $payment_method, $calculated_total_amount);
-    
-    if ($stmt->execute()) {
-        $last_order_id = $conn->insert_id;
-        
-        // Insert order items
-        $sql_cart_to_order = "SELECT product_id, quantity, size FROM cart WHERE user_session_id = ?";
-        $stmt_get_cart = $conn->prepare($sql_cart_to_order);
-        $stmt_get_cart->bind_param("s", $user_session_id);
-        $stmt_get_cart->execute();
-        $result_get_cart = $stmt_get_cart->get_result();
-
-        $stmt_insert_order_item = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
-
-        while ($cart_item = $result_get_cart->fetch_assoc()) {
-            $stmt_product_price = $conn->prepare("SELECT original_price, discount_price FROM products WHERE id = ?");
-            $stmt_product_price->bind_param("i", $cart_item['product_id']);
-            $stmt_product_price->execute();
-            $result_product_price = $stmt_product_price->get_result();
-            $product_price_row = $result_product_price->fetch_assoc();
-            $item_price = ($product_price_row['discount_price'] < $product_price_row['original_price'] && $product_price_row['discount_price'] > 0)
-                        ? $product_price_row['discount_price']
-                        : $product_price_row['original_price'];
-            $stmt_product_price->close();
-
-            $stmt_insert_order_item->bind_param("iiids", $last_order_id, $cart_item['product_id'], $cart_item['quantity'], $item_price, $cart_item['size']);
-            $stmt_insert_order_item->execute();
-        }
-        $stmt_get_cart->close();
-        $stmt_insert_order_item->close();
-        
-        // Clear cart
-        $clear_cart_stmt = $conn->prepare("DELETE FROM cart WHERE user_session_id = ?");
-        $clear_cart_stmt->bind_param("s", $user_session_id);
-        $clear_cart_stmt->execute();
-        $clear_cart_stmt->close();
-        
-        // Now create Razorpay order
+    if ($payment_method === 'Razorpay') {
         $api = new Api('rzp_test_TMaKHOLutXGYTH', 'eyvkr7ljPXve2MnuDjHXZQVE');
         $razorpay_order = $api->order->create([
             'receipt' => $order_id,
@@ -134,9 +93,18 @@ if ($payment_method === 'Razorpay') {
         ]);
         $real_razorpay_order_id = $razorpay_order['id'];
 
-        // Store minimal data in session
-        $_SESSION['razorpay_order_id'] = $real_razorpay_order_id;
-        $_SESSION['merchant_order_id'] = $order_id;
+        $_SESSION['razorpay_order'] = [
+            'order_id' => $order_id,
+            'razorpay_order_id' => $real_razorpay_order_id,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'phone_number' => $phone_number,
+            'shipping_address' => $shipping_address,
+            'pincode' => $pincode, // ✅ NEW
+            'payment_method' => $payment_method,
+            'total_amount' => $calculated_total_amount,
+            'items' => []
+        ];
 
         header('Content-Type: application/json');
         echo json_encode([
@@ -154,7 +122,7 @@ if ($payment_method === 'Razorpay') {
             ],
             'notes' => [
                 'address' => $shipping_address,
-                'pincode' => $pincode,
+                'pincode' => $pincode, // ✅ NEW
                 'merchant_order_id' => $order_id
             ],
             'theme' => [
@@ -162,13 +130,7 @@ if ($payment_method === 'Razorpay') {
             ]
         ]);
         exit();
-    } else {
-        $_SESSION['message'] = "Error creating order: " . $stmt->error;
-        $_SESSION['message_type'] = "error";
-        header("Location: checkout.php");
-        exit();
     }
-}
 
     $stmt = $conn->prepare("INSERT INTO orders (order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssssssd", $order_id, $first_name, $last_name, $phone_number, $shipping_address, $pincode, $payment_method, $calculated_total_amount);
@@ -533,74 +495,104 @@ $conn->close();
         </div>
 
         <script>
-         document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const form = this;
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-    
-    if (paymentMethod === 'Razorpay') {
-        fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'razorpay') {
-                const options = {
-                    key: data.key,
-                    amount: data.amount,
-                    currency: data.currency,
-                    name: data.name,
-                    description: data.description,
-                    order_id: data.order_id,
-                    handler: function (response) {
-                        // Create a form and submit to verify_razorpay.php
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = 'verify_razorpay.php';
-
-                        const fields = {
-                            'razorpay_payment_id': response.razorpay_payment_id,
-                            'razorpay_order_id': response.razorpay_order_id,
-                            'razorpay_signature': response.razorpay_signature
-                        };
-
-                        for (const [name, value] of Object.entries(fields)) {
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = name;
-                            input.value = value;
-                            form.appendChild(input);
-                        }
-
-                        document.body.appendChild(form);
-                        form.submit();
-                    },
-                    prefill: data.prefill,
-                    notes: data.notes,
-                    theme: data.theme
-                };
+            const baseTotal = <?php echo $total_checkout_amount; ?>;
+            const codFee = <?php echo $cod_fee; ?>;
+            
+            function updateTotal() {
+                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                const codFeeElement = document.getElementById('codFee');
+                const totalAmountElement = document.getElementById('totalAmount');
+                const totalAmountInput = document.getElementById('totalAmountInput');
                 
-                const rzp = new Razorpay(options);
-                rzp.open();
-            } else {
-                console.error('Unexpected response:', data);
-                alert('There was an error processing your payment. Please try again.');
+                if (paymentMethod === 'COD') {
+                    codFeeElement.classList.remove('hidden');
+                    const newTotal = baseTotal + codFee;
+                    totalAmountElement.textContent = '₹' + newTotal.toFixed(2);
+                    totalAmountInput.value = newTotal.toFixed(2);
+                } else {
+                    codFeeElement.classList.add('hidden');
+                    totalAmountElement.textContent = '₹' + baseTotal.toFixed(2);
+                    totalAmountInput.value = baseTotal.toFixed(2);
+                }
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('There was an error processing your request. Please try again.');
-        });
-    } else {
-        // For COD, submit the form normally
-        form.submit();
-    }
-});
+            
+            // Add event listeners to payment method radio buttons
+            document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+                radio.addEventListener('change', updateTotal);
+            });
+            
+            // Initialize on page load
+            updateTotal();
+
+            document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const form = this;
+                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                
+                if (paymentMethod === 'Razorpay') {
+                    // Submit form via AJAX to get Razorpay order details
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'razorpay') {
+                            // Initialize Razorpay checkout
+                            const options = {
+                                key: data.key,
+                                amount: data.amount,
+                                currency: data.currency,
+                                name: data.name,
+                                description: data.description,
+                                order_id: data.order_id,
+                                handler: function (response) {
+                                    const form = document.createElement('form');
+                                    form.method = 'POST';
+                                    form.action = 'verify_razorpay.php';
+
+                                    ['razorpay_payment_id', 'razorpay_order_id', 'razorpay_signature'].forEach((field) => {
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.name = field;
+                                        input.value = response[field];
+                                        form.appendChild(input);
+                                    });
+
+                                    document.body.appendChild(form);
+                                    form.submit();
+                                }
+                                ,
+                                prefill: data.prefill,
+                                notes: data.notes,
+                                theme: data.theme
+                            };
+                            
+                            const rzp = new Razorpay(options);
+                            rzp.open();
+                        } else {
+                            // Handle other cases or errors
+                            console.error('Unexpected response:', data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                } else {
+                    // For COD, submit the form normally
+                    form.submit();
+                }
+            });
+            
+            // You might also want to add a function to handle Razorpay payment verification
+            function verifyPayment(paymentId, orderId, signature) {
+                // This would call a server-side script to verify the payment
+                // Implementation depends on your server-side setup
+            }
         </script>
     </body>
     </html>

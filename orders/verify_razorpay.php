@@ -1,49 +1,75 @@
 <?php
 session_start();
 require('../vendor/autoload.php');
-include 'db_connect.php';
 use Razorpay\Api\Api;
+use Razorpay\Api\Errors\SignatureVerificationError;
+
+include 'db_connect.php';
 
 $api = new Api('rzp_test_TMaKHOLutXGYTH', 'eyvkr7ljPXve2MnuDjHXZQVE');
 
-$success = true;
-$error = "Payment Failed";
+$razorpay_order_id = $_POST['razorpay_order_id'];
+$razorpay_payment_id = $_POST['razorpay_payment_id'];
+$razorpay_signature = $_POST['razorpay_signature'];
 
-if (empty($_POST['razorpay_payment_id']) === false) {
-    try {
-        $attributes = array(
-            'razorpay_order_id' => $_SESSION['razorpay_order_id'],
-            'razorpay_payment_id' => $_POST['razorpay_payment_id'],
-            'razorpay_signature' => $_POST['razorpay_signature']
-        );
+$attributes = [
+    'razorpay_order_id' => $razorpay_order_id,
+    'razorpay_payment_id' => $razorpay_payment_id,
+    'razorpay_signature' => $razorpay_signature
+];
 
-        $api->utility->verifyPaymentSignature($attributes);
-        
-        // Update order status to 'completed'
-        $order_id = $_SESSION['merchant_order_id'];
-        $stmt = $conn->prepare("UPDATE orders SET status = 'completed' WHERE order_id = ?");
-        $stmt->bind_param("s", $order_id);
-        $stmt->execute();
-        $stmt->close();
-        
-        // Clear session variables
-        unset($_SESSION['razorpay_order_id']);
-        unset($_SESSION['merchant_order_id']);
-        
-        // Redirect to thank you page
-        $_SESSION['message'] = "Payment successful! Your Order ID: " . $order_id;
-        $_SESSION['message_type'] = "success";
-        header("Location: thank_you.php?order_id=" . $order_id);
-        exit();
-    } catch(SignatureVerificationError $e) {
-        $success = false;
-        $error = 'Razorpay Error : ' . $e->getMessage();
+try {
+    $api->utility->verifyPaymentSignature($attributes);
+
+    // ✅ Payment is verified
+    if (!isset($_SESSION['razorpay_order'])) {
+        die("Order details not found in session.");
     }
-}
 
-// If payment fails
-$_SESSION['message'] = $error;
-$_SESSION['message_type'] = "error";
-header("Location: checkout.php");
-exit();
+    $orderData = $_SESSION['razorpay_order'];
+
+    // Save order to DB
+    $stmt = $conn->prepare("INSERT INTO orders (order_id, first_name, last_name, phone_number, shipping_address, payment_method, total_amount, razorpay_payment_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssssds",
+        $orderData['order_id'],
+        $orderData['first_name'],
+        $orderData['last_name'],
+        $orderData['phone_number'],
+        $orderData['shipping_address'],
+        $orderData['payment_method'],
+        $orderData['total_amount'],
+        $razorpay_payment_id
+    );
+
+    if ($stmt->execute()) {
+        $last_order_id = $conn->insert_id;
+
+        // Insert order items
+        $stmt_items = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
+
+        foreach ($orderData['items'] as $item) {
+            $stmt_items->bind_param("iiids", $last_order_id, $item['product_id'], $item['quantity'], $item['price'], $item['size']);
+            $stmt_items->execute();
+        }
+
+        $stmt_items->close();
+
+        // Clear cart
+        $clear_cart_stmt = $conn->prepare("DELETE FROM cart WHERE user_session_id = ?");
+        $clear_cart_stmt->bind_param("s", session_id());
+        $clear_cart_stmt->execute();
+        $clear_cart_stmt->close();
+
+        // ✅ Redirect to thank you page
+        header("Location: thank_you.php?order_id=" . $orderData['order_id']);
+        exit();
+    } else {
+        echo "Failed to insert order in DB: " . $stmt->error;
+    }
+
+    $stmt->close();
+
+} catch(SignatureVerificationError $e) {
+    echo "Payment verification failed: " . $e->getMessage();
+}
 ?>
