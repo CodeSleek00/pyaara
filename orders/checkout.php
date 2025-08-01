@@ -328,7 +328,7 @@ $conn->close();
     <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
     <title>Secure Checkout | Your Store Name</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/checkout.css?v=<?= filemtime('css/checkout.css') ?>">
+    <link rel="stylesheet" href="checkout.css?v=<?= filemtime('checkout.css') ?>">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
