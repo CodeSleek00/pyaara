@@ -167,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'theme' => [
                     'color' => '#3399cc'
                 ],
-                'handler' => function(response) {
+                'handler' => function($response) {
                     // This will be handled by the JavaScript
                 },
                 'modal' => [
