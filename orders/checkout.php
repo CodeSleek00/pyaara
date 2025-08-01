@@ -494,14 +494,9 @@ $conn->close();
         </main>
 
         <footer class="checkout-footer">
-            <div class="footer-links">
-                <a href="#">Terms of Service</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Refund Policy</a>
-                <a href="#">Contact Us</a>
-            </div>
+           
             <div class="copyright">
-                &copy; <?= date('Y') ?> Your Store Name. All rights reserved.
+                &copy; <?= date('Y') ?> Pyaara. All rights reserved.
             </div>
         </footer>
     </div>
