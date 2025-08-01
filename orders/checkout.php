@@ -3,8 +3,10 @@ require('../vendor/autoload.php');
 use Razorpay\Api\Api;
 include 'db_connect.php';
 
+session_start();
 $user_session_id = session_id();
 
+// Check for buy now functionality
 if (isset($_GET['buy_now'])) {
     $stmt = $conn->prepare("SELECT COUNT(*) as count FROM cart WHERE user_session_id = ?");
     $stmt->bind_param("s", $user_session_id);
@@ -18,11 +20,12 @@ if (isset($_GET['buy_now'])) {
     $stmt->close();
 }
 
-$user_session_id = session_id();
+// Initialize variables
 $checkout_items = [];
 $total_checkout_amount = 0;
 $cod_fee = 49;
 
+// Display messages if any
 $message = '';
 $message_type = '';
 if (isset($_SESSION['message'])) {
@@ -32,15 +35,18 @@ if (isset($_SESSION['message'])) {
     unset($_SESSION['message_type']);
 }
 
+// Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate and sanitize inputs
     $first_name = $conn->real_escape_string($_POST['first_name']);
     $last_name = $conn->real_escape_string($_POST['last_name']);
     $phone_number = $conn->real_escape_string($_POST['phone_number']);
     $shipping_address = $conn->real_escape_string($_POST['shipping_address']);
-    $pincode = $conn->real_escape_string($_POST['pincode']); // ✅ NEW
+    $pincode = $conn->real_escape_string($_POST['pincode']);
     $payment_method = $conn->real_escape_string($_POST['payment_method']);
     $total_amount_from_form = (float)$_POST['total_amount'];
 
+    // Validate required fields
     if (empty($first_name) || empty($last_name) || empty($phone_number) || empty($shipping_address) || empty($pincode) || empty($payment_method)) {
         $_SESSION['message'] = "All fields are required.";
         $_SESSION['message_type'] = "error";
@@ -48,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    // Validate payment method
     if (!in_array($payment_method, ['COD', 'Razorpay'])) {
         $_SESSION['message'] = "Invalid payment method selected.";
         $_SESSION['message_type'] = "error";
@@ -55,26 +62,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    $sql_cart_items = "SELECT c.quantity, p.original_price, p.discount_price
-                    FROM cart c
-                    JOIN products p ON c.product_id = p.id
-                    WHERE c.user_session_id = ?";
+    // Calculate total amount from cart items
+    $sql_cart_items = "SELECT c.product_id, c.quantity, c.size, p.name, p.image, p.original_price, p.discount_price
+                      FROM cart c
+                      JOIN products p ON c.product_id = p.id
+                      WHERE c.user_session_id = ?";
     $stmt_cart = $conn->prepare($sql_cart_items);
     $stmt_cart->bind_param("s", $user_session_id);
     $stmt_cart->execute();
     $result_cart = $stmt_cart->get_result();
+    
     $calculated_total_amount = 0;
+    $cart_items = [];
+    
     while ($row_cart = $result_cart->fetch_assoc()) {
-        $price_to_use = ($row_cart['discount_price'] < $row_cart['original_price'] && $row_cart['discount_price'] > 0) ? $row_cart['discount_price'] : $row_cart['original_price'];
+        $price_to_use = ($row_cart['discount_price'] < $row_cart['original_price'] && $row_cart['discount_price'] > 0) 
+                        ? $row_cart['discount_price'] 
+                        : $row_cart['original_price'];
         $calculated_total_amount += ($price_to_use * $row_cart['quantity']);
+        $cart_items[] = $row_cart;
     }
 
+    // Add COD fee if applicable
     if ($payment_method === 'COD') {
         $calculated_total_amount += $cod_fee;
     }
 
     $stmt_cart->close();
 
+    // Verify calculated amount matches form amount
     if (abs($calculated_total_amount - $total_amount_from_form) > 0.01) {
         $_SESSION['message'] = "Total amount mismatch. Please try again.";
         $_SESSION['message_type'] = "error";
@@ -82,115 +98,151 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    $order_id = uniqid('ORDER_');
+    // Generate unique order ID
+    $order_id = 'ORDER_' . time() . '_' . bin2hex(random_bytes(4));
 
+    // Handle Razorpay payment
     if ($payment_method === 'Razorpay') {
-        $api = new Api('rzp_test_TMaKHOLutXGYTH', 'eyvkr7ljPXve2MnuDjHXZQVE');
-        $razorpay_order = $api->order->create([
-            'receipt' => $order_id,
-            'amount' => $calculated_total_amount * 100,
-            'currency' => 'INR'
-        ]);
-        $real_razorpay_order_id = $razorpay_order['id'];
+        try {
+            $api = new Api('rzp_test_TMaKHOLutXGYTH', 'eyvkr7ljPXve2MnuDjHXZQVE');
+            $razorpay_order = $api->order->create([
+                'receipt' => $order_id,
+                'amount' => $calculated_total_amount * 100,
+                'currency' => 'INR',
+                'payment_capture' => 1
+            ]);
+            
+            $real_razorpay_order_id = $razorpay_order['id'];
 
-        $_SESSION['razorpay_order'] = [
-            'order_id' => $order_id,
-            'razorpay_order_id' => $real_razorpay_order_id,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'phone_number' => $phone_number,
-            'shipping_address' => $shipping_address,
-            'pincode' => $pincode, // ✅ NEW
-            'payment_method' => $payment_method,
-            'total_amount' => $calculated_total_amount,
-            'items' => []
-        ];
+            // Store order details in session for verification
+            $_SESSION['razorpay_order'] = [
+                'order_id' => $order_id,
+                'razorpay_order_id' => $real_razorpay_order_id,
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'phone_number' => $phone_number,
+                'shipping_address' => $shipping_address,
+                'pincode' => $pincode,
+                'payment_method' => $payment_method,
+                'total_amount' => $calculated_total_amount,
+                'items' => []
+            ];
 
-        header('Content-Type: application/json');
-        echo json_encode([
-            'status' => 'razorpay',
-            'order_id' => $real_razorpay_order_id,
-            'amount' => $calculated_total_amount * 100,
-            'currency' => 'INR',
-            'key' => 'rzp_test_TMaKHOLutXGYTH',
-            'name' => 'Pyaara',
-            'description' => 'Order Payment',
-            'prefill' => [
-                'name' => $first_name . ' ' . $last_name,
-                'email' => '',
-                'contact' => $phone_number
-            ],
-            'notes' => [
-                'address' => $shipping_address,
-                'pincode' => $pincode, // ✅ NEW
-                'merchant_order_id' => $order_id
-            ],
-            'theme' => [
-                'color' => '#3399cc'
-            ]
-        ]);
-        exit();
-    }
-
-    $stmt = $conn->prepare("INSERT INTO orders (order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssssd", $order_id, $first_name, $last_name, $phone_number, $shipping_address, $pincode, $payment_method, $calculated_total_amount);
-
-    if ($stmt->execute()) {
-        $last_order_id = $conn->insert_id;
-
-        $sql_cart_to_order = "SELECT product_id, quantity, size FROM cart WHERE user_session_id = ?";
-        $stmt_get_cart = $conn->prepare($sql_cart_to_order);
-        $stmt_get_cart->bind_param("s", $user_session_id);
-        $stmt_get_cart->execute();
-        $result_get_cart = $stmt_get_cart->get_result();
-
-        $stmt_insert_order_item = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
-
-        while ($cart_item = $result_get_cart->fetch_assoc()) {
-            $stmt_product_price = $conn->prepare("SELECT original_price, discount_price FROM products WHERE id = ?");
-            $stmt_product_price->bind_param("i", $cart_item['product_id']);
-            $stmt_product_price->execute();
-            $result_product_price = $stmt_product_price->get_result();
-            $product_price_row = $result_product_price->fetch_assoc();
-            $item_price = ($product_price_row['discount_price'] < $product_price_row['original_price'] && $product_price_row['discount_price'] > 0)
-                        ? $product_price_row['discount_price']
-                        : $product_price_row['original_price'];
-            $stmt_product_price->close();
-
-            $stmt_insert_order_item->bind_param("iiids", $last_order_id, $cart_item['product_id'], $cart_item['quantity'], $item_price, $cart_item['size']);
-            $stmt_insert_order_item->execute();
-
-            if ($payment_method === 'Razorpay') {
+            // Store all cart items with product details
+            foreach ($cart_items as $item) {
+                $price_to_use = ($item['discount_price'] < $item['original_price'] && $item['discount_price'] > 0) 
+                               ? $item['discount_price'] 
+                               : $item['original_price'];
+                
                 $_SESSION['razorpay_order']['items'][] = [
-                    'product_id' => $cart_item['product_id'],
-                    'quantity' => $cart_item['quantity'],
-                    'price' => $item_price,
-                    'size' => $cart_item['size']
+                    'product_id' => $item['product_id'],
+                    'product_name' => $item['name'],
+                    'product_image' => $item['image'],
+                    'quantity' => $item['quantity'],
+                    'price' => $price_to_use,
+                    'size' => $item['size']
                 ];
             }
-        }
-        $stmt_get_cart->close();
-        $stmt_insert_order_item->close();
 
+            // Return JSON response for Razorpay checkout
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'razorpay',
+                'order_id' => $real_razorpay_order_id,
+                'amount' => $calculated_total_amount * 100,
+                'currency' => 'INR',
+                'key' => 'rzp_test_TMaKHOLutXGYTH',
+                'name' => 'Pyaara',
+                'description' => 'Order Payment',
+                'prefill' => [
+                    'name' => $first_name . ' ' . $last_name,
+                    'email' => '',
+                    'contact' => $phone_number
+                ],
+                'notes' => [
+                    'address' => $shipping_address,
+                    'pincode' => $pincode,
+                    'merchant_order_id' => $order_id
+                ],
+                'theme' => [
+                    'color' => '#3399cc'
+                ],
+                'handler' => function(response) {
+                    // This will be handled by the JavaScript
+                },
+                'modal' => [
+                    'ondismiss' => function() {
+                        window.location.href = 'checkout.php?payment_cancelled=1';
+                    }
+                ]
+            ]);
+            exit();
+            
+        } catch (Exception $e) {
+            $_SESSION['message'] = "Error creating Razorpay order: " . $e->getMessage();
+            $_SESSION['message_type'] = "error";
+            header("Location: checkout.php");
+            exit();
+        }
+    }
+
+    // Handle COD payment
+    $conn->begin_transaction();
+    
+    try {
+        // Insert into orders table
+        $stmt = $conn->prepare("INSERT INTO orders (order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt->bind_param("sssssssd", $order_id, $first_name, $last_name, $phone_number, $shipping_address, $pincode, $payment_method, $calculated_total_amount);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Error saving order: " . $stmt->error);
+        }
+        
+        $last_order_id = $conn->insert_id;
+        $stmt->close();
+
+        // Insert order items
+        $stmt_items = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
+        
+        foreach ($cart_items as $item) {
+            $price_to_use = ($item['discount_price'] < $item['original_price'] && $item['discount_price'] > 0) 
+                           ? $item['discount_price'] 
+                           : $item['original_price'];
+            
+            $stmt_items->bind_param("iiids", $last_order_id, $item['product_id'], $item['quantity'], $price_to_use, $item['size']);
+            
+            if (!$stmt_items->execute()) {
+                throw new Exception("Error saving order items: " . $stmt_items->error);
+            }
+        }
+        $stmt_items->close();
+
+        // Clear cart
         $clear_cart_stmt = $conn->prepare("DELETE FROM cart WHERE user_session_id = ?");
         $clear_cart_stmt->bind_param("s", $user_session_id);
-        $clear_cart_stmt->execute();
+        
+        if (!$clear_cart_stmt->execute()) {
+            throw new Exception("Error clearing cart: " . $clear_cart_stmt->error);
+        }
         $clear_cart_stmt->close();
+
+        $conn->commit();
 
         $_SESSION['message'] = "Order placed successfully! Your Order ID: " . $order_id;
         $_SESSION['message_type'] = "success";
         header("Location: thank_you.php?order_id=" . $order_id);
         exit();
-
-    } else {
-        $_SESSION['message'] = "Error placing order: " . $stmt->error;
+        
+    } catch (Exception $e) {
+        $conn->rollback();
+        $_SESSION['message'] = "Error placing order: " . $e->getMessage();
         $_SESSION['message_type'] = "error";
         header("Location: checkout.php");
         exit();
     }
-    $stmt->close();
 }
 
+// Get cart items for display
 $sql = "SELECT c.product_id, c.quantity, c.size, p.name, p.image, p.original_price, p.discount_price
         FROM cart c
         JOIN products p ON c.product_id = p.id
@@ -202,7 +254,9 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $price_to_use = ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0) ? $row['discount_price'] : $row['original_price'];
+        $price_to_use = ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0) 
+                        ? $row['discount_price'] 
+                        : $row['original_price'];
         $row['price'] = $price_to_use;
         $checkout_items[] = $row;
         $total_checkout_amount += ($price_to_use * $row['quantity']);
@@ -214,22 +268,28 @@ if ($result->num_rows > 0) {
     exit();
 }
 $stmt->close();
-
 $conn->close();
 ?>
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
-        <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
-        <title>Checkout</title>
-        <link rel="stylesheet" href="style.css">
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-        <style>
-            /* Specific styles for checkout.php */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
+    <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        /* Your existing CSS styles */
+        .checkout-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+        }
+                    /* Specific styles for checkout.php */
             .checkout-container {
                 display: flex;
                 flex-wrap: wrap;
@@ -404,195 +464,264 @@ $conn->close();
                 color: var(--medium-grey);
                 font-size: 1em;
             }
-        </style>
-    </head>
-    <body>
-       
-        <div class="container">
-            <?php if ($message): ?>
-                <div class="message <?php echo $message_type; ?>"><?php echo $message; ?></div>
-            <?php endif; ?>
-                <div class="checkout">
-                    <h2>Checkout</h2>
-                <p>Review your order and enter your shipping and payment details below.</p>
-                </div>
-            <div class="checkout-container">
-                <div class="checkout-form">
-                    <h2>Shipping & Payment Details</h2>
-                    <form action="checkout.php" method="post" id="checkoutForm">
-                        <div class="form-group">
-                            <label for="first_name">First Name:</label>
-                            <input type="text" id="first_name" name="first_name" required placeholder="Enter Your First Name">
-                        </div>
-                        <div class="form-group">
-                            <label for="last_name">Last Name:</label>
-                            <input type="text" id="last_name" name="last_name" required placeholder="Enter Your Last Name">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone_number">Phone Number:</label>
-                            <input type="tel" id="phone_number" name="phone_number" required placeholder="Enter Your Phone Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
-                        </div>
-                        <div class="form-group">
-                            <label for="shipping_address">Shipping Address:</label>
-                            <textarea id="shipping_address" name="shipping_address" required placeholder="Enter your Address"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="pincode">Pincode:</label>
-                            <input type="text" id="pincode" name="pincode" required pattern="[0-9]{6}" placeholder="Enter your pincode">
+        /* ... (keep all your existing styles) ... */
+        
+        /* Additional styles for payment processing */
+        .payment-processing {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .payment-processing-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <?php if ($message): ?>
+            <div class="message <?php echo $message_type; ?>"><?php echo $message; ?></div>
+        <?php endif; ?>
+        
+        <div class="checkout">
+            <h2>Checkout</h2>
+            <p>Review your order and enter your shipping and payment details below.</p>
+        </div>
+        
+        <div class="checkout-container">
+            <div class="checkout-form">
+                <h2>Shipping & Payment Details</h2>
+                <form action="checkout.php" method="post" id="checkoutForm">
+                    <div class="form-group">
+                        <label for="first_name">First Name:</label>
+                        <input type="text" id="first_name" name="first_name" required placeholder="Enter Your First Name" value="<?php echo isset($_POST['first_name']) ? htmlspecialchars($_POST['first_name']) : ''; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" id="last_name" name="last_name" required placeholder="Enter Your Last Name" value="<?php echo isset($_POST['last_name']) ? htmlspecialchars($_POST['last_name']) : ''; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number:</label>
+                        <input type="tel" id="phone_number" name="phone_number" required placeholder="Enter Your Phone Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" value="<?php echo isset($_POST['phone_number']) ? htmlspecialchars($_POST['phone_number']) : ''; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="shipping_address">Shipping Address:</label>
+                        <textarea id="shipping_address" name="shipping_address" required placeholder="Enter your Address"><?php echo isset($_POST['shipping_address']) ? htmlspecialchars($_POST['shipping_address']) : ''; ?></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="pincode">Pincode:</label>
+                        <input type="text" id="pincode" name="pincode" required pattern="[0-9]{6}" placeholder="Enter your pincode" value="<?php echo isset($_POST['pincode']) ? htmlspecialchars($_POST['pincode']) : ''; ?>">
+                    </div>
 
+                    <div class="form-group">
+                        <label>Payment Method:</label>
+                        <div class="payment-methods">
+                            <label><input type="radio" name="payment_method" value="COD" required checked> Cash on Delivery (COD) - Additional ₹49 fee</label>
+                            <label><input type="radio" name="payment_method" value="Razorpay" required> Razorpay (Card/UPI/NetBanking)</label>
                         </div>
+                    </div>
 
-                        <div class="form-group">
-                            <label>Payment Method:</label>
-                            <div class="payment-methods">
-                                <label><input type="radio" name="payment_method" value="COD" required checked> Cash on Delivery (COD) - Additional ₹49 fee</label>
-                                <label><input type="radio" name="payment_method" value="Razorpay" required> Razorpay (Card/UPI/NetBanking)</label>
+                    <input type="hidden" name="total_amount" value="<?php echo htmlspecialchars(number_format($total_checkout_amount + $cod_fee, 2, '.', '')); ?>" id="totalAmountInput">
+
+                    <button type="submit" class="btn-place-order" id="placeOrderBtn">Place Order</button>
+                </form>
+            </div>
+
+            <div class="order-summary">
+                <h2>Your Order Summary</h2>
+                <?php if (!empty($checkout_items)): ?>
+                    <?php foreach ($checkout_items as $item): ?>
+                        <div class="order-item">
+                            <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
+                            <div class="order-item-details">
+                                <h4><?php echo htmlspecialchars($item['name']); ?></h4>
+                                <p>Size: <?php echo htmlspecialchars($item['size'] ?? 'N/A'); ?> | Qty: <?php echo htmlspecialchars($item['quantity']); ?></p>
                             </div>
+                            <span class="order-item-price">₹<?php echo htmlspecialchars(number_format($item['price'] * $item['quantity'], 2)); ?></span>
                         </div>
-
-                        <input type="hidden" name="total_amount" value="<?php echo htmlspecialchars(number_format($total_checkout_amount + $cod_fee, 2, '.', '')); ?>" id="totalAmountInput">
-
-                        <button type="submit" class="btn-place-order" id="placeOrderBtn">Place Order</button>
-                    </form>
-                </div>
-
-                <div class="order-summary">
-                    <h2>Your Order Summary</h2>
-                    <?php if (!empty($checkout_items)): ?>
-                        <?php foreach ($checkout_items as $item): ?>
-                            <div class="order-item">
-                                <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
-                                <div class="order-item-details">
-                                    <h4><?php echo htmlspecialchars($item['name']); ?></h4>
-                                    <p>Size: <?php echo htmlspecialchars($item['size'] ?? 'N/A'); ?> | Qty: <?php echo htmlspecialchars($item['quantity']); ?></p>
-                                </div>
-                                <span class="order-item-price">₹<?php echo htmlspecialchars(number_format($item['price'] * $item['quantity'], 2)); ?></span>
-                            </div>
-                        <?php endforeach; ?>
-                        
-                        <div class="subtotal">
-                            <span>Subtotal:</span>
-                            <span>₹<?php echo htmlspecialchars(number_format($total_checkout_amount, 2)); ?></span>
-                        </div>
-                        
-                        <div class="cod-fee" id="codFee">
-                            <span>COD Fee:</span>
-                            <span>₹<?php echo $cod_fee; ?></span>
-                        </div>
-                        
-                        <div class="order-total">
-                            <span>Total:</span>
-                            <span id="totalAmount">₹<?php echo htmlspecialchars(number_format($total_checkout_amount + $cod_fee, 2)); ?></span>
-                        </div>
-                        <div class="secure">
-                            <p>Secure payment processing powered by Razorpay.</p>
-                        </div>
-                    <?php else: ?>
-                        <p>No items in your order summary.</p>
-                    <?php endif; ?>
-                </div>
+                    <?php endforeach; ?>
+                    
+                    <div class="subtotal">
+                        <span>Subtotal:</span>
+                        <span>₹<?php echo htmlspecialchars(number_format($total_checkout_amount, 2)); ?></span>
+                    </div>
+                    
+                    <div class="cod-fee" id="codFee">
+                        <span>COD Fee:</span>
+                        <span>₹<?php echo $cod_fee; ?></span>
+                    </div>
+                    
+                    <div class="order-total">
+                        <span>Total:</span>
+                        <span id="totalAmount">₹<?php echo htmlspecialchars(number_format($total_checkout_amount + $cod_fee, 2)); ?></span>
+                    </div>
+                    <div class="secure">
+                        <p>Secure payment processing powered by Razorpay.</p>
+                    </div>
+                <?php else: ?>
+                    <p>No items in your order summary.</p>
+                <?php endif; ?>
             </div>
         </div>
+    </div>
 
-        <script>
-            const baseTotal = <?php echo $total_checkout_amount; ?>;
-            const codFee = <?php echo $cod_fee; ?>;
+    <!-- Payment processing overlay -->
+    <div class="payment-processing" id="paymentProcessing">
+        <div class="payment-processing-content">
+            <div class="spinner"></div>
+            <h3>Processing Payment...</h3>
+            <p>Please wait while we process your payment. Do not refresh or close this page.</p>
+        </div>
+    </div>
+
+    <script>
+        const baseTotal = <?php echo $total_checkout_amount; ?>;
+        const codFee = <?php echo $cod_fee; ?>;
+        
+        function updateTotal() {
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const codFeeElement = document.getElementById('codFee');
+            const totalAmountElement = document.getElementById('totalAmount');
+            const totalAmountInput = document.getElementById('totalAmountInput');
             
-            function updateTotal() {
-                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-                const codFeeElement = document.getElementById('codFee');
-                const totalAmountElement = document.getElementById('totalAmount');
-                const totalAmountInput = document.getElementById('totalAmountInput');
-                
-                if (paymentMethod === 'COD') {
-                    codFeeElement.classList.remove('hidden');
-                    const newTotal = baseTotal + codFee;
-                    totalAmountElement.textContent = '₹' + newTotal.toFixed(2);
-                    totalAmountInput.value = newTotal.toFixed(2);
-                } else {
-                    codFeeElement.classList.add('hidden');
-                    totalAmountElement.textContent = '₹' + baseTotal.toFixed(2);
-                    totalAmountInput.value = baseTotal.toFixed(2);
-                }
+            if (paymentMethod === 'COD') {
+                codFeeElement.classList.remove('hidden');
+                const newTotal = baseTotal + codFee;
+                totalAmountElement.textContent = '₹' + newTotal.toFixed(2);
+                totalAmountInput.value = newTotal.toFixed(2);
+            } else {
+                codFeeElement.classList.add('hidden');
+                totalAmountElement.textContent = '₹' + baseTotal.toFixed(2);
+                totalAmountInput.value = baseTotal.toFixed(2);
             }
+        }
+        
+        // Add event listeners to payment method radio buttons
+        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+            radio.addEventListener('change', updateTotal);
+        });
+        
+        // Initialize on page load
+        updateTotal();
+
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            // Add event listeners to payment method radio buttons
-            document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-                radio.addEventListener('change', updateTotal);
-            });
+            const form = this;
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
             
-            // Initialize on page load
-            updateTotal();
-
-            document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-                e.preventDefault();
+            if (paymentMethod === 'Razorpay') {
+                // Show processing overlay
+                document.getElementById('paymentProcessing').style.display = 'flex';
                 
-                const form = this;
-                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-                
-                if (paymentMethod === 'Razorpay') {
-                    // Submit form via AJAX to get Razorpay order details
-                    fetch(form.action, {
-                        method: 'POST',
-                        body: new FormData(form),
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'razorpay') {
-                            // Initialize Razorpay checkout
-                            const options = {
-                                key: data.key,
-                                amount: data.amount,
-                                currency: data.currency,
-                                name: data.name,
-                                description: data.description,
-                                order_id: data.order_id,
-                                handler: function (response) {
-                                    const form = document.createElement('form');
-                                    form.method = 'POST';
-                                    form.action = 'verify_razorpay.php';
+                // Submit form via AJAX to get Razorpay order details
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'razorpay') {
+                        // Initialize Razorpay checkout
+                        const options = {
+                            key: data.key,
+                            amount: data.amount,
+                            currency: data.currency,
+                            name: data.name,
+                            description: data.description,
+                            order_id: data.order_id,
+                            handler: function(response) {
+                                // Create a form to submit payment verification data
+                                const form = document.createElement('form');
+                                form.method = 'POST';
+                                form.action = 'verify_razorpay.php';
 
-                                    ['razorpay_payment_id', 'razorpay_order_id', 'razorpay_signature'].forEach((field) => {
-                                        const input = document.createElement('input');
-                                        input.type = 'hidden';
-                                        input.name = field;
-                                        input.value = response[field];
-                                        form.appendChild(input);
-                                    });
+                                // Add payment response data
+                                const fields = {
+                                    'razorpay_payment_id': response.razorpay_payment_id,
+                                    'razorpay_order_id': response.razorpay_order_id,
+                                    'razorpay_signature': response.razorpay_signature
+                                };
 
-                                    document.body.appendChild(form);
-                                    form.submit();
+                                for (const [name, value] of Object.entries(fields)) {
+                                    const input = document.createElement('input');
+                                    input.type = 'hidden';
+                                    input.name = name;
+                                    input.value = value;
+                                    form.appendChild(input);
                                 }
-                                ,
-                                prefill: data.prefill,
-                                notes: data.notes,
-                                theme: data.theme
-                            };
-                            
-                            const rzp = new Razorpay(options);
-                            rzp.open();
-                        } else {
-                            // Handle other cases or errors
-                            console.error('Unexpected response:', data);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-                } else {
-                    // For COD, submit the form normally
-                    form.submit();
-                }
-            });
-            
-            // You might also want to add a function to handle Razorpay payment verification
-            function verifyPayment(paymentId, orderId, signature) {
-                // This would call a server-side script to verify the payment
-                // Implementation depends on your server-side setup
+
+                                document.body.appendChild(form);
+                                form.submit();
+                            },
+                            prefill: data.prefill,
+                            notes: data.notes,
+                            theme: data.theme,
+                            modal: {
+                                ondismiss: function() {
+                                    // Hide processing overlay when payment is cancelled
+                                    document.getElementById('paymentProcessing').style.display = 'none';
+                                    window.location.href = 'checkout.php?payment_cancelled=1';
+                                }
+                            }
+                        };
+                        
+                        const rzp = new Razorpay(options);
+                        rzp.open();
+                        
+                        // Hide processing overlay when Razorpay modal opens
+                        rzp.on('modal.opened', function() {
+                            document.getElementById('paymentProcessing').style.display = 'none';
+                        });
+                        
+                    } else {
+                        throw new Error('Unexpected response from server');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('paymentProcessing').style.display = 'none';
+                    alert('An error occurred while processing your payment. Please try again.');
+                });
+            } else {
+                // For COD, submit the form normally
+                form.submit();
             }
-        </script>
-    </body>
-    </html>
+        });
+    </script>
+</body>
+</html>
