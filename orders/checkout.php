@@ -1,12 +1,41 @@
 <?php
+// Strict error reporting for production (log errors instead of displaying)
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__.'/../logs/php_errors.log');
+
+// Ensure session is started securely
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 86400,
+        'path' => '/',
+        'domain' => $_SERVER['HTTP_HOST'],
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
+    session_start();
+}
+
 require('../vendor/autoload.php');
 use Razorpay\Api\Api;
 include 'db_connect.php';
 
-session_start();
+// CSRF protection
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Constants
+define('COD_FEE', 49);
+define('CURRENCY', 'INR');
+define('RAZORPAY_KEY_ID', 'rzp_test_TMaKHOLutXGYTH');
+define('RAZORPAY_KEY_SECRET', 'eyvkr7ljPXve2MnuDjHXZQVE');
+
 $user_session_id = session_id();
 
-// Check for buy now functionality
+// Buy Now functionality
 if (isset($_GET['buy_now'])) {
     $stmt = $conn->prepare("SELECT COUNT(*) as count FROM cart WHERE user_session_id = ?");
     $stmt->bind_param("s", $user_session_id);
@@ -23,32 +52,55 @@ if (isset($_GET['buy_now'])) {
 // Initialize variables
 $checkout_items = [];
 $total_checkout_amount = 0;
-$cod_fee = 49;
 
 // Display messages if any
 $message = '';
 $message_type = '';
 if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];
-    $message_type = isset($_SESSION['message_type']) ? $_SESSION['message_type'] : 'success';
-    unset($_SESSION['message']);
-    unset($_SESSION['message_type']);
+    $message_type = $_SESSION['message_type'] ?? 'success';
+    unset($_SESSION['message'], $_SESSION['message_type']);
 }
 
 // Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF validation
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $_SESSION['message'] = "Security token mismatch. Please try again.";
+        $_SESSION['message_type'] = "error";
+        header("Location: checkout.php");
+        exit();
+    }
+
     // Validate and sanitize inputs
-    $first_name = $conn->real_escape_string($_POST['first_name']);
-    $last_name = $conn->real_escape_string($_POST['last_name']);
-    $phone_number = $conn->real_escape_string($_POST['phone_number']);
-    $shipping_address = $conn->real_escape_string($_POST['shipping_address']);
-    $pincode = $conn->real_escape_string($_POST['pincode']);
+    $required_fields = ['first_name', 'last_name', 'phone_number', 'shipping_address', 'pincode', 'payment_method', 'total_amount'];
+    foreach ($required_fields as $field) {
+        if (empty($_POST[$field])) {
+            $_SESSION['message'] = "All fields are required.";
+            $_SESSION['message_type'] = "error";
+            header("Location: checkout.php");
+            exit();
+        }
+    }
+
+    $first_name = $conn->real_escape_string(trim($_POST['first_name']));
+    $last_name = $conn->real_escape_string(trim($_POST['last_name']));
+    $phone_number = $conn->real_escape_string(trim($_POST['phone_number']));
+    $shipping_address = $conn->real_escape_string(trim($_POST['shipping_address']));
+    $pincode = $conn->real_escape_string(trim($_POST['pincode']));
     $payment_method = $conn->real_escape_string($_POST['payment_method']);
     $total_amount_from_form = (float)$_POST['total_amount'];
 
-    // Validate required fields
-    if (empty($first_name) || empty($last_name) || empty($phone_number) || empty($shipping_address) || empty($pincode) || empty($payment_method)) {
-        $_SESSION['message'] = "All fields are required.";
+    // Validate phone number and pincode
+    if (!preg_match('/^[0-9]{10}$/', $phone_number)) {
+        $_SESSION['message'] = "Please enter a valid 10-digit phone number.";
+        $_SESSION['message_type'] = "error";
+        header("Location: checkout.php");
+        exit();
+    }
+
+    if (!preg_match('/^[0-9]{6}$/', $pincode)) {
+        $_SESSION['message'] = "Please enter a valid 6-digit pincode.";
         $_SESSION['message_type'] = "error";
         header("Location: checkout.php");
         exit();
@@ -85,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Add COD fee if applicable
     if ($payment_method === 'COD') {
-        $calculated_total_amount += $cod_fee;
+        $calculated_total_amount += COD_FEE;
     }
 
     $stmt_cart->close();
@@ -99,16 +151,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Generate unique order ID
-    $order_id = 'ORDER_' . time() . '_' . bin2hex(random_bytes(4));
+    $order_id = 'ORD_' . time() . '_' . bin2hex(random_bytes(4));
 
     // Handle Razorpay payment
     if ($payment_method === 'Razorpay') {
         try {
-            $api = new Api('rzp_test_TMaKHOLutXGYTH', 'eyvkr7ljPXve2MnuDjHXZQVE');
+            $api = new Api(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET);
             $razorpay_order = $api->order->create([
                 'receipt' => $order_id,
                 'amount' => $calculated_total_amount * 100,
-                'currency' => 'INR',
+                'currency' => CURRENCY,
                 'payment_capture' => 1
             ]);
             
@@ -150,9 +202,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'status' => 'razorpay',
                 'order_id' => $real_razorpay_order_id,
                 'amount' => $calculated_total_amount * 100,
-                'currency' => 'INR',
-                'key' => 'rzp_test_TMaKHOLutXGYTH',
-                'name' => 'Pyaara',
+                'currency' => CURRENCY,
+                'key' => RAZORPAY_KEY_ID,
+                'name' => 'Your Store Name',
                 'description' => 'Order Payment',
                 'prefill' => [
                     'name' => $first_name . ' ' . $last_name,
@@ -166,13 +218,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ],
                 'theme' => [
                     'color' => '#3399cc'
-                ],
-                // Remove 'handler' and 'modal' from PHP response; handle in JS
+                ]
             ]);
             exit();
             
         } catch (Exception $e) {
-            $_SESSION['message'] = "Error creating Razorpay order: " . $e->getMessage();
+            error_log("Razorpay Order Error: " . $e->getMessage());
+            $_SESSION['message'] = "Error processing payment. Please try again or contact support.";
             $_SESSION['message_type'] = "error";
             header("Location: checkout.php");
             exit();
@@ -223,12 +275,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $_SESSION['message'] = "Order placed successfully! Your Order ID: " . $order_id;
         $_SESSION['message_type'] = "success";
-        header("Location: thank_you.php?order_id=" . $order_id);
+        header("Location: thank_you.php?order_id=" . urlencode($order_id));
         exit();
         
     } catch (Exception $e) {
         $conn->rollback();
-        $_SESSION['message'] = "Error placing order: " . $e->getMessage();
+        error_log("Order Processing Error: " . $e->getMessage());
+        $_SESSION['message'] = "Error placing order. Please try again or contact support.";
         $_SESSION['message_type'] = "error";
         header("Location: checkout.php");
         exit();
@@ -269,385 +322,264 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Secure checkout for your order">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
     <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
-    <title>Checkout</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Secure Checkout | Your Store Name</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/checkout.css?v=<?= filemtime('css/checkout.css') ?>">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <style>
-        /* Your existing CSS styles */
-        .checkout-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            margin-top: 30px;
-        }
-                    /* Specific styles for checkout.php */
-            .checkout-container {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 30px;
-                margin-top: 30px;
-            }
-
-            .checkout-form, .order-summary {
-                background-color: var(--white);
-                padding: 30px;
-                border-radius: 8px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            }
-
-            .checkout-form {
-                flex: 2 1 600px; /* Takes more space */
-            }
-
-            .order-summary {
-                flex: 1 1 300px; /* Takes less space */
-            }
-
-            .checkout-form h2, .order-summary h2 {
-                color: var(--dark-grey);
-                margin-top: 0;
-                margin-bottom: 25px;
-                text-align: center;
-            }
-
-            .form-group {
-                margin-bottom: 20px;
-            }
-
-            .form-group label {
-                display: block;
-                margin-bottom: 8px;
-                font-weight: bold;
-                color: var(--medium-grey);
-            }
-
-            .form-group input[type="text"],
-            .form-group input[type="tel"],
-            .form-group textarea,
-            .form-group select {
-                width: calc(100% - 22px); /* Account for padding */
-                padding: 12px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                font-size: 1em;
-                box-sizing: border-box;
-            }
-
-            .form-group textarea {
-                resize: vertical;
-                min-height: 80px;
-            }
-
-            .payment-methods {
-                margin-top: 15px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 15px;
-            }
-
-            .payment-methods label {
-                display: flex;
-                align-items: center;
-                font-weight: normal;
-                cursor: pointer;
-                color: var(--dark-grey);
-            }
-
-            .payment-methods input[type="radio"] {
-                margin-right: 8px;
-            }
-
-            .btn-place-order {
-                display: block;
-                width: 100%;
-                padding: 15px;
-                background-color: #45a049;
-                color: var(--white);
-                border: none;
-                border-radius: 5px;
-                font-size: 1.2em;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-                margin-top: 30px;
-            }
-
-            .btn-place-order:hover {
-                background-color: #45a049;
-            }
-
-            .order-item {
-                display: flex;
-                align-items: center;
-                margin-bottom: 15px;
-                padding-bottom: 15px;
-                border-bottom: 1px dashed #eee;
-            }
-
-            .order-item:last-child {
-                border-bottom: none;
-                margin-bottom: 0;
-                padding-bottom: 0;
-            }
-
-            .order-item img {
-                width: 70px;
-                height: 70px;
-                object-fit: cover;
-                border-radius: 5px;
-                margin-right: 15px;
-            }
-
-            .order-item-details {
-                flex-grow: 1;
-            }
-
-            .order-item-details h4 {
-                margin: 0 0 5px 0;
-                color: var(--dark-grey);
-                font-size: 1.1em;
-            }
-
-            .order-item-details p {
-                margin: 0;
-                font-size: 0.9em;
-                color: var(--medium-grey);
-            }
-
-            .order-item-price {
-                font-weight: bold;
-                color: var(--red);
-                font-size: 1em;
-            }
-
-            .order-total {
-                border-top: 2px solid var(--primary-color);
-                padding-top: 20px;
-                margin-top: 20px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                font-size: 1.4em;
-                font-weight: bold;
-                color: var(--dark-grey);
-            }
-
-            .cod-fee {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 10px;
-                padding: 10px 0;
-                color: var(--dark-grey);
-                font-size: 1em;
-                border-bottom: 1px dashed #eee;
-            }
-
-            .cod-fee.hidden {
-                display: none;
-            }
-
-            .subtotal {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 10px;
-                padding: 10px 0;
-                color: var(--medium-grey);
-                font-size: 1em;
-            }
-        /* ... (keep all your existing styles) ... */
-        
-        /* Additional styles for payment processing */
-        .payment-processing {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .payment-processing-content {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
 </head>
 <body>
     <div class="container">
         <?php if ($message): ?>
-            <div class="message <?php echo $message_type; ?>"><?php echo $message; ?></div>
+            <div class="alert alert-<?= $message_type ?>">
+                <?= htmlspecialchars($message) ?>
+                <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+            </div>
         <?php endif; ?>
         
-        <div class="checkout">
-            <h2>Checkout</h2>
-            <p>Review your order and enter your shipping and payment details below.</p>
-        </div>
-        
-        <div class="checkout-container">
-            <div class="checkout-form">
-                <h2>Shipping & Payment Details</h2>
-                <form action="checkout.php" method="post" id="checkoutForm">
-                    <div class="form-group">
-                        <label for="first_name">First Name:</label>
-                        <input type="text" id="first_name" name="first_name" required placeholder="Enter Your First Name" value="<?php echo isset($_POST['first_name']) ? htmlspecialchars($_POST['first_name']) : ''; ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="last_name">Last Name:</label>
-                        <input type="text" id="last_name" name="last_name" required placeholder="Enter Your Last Name" value="<?php echo isset($_POST['last_name']) ? htmlspecialchars($_POST['last_name']) : ''; ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="phone_number">Phone Number:</label>
-                        <input type="tel" id="phone_number" name="phone_number" required placeholder="Enter Your Phone Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" value="<?php echo isset($_POST['phone_number']) ? htmlspecialchars($_POST['phone_number']) : ''; ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="shipping_address">Shipping Address:</label>
-                        <textarea id="shipping_address" name="shipping_address" required placeholder="Enter your Address"><?php echo isset($_POST['shipping_address']) ? htmlspecialchars($_POST['shipping_address']) : ''; ?></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="pincode">Pincode:</label>
-                        <input type="text" id="pincode" name="pincode" required pattern="[0-9]{6}" placeholder="Enter your pincode" value="<?php echo isset($_POST['pincode']) ? htmlspecialchars($_POST['pincode']) : ''; ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Payment Method:</label>
-                        <div class="payment-methods">
-                            <label><input type="radio" name="payment_method" value="COD" required checked> Cash on Delivery (COD) - Additional ₹49 fee</label>
-                            <label><input type="radio" name="payment_method" value="Razorpay" required> Razorpay (Card/UPI/NetBanking)</label>
-                        </div>
-                    </div>
-
-                    <input type="hidden" name="total_amount" value="<?php echo htmlspecialchars(number_format($total_checkout_amount + $cod_fee, 2, '.', '')); ?>" id="totalAmountInput">
-
-                    <button type="submit" class="btn-place-order" id="placeOrderBtn">Place Order</button>
-                </form>
+        <header class="checkout-header">
+            <div class="logo-container">
+                <a href="index.php">
+                    <img src="../images/Pyaara Circle.png" alt="Store Logo" class="logo">
+                </a>
             </div>
+            <div class="checkout-progress">
+                <div class="step active"><span>1</span> Cart</div>
+                <div class="step active"><span>2</span> Details</div>
+                <div class="step"><span>3</span> Payment</div>
+                <div class="step"><span>4</span> Complete</div>
+            </div>
+        </header>
 
-            <div class="order-summary">
-                <h2>Your Order Summary</h2>
-                <?php if (!empty($checkout_items)): ?>
-                    <?php foreach ($checkout_items as $item): ?>
-                        <div class="order-item">
-                            <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
-                            <div class="order-item-details">
-                                <h4><?php echo htmlspecialchars($item['name']); ?></h4>
-                                <p>Size: <?php echo htmlspecialchars($item['size'] ?? 'N/A'); ?> | Qty: <?php echo htmlspecialchars($item['quantity']); ?></p>
+        <main class="checkout-main">
+            <div class="checkout-container">
+                <div class="checkout-form-container">
+                    <h1 class="form-title"><i class="fas fa-shipping-fast"></i> Shipping & Payment Details</h1>
+                    <form action="checkout.php" method="post" id="checkoutForm" class="checkout-form">
+                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                        
+                        <section class="form-section">
+                            <h2 class="section-title"><i class="fas fa-user"></i> Personal Information</h2>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="first_name">First Name*</label>
+                                    <input type="text" id="first_name" name="first_name" required 
+                                           value="<?= isset($_POST['first_name']) ? htmlspecialchars($_POST['first_name']) : '' ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label for="last_name">Last Name*</label>
+                                    <input type="text" id="last_name" name="last_name" required 
+                                           value="<?= isset($_POST['last_name']) ? htmlspecialchars($_POST['last_name']) : '' ?>">
+                                </div>
                             </div>
-                            <span class="order-item-price">₹<?php echo htmlspecialchars(number_format($item['price'] * $item['quantity'], 2)); ?></span>
+                            <div class="form-group">
+                                <label for="phone_number">Phone Number*</label>
+                                <input type="tel" id="phone_number" name="phone_number" required 
+                                       pattern="[0-9]{10}" title="10-digit number without spaces or special characters"
+                                       value="<?= isset($_POST['phone_number']) ? htmlspecialchars($_POST['phone_number']) : '' ?>">
+                            </div>
+                        </section>
+
+                        <section class="form-section">
+                            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Shipping Address</h2>
+                            <div class="form-group">
+                                <label for="shipping_address">Full Address*</label>
+                                <textarea id="shipping_address" name="shipping_address" required><?= isset($_POST['shipping_address']) ? htmlspecialchars($_POST['shipping_address']) : '' ?></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pincode">Pincode*</label>
+                                <input type="text" id="pincode" name="pincode" required 
+                                       pattern="[0-9]{6}" title="6-digit postal code"
+                                       value="<?= isset($_POST['pincode']) ? htmlspecialchars($_POST['pincode']) : '' ?>">
+                            </div>
+                        </section>
+
+                        <section class="form-section">
+                            <h2 class="section-title"><i class="fas fa-credit-card"></i> Payment Method</h2>
+                            <div class="payment-methods">
+                                <label class="payment-option">
+                                    <input type="radio" name="payment_method" value="COD" required checked>
+                                    <div class="payment-content">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        <span>Cash on Delivery (COD)</span>
+                                        <small>Additional ₹<?= COD_FEE ?> fee</small>
+                                    </div>
+                                </label>
+                                <label class="payment-option">
+                                    <input type="radio" name="payment_method" value="Razorpay" required>
+                                    <div class="payment-content">
+                                        <i class="fas fa-wallet"></i>
+                                        <span>Razorpay</span>
+                                        <small>Card/UPI/NetBanking</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </section>
+
+                        <input type="hidden" name="total_amount" value="<?= htmlspecialchars(number_format($total_checkout_amount + COD_FEE, 2, '.', '')) ?>" id="totalAmountInput">
+
+                        <div class="form-actions">
+                            <a href="cart.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Cart</a>
+                            <button type="submit" class="btn-submit" id="placeOrderBtn">
+                                <span class="btn-text">Place Order</span>
+                                <span class="btn-icon"><i class="fas fa-lock"></i></span>
+                            </button>
                         </div>
-                    <?php endforeach; ?>
-                    
-                    <div class="subtotal">
-                        <span>Subtotal:</span>
-                        <span>₹<?php echo htmlspecialchars(number_format($total_checkout_amount, 2)); ?></span>
+                    </form>
+                </div>
+
+                <div class="order-summary-container">
+                    <div class="order-summary">
+                        <h2 class="summary-title"><i class="fas fa-receipt"></i> Order Summary</h2>
+                        
+                        <?php if (!empty($checkout_items)): ?>
+                            <div class="order-items">
+                                <?php foreach ($checkout_items as $item): ?>
+                                    <div class="order-item">
+                                        <img src="uploads/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="item-image">
+                                        <div class="item-details">
+                                            <h3 class="item-name"><?= htmlspecialchars($item['name']) ?></h3>
+                                            <div class="item-meta">
+                                                <span class="item-size">Size: <?= htmlspecialchars($item['size'] ?? 'N/A') ?></span>
+                                                <span class="item-qty">Qty: <?= htmlspecialchars($item['quantity']) ?></span>
+                                            </div>
+                                        </div>
+                                        <div class="item-price">₹<?= number_format($item['price'] * $item['quantity'], 2) ?></div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            
+                            <div class="order-totals">
+                                <div class="total-row subtotal">
+                                    <span>Subtotal:</span>
+                                    <span>₹<?= number_format($total_checkout_amount, 2) ?></span>
+                                </div>
+                                
+                                <div class="total-row cod-fee" id="codFee">
+                                    <span>COD Fee:</span>
+                                    <span>₹<?= COD_FEE ?></span>
+                                </div>
+                                
+                                <div class="total-row grand-total">
+                                    <span>Total:</span>
+                                    <span id="totalAmount">₹<?= number_format($total_checkout_amount + COD_FEE, 2) ?></span>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-security">
+                                <div class="security-badge">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Secure Payment Processing</span>
+                                </div>
+                                <div class="payment-icons">
+                                    <i class="fab fa-cc-visa"></i>
+                                    <i class="fab fa-cc-mastercard"></i>
+                                    <i class="fab fa-cc-amex"></i>
+                                    <i class="fab fa-cc-discover"></i>
+                                    <i class="fas fa-rupee-sign"></i>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="empty-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                <p>No items in your cart</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    
-                    <div class="cod-fee" id="codFee">
-                        <span>COD Fee:</span>
-                        <span>₹<?php echo $cod_fee; ?></span>
-                    </div>
-                    
-                    <div class="order-total">
-                        <span>Total:</span>
-                        <span id="totalAmount">₹<?php echo htmlspecialchars(number_format($total_checkout_amount + $cod_fee, 2)); ?></span>
-                    </div>
-                    <div class="secure">
-                        <p>Secure payment processing powered by Razorpay.</p>
-                    </div>
-                <?php else: ?>
-                    <p>No items in your order summary.</p>
-                <?php endif; ?>
+                </div>
             </div>
-        </div>
+        </main>
+
+        <footer class="checkout-footer">
+            <div class="footer-links">
+                <a href="#">Terms of Service</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Refund Policy</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <div class="copyright">
+                &copy; <?= date('Y') ?> Your Store Name. All rights reserved.
+            </div>
+        </footer>
     </div>
 
-    <!-- Payment processing overlay -->
-    <div class="payment-processing" id="paymentProcessing">
-        <div class="payment-processing-content">
-            <div class="spinner"></div>
-            <h3>Processing Payment...</h3>
-            <p>Please wait while we process your payment. Do not refresh or close this page.</p>
+    <!-- Payment Processing Modal -->
+    <div class="modal-overlay" id="paymentProcessing">
+        <div class="modal-container">
+            <div class="modal-content">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                </div>
+                <h3>Processing Payment</h3>
+                <p>Please wait while we process your payment securely.</p>
+                <p class="small-text">Do not refresh or close this window.</p>
+            </div>
         </div>
     </div>
 
     <script>
-        const baseTotal = <?php echo $total_checkout_amount; ?>;
-        const codFee = <?php echo $cod_fee; ?>;
+        // Constants
+        const baseTotal = <?= $total_checkout_amount ?>;
+        const codFee = <?= COD_FEE ?>;
         
-        function updateTotal() {
+        // Update totals based on payment method
+        function updateTotals() {
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
             const codFeeElement = document.getElementById('codFee');
             const totalAmountElement = document.getElementById('totalAmount');
             const totalAmountInput = document.getElementById('totalAmountInput');
             
             if (paymentMethod === 'COD') {
-                codFeeElement.classList.remove('hidden');
+                codFeeElement.style.display = 'flex';
                 const newTotal = baseTotal + codFee;
                 totalAmountElement.textContent = '₹' + newTotal.toFixed(2);
                 totalAmountInput.value = newTotal.toFixed(2);
             } else {
-                codFeeElement.classList.add('hidden');
+                codFeeElement.style.display = 'none';
                 totalAmountElement.textContent = '₹' + baseTotal.toFixed(2);
                 totalAmountInput.value = baseTotal.toFixed(2);
             }
         }
         
-        // Add event listeners to payment method radio buttons
+        // Payment method change event
         document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-            radio.addEventListener('change', updateTotal);
+            radio.addEventListener('change', updateTotals);
         });
         
-        // Initialize on page load
-        updateTotal();
+        // Initialize totals
+        updateTotals();
 
-        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+        // Form submission handler
+        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const form = this;
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const processingModal = document.getElementById('paymentProcessing');
             
-            if (paymentMethod === 'Razorpay') {
-                // Show processing overlay
-                document.getElementById('paymentProcessing').style.display = 'flex';
-                
-                // Submit form via AJAX to get Razorpay order details
-                fetch(form.action, {
-                    method: 'POST',
-                    body: new FormData(form),
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => {
+            // Show processing modal
+            processingModal.style.display = 'flex';
+            
+            try {
+                if (paymentMethod === 'Razorpay') {
+                    // Submit form via AJAX to get Razorpay order details
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    return response.json();
-                })
-                .then(data => {
+                    
+                    const data = await response.json();
+                    
                     if (data.status === 'razorpay') {
                         // Initialize Razorpay checkout
                         const options = {
@@ -658,61 +590,75 @@ $conn->close();
                             description: data.description,
                             order_id: data.order_id,
                             handler: function(response) {
-                                // Create a form to submit payment verification data
-                                const form = document.createElement('form');
-                                form.method = 'POST';
-                                form.action = 'verify_razorpay.php';
-
-                                // Add payment response data
+                                // Create form to submit verification data
+                                const verifyForm = document.createElement('form');
+                                verifyForm.method = 'POST';
+                                verifyForm.action = 'verify_razorpay.php';
+                                
+                                // Add response fields
                                 const fields = {
-                                    'razorpay_payment_id': response.razorpay_payment_id,
-                                    'razorpay_order_id': response.razorpay_order_id,
-                                    'razorpay_signature': response.razorpay_signature
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    csrf_token: '<?= $_SESSION['csrf_token'] ?>'
                                 };
-
+                                
                                 for (const [name, value] of Object.entries(fields)) {
                                     const input = document.createElement('input');
                                     input.type = 'hidden';
                                     input.name = name;
                                     input.value = value;
-                                    form.appendChild(input);
+                                    verifyForm.appendChild(input);
                                 }
-
-                                document.body.appendChild(form);
-                                form.submit();
+                                
+                                document.body.appendChild(verifyForm);
+                                verifyForm.submit();
                             },
                             prefill: data.prefill,
                             notes: data.notes,
                             theme: data.theme,
                             modal: {
                                 ondismiss: function() {
-                                    // Hide processing overlay when payment is cancelled
-                                    document.getElementById('paymentProcessing').style.display = 'none';
+                                    processingModal.style.display = 'none';
                                     window.location.href = 'checkout.php?payment_cancelled=1';
                                 }
                             }
                         };
                         
                         const rzp = new Razorpay(options);
-                        rzp.open();
                         
-                        // Hide processing overlay when Razorpay modal opens
+                        // Hide modal when Razorpay opens
                         rzp.on('modal.opened', function() {
-                            document.getElementById('paymentProcessing').style.display = 'none';
+                            processingModal.style.display = 'none';
                         });
                         
+                        rzp.open();
                     } else {
                         throw new Error('Unexpected response from server');
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('paymentProcessing').style.display = 'none';
-                    alert('An error occurred while processing your payment. Please try again.');
+                } else {
+                    // For COD, submit normally
+                    form.submit();
+                }
+            } catch (error) {
+                console.error('Payment Error:', error);
+                processingModal.style.display = 'none';
+                
+                // Show error message
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-error';
+                alertDiv.innerHTML = `
+                    <p>Error processing payment. Please try again.</p>
+                    <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+                `;
+                
+                document.querySelector('.container').prepend(alertDiv);
+                
+                // Scroll to top
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
                 });
-            } else {
-                // For COD, submit the form normally
-                form.submit();
             }
         });
     </script>
