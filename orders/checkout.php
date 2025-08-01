@@ -167,14 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'theme' => [
                     'color' => '#3399cc'
                 ],
-                'handler' => function($response) {
-                    // This will be handled by the JavaScript
-                },
-                'modal' => [
-                    'ondismiss' => function() {
-                        window.location.href = 'checkout.php?payment_cancelled=1';
-                    }
-                ]
+                // Remove 'handler' and 'modal' from PHP response; handle in JS
             ]);
             exit();
             
