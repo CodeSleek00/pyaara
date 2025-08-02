@@ -75,6 +75,7 @@
         <div class="account-dropdown">
           <a href="signup.html" id="signupLink">Signup</a>
           <a href="login.html" id="loginLink">Login</a>
+          <a href="orders/search_order.php">Track Order </a>
           <a href="profile.php" id="profileLink" style="display:none;">My Profile</a>
           <a href="logout.php" id="logoutLink" style="display:none;">Logout</a>
         </div>
