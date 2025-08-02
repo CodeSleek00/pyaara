@@ -2,7 +2,16 @@
 include 'db_connect.php';
 
 $page = basename($_SERVER['PHP_SELF']);
-$products = $conn->query("SELECT * FROM products WHERE discount_percent > 30 ORDER BY id DESC");
+$products = $conn->query("SELECT * FROM products WHERE discount_percent > 30");
+
+// Store products in an array and shuffle them
+$products_array = [];
+if ($products && $products->num_rows > 0) {
+    while ($row = $products->fetch_assoc()) {
+        $products_array[] = $row;
+    }
+    shuffle($products_array); // This randomizes the order of products
+}
 ?>
 
 <!DOCTYPE html>
@@ -282,8 +291,8 @@ $products = $conn->query("SELECT * FROM products WHERE discount_percent > 30 ORD
         </div>
 
         <div class="products-grid">
-            <?php if (!empty($products) && $products->num_rows > 0): ?>
-                <?php while ($row = $products->fetch_assoc()): ?>
+            <?php if (!empty($products_array)): ?>
+                <?php foreach ($products_array as $row): ?>
                     <div class="product-card">
                         <div class="product-image-container">
                             <a href="product_detail.php?id=<?php echo $row['id']; ?>">
@@ -303,7 +312,7 @@ $products = $conn->query("SELECT * FROM products WHERE discount_percent > 30 ORD
                             </div>
                         </div>
                     </div>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             <?php else: ?>
                 <div class="no-products">
                     <p>No offers available currently. Please check back soon!</p>
