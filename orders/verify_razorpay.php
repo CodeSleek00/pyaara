@@ -6,7 +6,7 @@ use Razorpay\Api\Errors\SignatureVerificationError;
 
 include 'db_connect.php';
 
-$api = new Api('rzp_test_TMaKHOLutXGYTH', 'eyvkr7ljPXve2MnuDjHXZQVE');
+$api = new Api('rzp_live_pA6jgjncp78sq7', 'N7INcRU4l61iijQ2sOjL5YTs');
 
 $razorpay_order_id = $_POST['razorpay_order_id'];
 $razorpay_payment_id = $_POST['razorpay_payment_id'];

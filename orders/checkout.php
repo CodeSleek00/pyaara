@@ -30,8 +30,8 @@ if (!isset($_SESSION['csrf_token'])) {
 // Constants
 define('COD_FEE', 49);
 define('CURRENCY', 'INR');
-define('RAZORPAY_KEY_ID', 'rzp_test_TMaKHOLutXGYTH');
-define('RAZORPAY_KEY_SECRET', 'eyvkr7ljPXve2MnuDjHXZQVE');
+define('RAZORPAY_KEY_ID', 'rzp_live_pA6jgjncp78sq7');
+define('RAZORPAY_KEY_SECRET', 'N7INcRU4l61iijQ2sOjL5YTs');
 
 $user_session_id = session_id();
 
@@ -203,8 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'order_id' => $real_razorpay_order_id,
                 'amount' => $calculated_total_amount * 100,
                 'currency' => CURRENCY,
-                'key' => RAZORPAY_KEY_ID,
-                'name' => 'Your Store Name',
+                'key' => 'rzp_live_pA6jgjncp78sq7',
+                'name' => 'Pyaara',
                 'description' => 'Order Payment',
                 'prefill' => [
                     'name' => $first_name . ' ' . $last_name,
