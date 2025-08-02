@@ -2,7 +2,16 @@
 include 'db_connect.php';
 
 $page = basename($_SERVER['PHP_SELF']);
-$products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY id DESC");
+$products = $conn->query("SELECT * FROM products WHERE page = '$page'");
+
+// Store products in an array and shuffle them
+$products_array = [];
+if ($products && $products->num_rows > 0) {
+    while ($row = $products->fetch_assoc()) {
+        $products_array[] = $row;
+    }
+    shuffle($products_array); // This randomizes the order of products
+}
 ?>
 
 <!DOCTYPE html>
@@ -258,7 +267,7 @@ $products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY i
 
         @media (max-width: 480px) {
             .products-grid {
-                grid-template-columns: repeat(2, 1fr); /* Changed from 1fr to 2 per row */
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .container {
@@ -287,11 +296,13 @@ $products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY i
         </div>
 
         <div class="products-grid">
-            <?php if (!empty($products) && $products->num_rows > 0): ?>
-                <?php while ($row = $products->fetch_assoc()): ?>
+            <?php if (!empty($products_array)): ?>
+                <?php foreach ($products_array as $row): ?>
                     <div class="product-card">
                         <div class="product-image-container">
-                            <a href="product_detail.php?id=<?php echo $row['id']; ?>"><img class="product-image" src="uploads/<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>"></a>
+                            <a href="product_detail.php?id=<?php echo $row['id']; ?>">
+                                <img class="product-image" src="uploads/<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
+                            </a>
                             <?php if ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0): ?>
                                 <div class="discount-tag"><?php echo htmlspecialchars(number_format($row['discount_percent'], 0)); ?>% OFF</div>
                             <?php endif; ?>
@@ -309,11 +320,10 @@ $products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY i
                             </div>
                             <div class="product-actions">
                                 <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Buy Now</a>
-                        
                             </div>
                         </div>
                     </div>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             <?php else: ?>
                 <div class="no-products">
                     <p>No products found in this category.</p>
