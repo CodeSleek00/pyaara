@@ -45,7 +45,7 @@ body {
 }
 
 .logo {
-  height: 40px;
+  height: auto;
 }
 
 .checkout-progress {
