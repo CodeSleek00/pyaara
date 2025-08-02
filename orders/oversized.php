@@ -2,7 +2,16 @@
 include 'db_connect.php';
 
 $page = basename($_SERVER['PHP_SELF']);
-$products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY id DESC");
+$products = $conn->query("SELECT * FROM products WHERE page = '$page'");
+
+// Store products in an array and shuffle them
+$products_array = [];
+if ($products && $products->num_rows > 0) {
+    while ($row = $products->fetch_assoc()) {
+        $products_array[] = $row;
+    }
+    shuffle($products_array); // This randomizes the order of products
+}
 ?>
 
 <!DOCTYPE html>
@@ -11,7 +20,7 @@ $products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY i
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
-    <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
+  <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
   <title><?php echo ucfirst(str_replace('.php', '', $page)); ?> | Pyaara Store</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -137,8 +146,8 @@ $products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY i
     <h1 class="page-title"><?php echo ucfirst(str_replace('.php', '', $page)); ?></h1>
 
     <div class="products-grid">
-      <?php if ($products && $products->num_rows > 0): ?>
-        <?php while ($row = $products->fetch_assoc()): ?>
+      <?php if (!empty($products_array)): ?>
+        <?php foreach ($products_array as $row): ?>
           <div class="product-card">
             <div class="product-image-container">
               <a href="product_detail.php?id=<?php echo $row['id']; ?>">
@@ -165,7 +174,7 @@ $products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY i
               </div>
             </div>
           </div>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
       <?php else: ?>
         <div class="no-products">
           <p>No products found in this category.</p>
