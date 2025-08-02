@@ -342,7 +342,7 @@ $conn->close();
         
         <header class="checkout-header">
             <div class="logo-container">
-                <a href="index.php">
+                <a href="../index.php">
                     <img src="../images/Pyaara Circle.png" alt="Store Logo" class="logo">
                 </a>
             </div>
