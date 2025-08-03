@@ -29,11 +29,13 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
+    <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
     <title>Your Order History | Pyaara</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+             font-family: "Outfit", sans-serif;
             line-height: 1.6;
             color: #333;
             max-width: 1200px;
