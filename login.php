@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'db_connect.php';
+require 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = $_POST['email_or_contact'];
