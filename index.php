@@ -186,9 +186,9 @@
           <i class="fas fa-shopping-cart"></i>
           <span>Cart</span>
         </a>
-        <a href="orders/anime.php" class="footer-menu-item">
+        <a href="orders/order_history.php" class="footer-menu-item">
             <i class="fa-solid fa-list"></i> 
-            <span>Suggestion</span>
+            <span>Orders</span>
         </a>
         <a href="user.php" class="footer-menu-item">
           <i class="fas fa-user"></i>
