@@ -1,13 +1,11 @@
 <?php
 require 'db_connect.php';
 
-// Check login and order ID
 if (!isset($_SESSION['user_id']) || !isset($_GET['id'])) {
     header("Location: login.php");
     exit();
 }
 
-// Fetch order details
 $sql = "SELECT o.order_id, o.order_date, o.total_amount, o.payment_method, 
                oi.quantity, oi.price, oi.size, p.name, p.image 
         FROM orders o
@@ -24,7 +22,6 @@ if (empty($items)) {
     exit();
 }
 
-// Calculate subtotal
 $subtotal = array_reduce($items, function($carry, $item) {
     return $carry + ($item['price'] * $item['quantity']);
 }, 0);
@@ -36,7 +33,6 @@ $subtotal = array_reduce($items, function($carry, $item) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
-    <link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
     <title>Order Details | Pyaara</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -45,7 +41,7 @@ $subtotal = array_reduce($items, function($carry, $item) {
             --primary: #d32f2f;
             --primary-dark: #b71c1c;
             --text: #333;
-            --light-gray: #f5f5f5;
+            --light-gray: #f9f9f9;
             --border: #e0e0e0;
         }
         
@@ -57,216 +53,219 @@ $subtotal = array_reduce($items, function($carry, $item) {
         
         body {
             font-family: 'Outfit', sans-serif;
-            line-height: 1.6;
+            line-height: 1.5;
             color: var(--text);
-            background-color: #fff;
-            padding: 20px;
+            background-color: var(--light-gray);
+            padding: 0;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 100%;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .back-btn {
+            color: white;
+            font-size: 20px;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .order-card {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
         }
         
         .order-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
+            margin-bottom: 12px;
         }
         
-        .order-title {
-            color: var(--primary);
-            font-size: 28px;
+        .order-id {
             font-weight: 600;
+            font-size: 16px;
         }
         
         .order-status {
             background: #e8f5e9;
             color: #2e7d32;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 500;
         }
         
         .order-meta {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-            background: var(--light-gray);
-            padding: 20px;
-            border-radius: 8px;
-        }
-        
-        .meta-item {
-            display: flex;
-            flex-direction: column;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            font-size: 14px;
+            margin-bottom: 16px;
         }
         
         .meta-label {
-            font-size: 14px;
             color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .meta-value {
-            font-weight: 500;
         }
         
         .section-title {
-            font-size: 20px;
-            margin: 30px 0 20px;
-            color: var(--primary);
+            font-size: 16px;
+            font-weight: 600;
+            padding: 16px;
+            background-color: var(--light-gray);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
-        .items-container {
-            display: grid;
-            gap: 15px;
+        .items-list {
+            padding: 0 16px;
         }
         
         .item {
-            display: grid;
-            grid-template-columns: 100px 1fr auto;
-            gap: 20px;
-            padding: 15px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            gap: 12px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
         }
         
-        .item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .item:last-child {
+            border-bottom: none;
         }
         
         .item-image {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
             border-radius: 4px;
+            border: 1px solid var(--border);
         }
         
         .item-details {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            flex: 1;
         }
         
         .item-name {
             font-weight: 500;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            font-size: 15px;
         }
         
         .item-meta {
             display: flex;
-            gap: 15px;
-            font-size: 14px;
+            gap: 12px;
+            font-size: 13px;
             color: #666;
+            margin-bottom: 8px;
         }
         
         .item-price {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-end;
             font-weight: 600;
-            min-width: 100px;
+            font-size: 15px;
         }
         
         .order-summary {
-            margin-top: 30px;
-            background: var(--light-gray);
-            padding: 20px;
-            border-radius: 8px;
+            padding: 16px;
+            background-color: white;
+            margin-top: 8px;
+            border-top: 1px solid var(--border);
         }
         
         .summary-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 8px 0;
+            font-size: 14px;
         }
         
         .grand-total {
             font-weight: 700;
-            font-size: 18px;
+            font-size: 16px;
             border-top: 1px solid var(--border);
-            margin-top: 10px;
-            padding-top: 10px;
+            margin-top: 8px;
+            padding-top: 8px;
+        }
+        
+        .footer {
+            padding: 16px;
+            background-color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
         
         .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 30px;
-            padding: 12px 20px;
+            display: block;
+            text-align: center;
+            padding: 12px;
             background: var(--primary);
             color: white;
             text-decoration: none;
             border-radius: 6px;
-            transition: background 0.2s;
-        }
-        
-        .back-link:hover {
-            background: var(--primary-dark);
-        }
-        
-        @media (max-width: 768px) {
-            .item {
-                grid-template-columns: 80px 1fr;
-            }
-            
-            .item-price {
-                grid-column: 2;
-                align-items: flex-start;
-                margin-top: 10px;
-            }
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="order-header">
-            <h1 class="order-title">
-                <i class="fas fa-receipt"></i> 
-                Order #<?= htmlspecialchars($items[0]['order_id']) ?>
-            </h1>
-            <span class="order-status">
-                <i class="fas fa-check-circle"></i> Completed
-            </span>
+        <div class="header">
+            <a href="order_history.php" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="header-title">Order Details</div>
         </div>
         
-        <div class="order-meta">
-            <div class="meta-item">
-                <span class="meta-label">Order Date</span>
-                <span class="meta-value"><?= date('F j, Y, g:i a', strtotime($items[0]['order_date'])) ?></span>
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-id">Order #<?= htmlspecialchars($items[0]['order_id']) ?></div>
+                <div class="order-status">Completed</div>
             </div>
-            <div class="meta-item">
-                <span class="meta-label">Payment Method</span>
-                <span class="meta-value"><?= htmlspecialchars($items[0]['payment_method']) ?></span>
-            </div>
-            <div class="meta-item">
-                <span class="meta-label">Items</span>
-                <span class="meta-value"><?= count($items) ?></span>
+            
+            <div class="order-meta">
+                <div>
+                    <div class="meta-label">Order Date</div>
+                    <div><?= date('M j, Y', strtotime($items[0]['order_date'])) ?></div>
+                </div>
+                <div>
+                    <div class="meta-label">Payment</div>
+                    <div><?= htmlspecialchars($items[0]['payment_method']) ?></div>
+                </div>
+                <div>
+                    <div class="meta-label">Items</div>
+                    <div><?= count($items) ?></div>
+                </div>
+                <div>
+                    <div class="meta-label">Total</div>
+                    <div>₹<?= number_format($items[0]['total_amount'], 2) ?></div>
+                </div>
             </div>
         </div>
         
-        <h2 class="section-title">
-            <i class="fas fa-box-open"></i> Order Items
-        </h2>
+        <div class="section-title">
+            <i class="fas fa-box-open"></i> Items Ordered
+        </div>
         
-        <div class="items-container">
+        <div class="items-list">
             <?php foreach ($items as $item): ?>
                 <div class="item">
                     <img src="uploads/<?= htmlspecialchars($item['image']) ?>" 
@@ -274,25 +273,18 @@ $subtotal = array_reduce($items, function($carry, $item) {
                          class="item-image">
                     
                     <div class="item-details">
-                        <h3 class="item-name"><?= htmlspecialchars($item['name']) ?></h3>
+                        <div class="item-name"><?= htmlspecialchars($item['name']) ?></div>
                         <div class="item-meta">
                             <span>Size: <?= htmlspecialchars($item['size'] ?? 'N/A') ?></span>
                             <span>Qty: <?= htmlspecialchars($item['quantity']) ?></span>
                         </div>
-                    </div>
-                    
-                    <div class="item-price">
-                        ₹<?= number_format($item['price'] * $item['quantity'], 2) ?>
+                        <div class="item-price">₹<?= number_format($item['price'] * $item['quantity'], 2) ?></div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
         
         <div class="order-summary">
-            <h2 class="section-title">
-                <i class="fas fa-file-invoice-dollar"></i> Order Summary
-            </h2>
-            
             <div class="summary-row">
                 <span>Subtotal</span>
                 <span>₹<?= number_format($subtotal, 2) ?></span>
@@ -311,9 +303,11 @@ $subtotal = array_reduce($items, function($carry, $item) {
             </div>
         </div>
         
-        <a href="order_history.php" class="back-link">
-            <i class="fas fa-arrow-left"></i> Back to Orders
-        </a>
+        <div class="footer">
+            <a href="order_history.php" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+        </div>
     </div>
 </body>
 </html>
