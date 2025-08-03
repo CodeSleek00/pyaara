@@ -280,9 +280,7 @@ $user = $result->fetch_assoc();
 
             <ul class="nav-menu">
                 <li><a href="#" class="active"><i class="fas fa-user"></i> Profile</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                <li><a href="#"><i class="fas fa-history"></i> Activity</a></li>
-                <li><a href="#"><i class="fas fa-lock"></i> Security</a></li>
+                <li><a href="orders/order_history.php"><i class="fa-solid fa-list"></i> My Orders</a></li>
             </ul>
         </div>
 
