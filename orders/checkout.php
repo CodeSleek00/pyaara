@@ -23,7 +23,7 @@ if (!isset($_SESSION['user_id'])) {
     $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
     $_SESSION['message'] = "Please login to proceed with checkout";
     $_SESSION['message_type'] = "error";
-    header("Location: ../login.php");
+    header("Location: ../login.html");
     exit();
 }
 
