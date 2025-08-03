@@ -1,5 +1,9 @@
 <?php
-session_start();
+// Only start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require 'db_connect.php';
 
 // Check login
@@ -30,9 +34,9 @@ $orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         <div class="orders">
             <?php foreach ($orders as $order): ?>
                 <div class="order">
-                    <p>Order #<?= $order['order_id'] ?></p>
-                    <p>Date: <?= $order['order_date'] ?></p>
-                    <p>Total: ₹<?= $order['total_amount'] ?></p>
+                    <p>Order #<?= htmlspecialchars($order['order_id']) ?></p>
+                    <p>Date: <?= htmlspecialchars($order['order_date']) ?></p>
+                    <p>Total: ₹<?= number_format($order['total_amount'], 2) ?></p>
                     <a href="order_details.php?id=<?= $order['id'] ?>">View Details</a>
                 </div>
             <?php endforeach; ?>
