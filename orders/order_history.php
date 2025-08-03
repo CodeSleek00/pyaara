@@ -1,10 +1,5 @@
 <?php
-// Check if session is not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-require 'db_connect.php';  // Make sure this file doesn't call session_start()
+require 'db_connect.php'; // Make sure this file handles session_start()
 
 // Check login
 if (!isset($_SESSION['user_id'])) {
@@ -36,7 +31,6 @@ $stmt->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Order History | Pyaara</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/order_history.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -62,11 +56,6 @@ $stmt->close();
             padding: 20px;
             background: #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-        }
-        .order-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .order-header {
             display: flex;
@@ -91,20 +80,11 @@ $stmt->close();
             color: white;
             text-decoration: none;
             border-radius: 4px;
-            transition: background 0.2s;
-        }
-        .view-details:hover {
-            background: #b71c1c;
         }
         .empty-orders {
             text-align: center;
             padding: 40px;
             color: #666;
-        }
-        .empty-orders i {
-            font-size: 50px;
-            color: #ddd;
-            margin-bottom: 15px;
         }
     </style>
 </head>
