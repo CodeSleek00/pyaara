@@ -188,7 +188,7 @@
         </a>
         <a href="orders/order_history.php" class="footer-menu-item">
             <i class="fa-solid fa-list"></i> 
-            <span>Orders</span>
+            <span>My Orders</span>
         </a>
         <a href="user.php" class="footer-menu-item">
           <i class="fas fa-user"></i>
