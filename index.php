@@ -162,7 +162,7 @@
               <a href="orders/exclusive.php">Exclusive</a>
             </div>
           </li>
-          <li><a href="pyaarasuggest.php">Pyaara Suggest</a></li>
+          
           <li><a href="orders/offer.php">Offer's</a></li>
           <li><a href="orders/search_order.php">Delivery Status</a></li>
         </ul>
