@@ -129,6 +129,7 @@
           </li>
           <li><a href="orders/anime.php">Anime</a></li>
           <li><a href="orders/offer.php">Offer's</a></li>
+          <li><a href="orders/order_history.php">My Orders</a></li>
         </ul>
       </nav>
 
