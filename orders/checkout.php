@@ -18,6 +18,15 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Check if user is logged in, redirect to login if not
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
+    $_SESSION['message'] = "Please login to proceed with checkout";
+    $_SESSION['message_type'] = "error";
+    header("Location: ../login.php");
+    exit();
+}
+
 require('../vendor/autoload.php');
 use Razorpay\Api\Api;
 include 'db_connect.php';
@@ -177,6 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'pincode' => $pincode,
                 'payment_method' => $payment_method,
                 'total_amount' => $calculated_total_amount,
+                'user_id' => $_SESSION['user_id'], // Add user_id to session
                 'items' => []
             ];
 
@@ -235,9 +245,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->begin_transaction();
     
     try {
-        // Insert into orders table
-        $stmt = $conn->prepare("INSERT INTO orders (order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
-        $stmt->bind_param("sssssssd", $order_id, $first_name, $last_name, $phone_number, $shipping_address, $pincode, $payment_method, $calculated_total_amount);
+        // Insert into orders table with user_id
+        $stmt = $conn->prepare("INSERT INTO orders (user_id, order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt->bind_param("isssssssd", $_SESSION['user_id'], $order_id, $first_name, $last_name, $phone_number, $shipping_address, $pincode, $payment_method, $calculated_total_amount);
         
         if (!$stmt->execute()) {
             throw new Exception("Error saving order: " . $stmt->error);
