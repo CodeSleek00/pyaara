@@ -95,7 +95,7 @@ $stmt->close();
         <div class="empty-orders">
             <i class="fas fa-box-open"></i>
             <p>You haven't placed any orders yet.</p>
-            <a href="../products.php" class="view-details">Start Shopping</a>
+            <a href="../index.php" class="view-details">Start Shopping</a>
         </div>
     <?php else: ?>
         <div class="orders-container">
