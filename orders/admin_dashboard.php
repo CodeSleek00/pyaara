@@ -431,6 +431,7 @@ if ($result_orders->num_rows > 0) {
                         <th>Order ID</th>
                         <th>Customer Name</th>
                         <th>Phone</th>
+                        <th>Pincode</th> 
                         <th>Total Amount</th>
                         <th>Payment Method</th>
                         <th>Order Date</th>
@@ -445,6 +446,7 @@ if ($result_orders->num_rows > 0) {
                                 <td><?php echo htmlspecialchars($order['order_id']); ?></td>
                                 <td><?php echo htmlspecialchars($order['first_name'] . ' ' . $order['last_name']); ?></td>
                                 <td><?php echo htmlspecialchars($order['phone_number']); ?></td>
+                                <td><?php echo htmlspecialchars($order['pincode']); ?></td>
                                 <td>₹<?php echo htmlspecialchars(number_format($order['total_amount'], 2)); ?></td>
                                 <td><?php echo htmlspecialchars($order['payment_method']); ?></td>
                                 <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($order['order_date']))); ?></td>
