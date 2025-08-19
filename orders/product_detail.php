@@ -1083,9 +1083,7 @@ if (isset($_SESSION['message'])) {
                     <li><strong>Standard Shipping:</strong> 3-5 business days - ₹49 (Free on online payments)</li>
                 </ul>
                 
-                <h4>International Shipping</h4>
-                <p>We ship to over 100 countries worldwide. Shipping costs and delivery times vary by destination. Customs fees may apply.</p>
-                
+               
                 <h3>Return Policy</h3>
                 <p>Your satisfaction is our priority. If you're not completely happy with your purchase, we'll make it right.</p>
                 
