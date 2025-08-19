@@ -1085,8 +1085,7 @@ if (isset($_SESSION['message'])) {
                 
                
                 <h3>Return Policy</h3>
-                <p>Your satisfaction is our priority. If you're not completely happy with your purchase, we'll make it right.</p>
-                
+        
                 <h4>Returns & Exchanges</h4>
                 <ul>
                     <li>No Return Policy  </li>
