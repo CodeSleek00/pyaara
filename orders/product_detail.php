@@ -1,18 +1,19 @@
 <?php
-include 'db_connect.php'; // connection include
+include 'db_connect.php';
 
-$id = $_GET['id'] ?? 0;
+$product = null;
+$product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// Prepared statement
-$stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$product = $result->fetch_assoc();
-
-$stmt->close();
-?>
-
+if ($product_id > 0) {
+    $stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
+    $stmt->bind_param("i", $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $product = $result->fetch_assoc();
+    }
+    $stmt->close();
+}
 
 if (!$product) {
     $_SESSION['message'] = "Product not found.";
