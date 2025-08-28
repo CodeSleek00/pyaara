@@ -1,28 +1,14 @@
 <?php
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Start session for managing user cart and other session data
+session_start();
 
 $host = "178.16.136.97";
 $user = "u298112699_Anant";
 $pass = "Pyaara_store15";
-$db   = "u298112699_pyaara_store_A";
+$db = "u298112699_pyaara_store_A";
 
-// Only create connection if not already set
-if (!isset($conn) || !$conn instanceof mysqli) {
-    // 'p:' makes connection persistent (reused)
-    $conn = new mysqli("p:" . $host, $user, $pass, $db);
-
-    if ($conn->connect_error) {
-        die("Database Connection failed: " . $conn->connect_error);
-    }
-
-    // Auto-close when PHP script ends
-    register_shutdown_function(function() use ($conn) {
-        if ($conn && $conn instanceof mysqli) {
-            $conn->close();
-        }
-    });
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 ?>
