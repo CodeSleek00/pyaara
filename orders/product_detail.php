@@ -1,10 +1,5 @@
 <?php
 include 'db_connect.php';
-if (!isset($_SESSION['categories'])) {
-    $result = $conn->query("SELECT id, name FROM categories");
-    $_SESSION['categories'] = $result->fetch_all(MYSQLI_ASSOC);
-}
-$categories = $_SESSION['categories'];
 
 $product = null;
 $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
