@@ -1,5 +1,5 @@
 <?php
-include 'db_connect.php';
+include  require_once 'db_connect.php';
 
 $product = null;
 $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
