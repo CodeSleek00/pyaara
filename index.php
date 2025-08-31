@@ -615,25 +615,25 @@
     <h2 class="font-['Montserrat'] font-extrabold text-black text-center text-xl tracking-[0.15em] mb-4 uppercase">TRENDING CATEGORIES</h2>
     <div class="grid grid-cols-2 gap-4">
       <div class="relative rounded-3xl overflow-hidden row-span-2">
-        <img class="w-full h-full object-cover block" src="images/model.jpeg" alt="Man in beige polo shirt" />
-        <div class="absolute bottom-4 right-4 text-white font-bold text-lg text-shadow font-['Montserrat']">F1 Racing</div>
-      </div>
+         <a href="orders/offer.php"><img class="w-full h-full object-cover block" src="images/model.jpeg" alt="Man in beige polo shirt" />
+        <div class="absolute bottom-4 right-4 text-white font-bold text-lg text-shadow font-['Montserrat']">OFFER</div>
+      </div></a>
       <div class="relative rounded-3xl overflow-hidden">
-        <img class="w-full h-full object-cover block" src="images/model 12.jpeg" alt="Man in white full sleeve shirt" />
+        <a href="orders/oversized.php"><img class="w-full h-full object-cover block" src="images/model 12.jpeg" alt="Man in white full sleeve shirt" />
         <div class="absolute bottom-4 right-4 text-white font-bold text-lg text-shadow font-['Montserrat']">OVERSIZED<br/>T-SHIRTS</div>
-      </div>
+      </div></a>
       <div class="relative rounded-3xl overflow-hidden">
-        <img class="w-full h-full object-cover block" src="images/model 13.jpeg" alt="Man in yellow oversized t-shirt" />
+        <a href="orders/offer.php"><img class="w-full h-full object-cover block" src="images/model 13.jpeg" alt="Man in yellow oversized t-shirt" />
         <div class="absolute bottom-4 right-4 text-white font-bold text-lg text-shadow font-['Montserrat']">CASUAL<br/>T-SHIRTS</div>
-      </div>
+      </div></a>
       <div class="relative rounded-3xl overflow-hidden">
-        <img class="w-full h-full object-cover block" src="images/model 11.jpeg" alt="Man in blue half sleeve shirt" />
-        <div class="absolute bottom-4 right-4 text-white font-bold text-lg text-shadow font-['Montserrat']">HALF SLEEVE<br/>SHIRTS</div>
-      </div>
+        <a href="orders/exclusive.php"><img class="w-full h-full object-cover block" src="images/model 11.jpeg" alt="Man in blue half sleeve shirt" />
+        <div class="absolute bottom-4 right-4 text-white font-bold text-lg text-shadow font-['Montserrat']">Exclusive</div>
+      </div></a>
       <div class="relative rounded-3xl overflow-hidden">
-        <img class="w-full h-full object-cover block" src="images/model 14.jpeg" alt="Person wearing blue denim pants" />
+       <a href="orders/anime.php"><img class="w-full h-full object-cover block" src="images/model 14.jpeg" alt="Person wearing blue denim pants" />
         <div class="absolute bottom-4 right-4 text-white font-bold text-lg text-shadow font-['Montserrat']">Anime </div>
-      </div>
+      </div></a>
     </div>
   </div>
  <section class="new-arrivals">
