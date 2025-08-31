@@ -1,7 +1,8 @@
 const newsItems = [
-    "Limited Time Offer: 50% off on all items! ",
+    "Fresh:  Freshly stocked items!",
     "New Arrival: Check out our latest collection!",
-    "Sale: Up to 70% off on selected items!",
+    "Sale: Up to 60% off on selected items!",
+    "Delivery: Free shipping on razorpay orders!",
 ];
 
 let currentIndex = 0;
