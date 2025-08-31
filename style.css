@@ -394,7 +394,7 @@
 .voucher img {
     width: 100%;
     max-width: 800px;
-    height: auto;
+    height: 40%;
     aspect-ratio: 8.5 / 2.75;
     border-radius: 6px;
 }
