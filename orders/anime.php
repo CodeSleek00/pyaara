@@ -169,8 +169,9 @@ if ($products && $products->num_rows > 0) {
                 <?php endif; ?>
               </div>
               <div class="product-actions">
-                <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Buy Now</a>
-                <button class="btn btn-primary share-btn" data-link="https://pyaara.in/orders/product_detail.php?id=<?php echo $row['id']; ?>"><i class="fas fa-share-alt"></i> Share</button>
+               <button type="submit" name="action" value="add_to_cart" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
               </div>
             </div>
           </div>
