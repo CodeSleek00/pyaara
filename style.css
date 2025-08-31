@@ -393,12 +393,11 @@
 
 .voucher img {
     width: 100%;
-    max-width: 900px;
-    height: 350px;
+    max-width: 800px;
+    height: auto;
     aspect-ratio: 8.5 / 2.75;
     border-radius: 6px;
 }
-
 
 /* Responsive design */
 @media (max-width: 768px) {
@@ -407,7 +406,7 @@
         flex-wrap: wrap;
         padding: 0;
     }
-        
+
     .search-mobile {
         display: flex;
     }
@@ -898,9 +897,6 @@
     .desktop-container {
         display: none;
     }
-    .vouncher img {
-        height: 250px;
-       
 }
 
 @media (min-width: 481px) {
