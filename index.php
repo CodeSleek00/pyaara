@@ -600,7 +600,7 @@
         <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat'] text-right leading-tight">HALF SLEEVE<br/>T-SHIRTS</div>
       </div></a>
       <div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300">
-        <a href="orders/odder.php"><img class="w-full h-full object-cover block" src="images/model 13.jpeg" alt="Person wearing blue denim pants" />
+        <a href="orders/offer.php"><img class="w-full h-full object-cover block" src="images/model 13.jpeg" alt="Person wearing blue denim pants" />
         <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat']">CASUAL</div>
       </div></a>
       <div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300">
