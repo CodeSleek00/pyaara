@@ -402,7 +402,7 @@
   .voucher img {
     width: 100%;
     max-width: 400px;
-    height: 400px;
+    height: 300px;
     aspect-ratio: 8.5 / 2.75;
     border-radius: 6px;
 }
