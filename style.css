@@ -398,7 +398,11 @@
     aspect-ratio: 8.5 / 2.75;
     border-radius: 6px;
 }
-
+@media (max-width: 480px) {
+    .voucher img {
+        aspect-ratio: 8.5 / 3.5;
+    }
+}
 /* Responsive design */
 @media (max-width: 768px) {
     .search {
