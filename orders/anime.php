@@ -12,6 +12,46 @@ if ($products && $products->num_rows > 0) {
     }
     shuffle($products_array); // This randomizes the order of products
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action = $_POST['action'];
+    $product_id = intval($_POST['product_id']);
+
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+
+    if ($action === "add_to_cart") {
+        // Check if product already in cart
+        if (isset($_SESSION['cart'][$product_id])) {
+            $_SESSION['cart'][$product_id]['quantity']++;
+        } else {
+            // Fetch product from database
+            $sql = "SELECT id, name, image, original_price, discount_price FROM products WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $product_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($row = $result->fetch_assoc()) {
+                $_SESSION['cart'][$product_id] = [
+                    'id' => $row['id'],
+                    'name' => $row['name'],
+                    'image' => $row['image'],
+                    'price' => ($row['discount_price'] > 0 ? $row['discount_price'] : $row['original_price']),
+                    'quantity' => 1
+                ];
+            }
+            $stmt->close();
+        }
+        echo "success";
+        exit;
+    }
+
+    if ($action === "remove_from_cart") {
+        unset($_SESSION['cart'][$product_id]);
+        echo "removed";
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -170,9 +210,13 @@ if ($products && $products->num_rows > 0) {
               </div>
               <div class="product-actions">
                 <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Buy Now</a>
-                <button type="submit" name="action" value="add_to_cart" class="btn btn-primary">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
+                <button 
+    type="button" 
+    class="btn btn-primary add-to-cart" 
+    data-id="<?php echo $row['id']; ?>">
+    <i class="fas fa-shopping-cart"></i> Add to Cart
+</button>
+
               </div>
             </div>
           </div>
@@ -229,6 +273,31 @@ if ($products && $products->num_rows > 0) {
         shareModal.style.display = 'none';
       }
     });
+    <script>
+document.querySelectorAll('.add-to-cart').forEach(btn => {
+  btn.addEventListener('click', function() {
+    let productId = this.getAttribute('data-id');
+    let formData = new FormData();
+    formData.append('action', 'add_to_cart');
+    formData.append('product_id', productId);
+
+    fetch('cart_handler.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.text())
+    .then(data => {
+      if (data.trim() === 'success') {
+        alert("Product added to cart!");
+      } else {
+        alert("Something went wrong!");
+      }
+    })
+    .catch(err => console.error(err));
+  });
+});
+</script>
+
   </script>
 </body>
 </html>
