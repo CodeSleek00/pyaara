@@ -588,25 +588,25 @@
         <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat'] text-right leading-tight">F1 Racing</div>
       </div>
       <div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300">
-        <img class="w-full h-full object-cover block" src="images/model 11.jpeg" alt="Man in white full sleeve shirt" />
-        <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat'] text-right leading-tight">FULL SLEEVE<br/>SHIRTS</div>
-      </div>
+        <a href="orders/exclusive.php"><img class="w-full h-full object-cover block" src="images/model 11.jpeg" alt="Man in white full sleeve shirt" />
+        <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat'] text-right leading-tight">Exclusive</div>
+      </div></a>
       <div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300">
         <a href="orders/oversized.php"><img class="w-full h-full object-cover block" src="images/model 12.jpeg" alt="Man in yellow oversized t-shirt" />
         <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat'] text-right leading-tight">OVERSIZED<br/>T-SHIRTS</div>
       </div></a>
-      <div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300 row-span-2">
+      <a href="orders/cutie.php"><div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300 row-span-2">
         <img class="w-full h-full object-cover block" src="images/model(2).jpeg" alt="Man in blue half sleeve shirt" />
         <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat'] text-right leading-tight">HALF SLEEVE<br/>T-SHIRTS</div>
-      </div>
+      </div></a>
       <div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300">
-        <img class="w-full h-full object-cover block" src="images/model 13.jpeg" alt="Person wearing blue denim pants" />
+        <a href="orders/odder.php"><img class="w-full h-full object-cover block" src="images/model 13.jpeg" alt="Person wearing blue denim pants" />
         <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat']">CASUAL</div>
-      </div>
+      </div></a>
       <div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300">
-        <img class="w-full h-full object-cover block" src="images/model 14.jpeg" alt="Casual shirts" />
+       <a href="orders/anime.php"> <img class="w-full h-full object-cover block" src="images/model 14.jpeg" alt="Casual shirts" />
         <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat'] text-right leading-tight">ANIME<br/>BASED</div>
-      </div>
+      </div></a>
     </div>
   </div>
 
