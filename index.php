@@ -584,9 +584,9 @@
     <h2 class="font-['Montserrat'] font-extrabold text-black text-center text-3xl tracking-[0.15em] mb-8 uppercase">TRENDING CATEGORIES</h2>
     <div class="grid grid-cols-4 gap-6">
       <div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300 row-span-2">
-        <img class="w-full h-full object-cover block" src="images/model.jpeg" alt="Man in beige polo shirt" />
+        <a href="orders/offer.php"><img class="w-full h-full object-cover block" src="images/model.jpeg" alt="Man in beige polo shirt" />
         <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat'] text-right leading-tight">F1 Racing</div>
-      </div>
+      </div></a>
       <div class="relative rounded-3xl overflow-hidden hover:scale-103 transition-transform duration-300">
         <a href="orders/exclusive.php"><img class="w-full h-full object-cover block" src="images/model 11.jpeg" alt="Man in white full sleeve shirt" />
         <div class="absolute bottom-6 right-6 text-white font-bold text-2xl text-shadow font-['Montserrat'] text-right leading-tight">Exclusive</div>
