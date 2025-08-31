@@ -407,10 +407,7 @@
         flex-wrap: wrap;
         padding: 0;
     }
-    .vouncher img {
-        height: 250px;
         
-    }
     .search-mobile {
         display: flex;
     }
@@ -901,6 +898,9 @@
     .desktop-container {
         display: none;
     }
+    .vouncher img {
+        height: 250px;
+       
 }
 
 @media (min-width: 481px) {
