@@ -1,6 +1,5 @@
 <?php
 include 'db_connect.php';
-session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
