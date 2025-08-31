@@ -116,17 +116,16 @@
             <div class="dropdown-content">
               <a href="orders/exclusive.php">Exclusive</a>
               <a href="orders/anime.php">Anime</a>
-              <a href="orders/oversized.php">Oversized</a>
             </div>
           </li>
           <li class="dropdown">
             <a href="#">Women's</a>
             <div class="dropdown-content">
                <a href="orders/cutie.php">Cutiesssss</a>
-              <a href="orders/oversized.php">Oversized</a>
               <a href="orders/exclusive.php">Exclusive</a>
             </div>
           </li>
+          <li><a href="orders/oversized.php">Oversized</a></li>
           <li><a href="orders/anime.php">Anime</a></li>
           <li><a href="orders/offer.php">Offer's</a></li>
           <li><a href="orders/order_history.php">My Orders</a></li>
@@ -151,18 +150,16 @@
             <div class="mobile-dropdown-content">
               <a href="orders/exclusive.php">Exclusive</a>
               <a href="orders/anime.php">Anime</a>
-              <a href="orders/oversized.php">Oversized</a>
             </div>
           </li>
           <li class="mobile-dropdown">
             <a href="#">Women's</a>
             <div class="mobile-dropdown-content">
               <a href="orders/cutie.php">Cutiesssss</a>
-              <a href="orders/oversized.php">Oversized</a>
               <a href="orders/exclusive.php">Exclusive</a>
             </div>
           </li>
-          
+          <li><a href="orders/oversized.php">Oversized</a></li>
           <li><a href="orders/offer.php">Offer's</a></li>
           <li><a href="orders/search_order.php">Delivery Status</a></li>
         </ul>
