@@ -399,6 +399,7 @@
     border-radius: 6px;
 }
 
+
 /* Responsive design */
 @media (max-width: 768px) {
     .search {
@@ -406,7 +407,10 @@
         flex-wrap: wrap;
         padding: 0;
     }
-
+    .vouncher img {
+        height: 250px;
+        
+    }
     .search-mobile {
         display: flex;
     }
