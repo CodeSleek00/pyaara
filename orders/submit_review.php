@@ -1,5 +1,4 @@
 <?php
-session_start();
 include 'db_connect.php'; // apna DB connection file include karo
 
 // Agar user login nahi hai
