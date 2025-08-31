@@ -169,7 +169,8 @@ if ($products && $products->num_rows > 0) {
                 <?php endif; ?>
               </div>
               <div class="product-actions">
-               <button type="submit" name="action" value="add_to_cart" class="btn btn-primary">
+                <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Buy Now</a>
+                <button type="submit" name="action" value="add_to_cart" class="btn btn-primary">
                             <i class="fas fa-shopping-cart"></i> Add to Cart
                         </button>
               </div>
