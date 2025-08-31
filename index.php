@@ -217,7 +217,7 @@
     <div class="click-overlay" id="mobile-overlay"></div>
   </section>
   <section class="voucher">
-    <img src="images/change.png" alt="">
+    <img src="images/change.jpg" alt="">
   </section>
      <section class="new-arrivals">
         <div class="section-header">
