@@ -893,6 +893,96 @@ if (isset($_SESSION['message'])) {
                 font-size: 1.5rem;
             }
         }
+        <!-- Add this CSS to the style section -->
+.share-button-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+}
+
+.share-btn {
+    background-color: var(--primary-white);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    color: var(--dark-gray);
+    font-size: 1.1rem;
+}
+
+.share-btn:hover {
+    background-color: var(--primary-red);
+    color: var(--primary-white);
+    transform: scale(1.1);
+}
+
+.share-options {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: var(--primary-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 150px;
+}
+
+.share-options.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.share-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+}
+
+.share-option:hover {
+    background-color: var(--light-gray);
+}
+
+.share-option i {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.facebook-option {
+    color: #1877F2;
+}
+
+.whatsapp-option {
+    color: #25D366;
+}
+
+.twitter-option {
+    color: #1DA1F2;
+}
+
+.pinterest-option {
+    color: #BD081C;
+}
+
+.link-option {
+    color: var(--primary-red);
+}
         
         @media (max-width: 576px) {
             .container {
@@ -936,6 +1026,39 @@ if (isset($_SESSION['message'])) {
         <div class="product-hero">
             <div class="product-gallery">
                 <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="main-image">
+                <!-- Add this HTML inside the product-gallery div, right after the main image -->
+<div class="product-gallery">
+    <div class="share-button-container">
+        <button class="share-btn" id="shareButton">
+            <i class="fas fa-share-alt"></i>
+        </button>
+        <div class="share-options" id="shareOptions">
+            <div class="share-option facebook-option" data-platform="facebook">
+                <i class="fab fa-facebook-f"></i>
+                <span>Facebook</span>
+            </div>
+            <div class="share-option whatsapp-option" data-platform="whatsapp">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp</span>
+            </div>
+            <div class="share-option twitter-option" data-platform="twitter">
+                <i class="fab fa-twitter"></i>
+                <span>Twitter</span>
+            </div>
+            <div class="share-option pinterest-option" data-platform="pinterest">
+                <i class="fab fa-pinterest-p"></i>
+                <span>Pinterest</span>
+            </div>
+            <div class="share-option link-option" data-platform="copy">
+                <i class="fas fa-link"></i>
+                <span>Copy Link</span>
+            </div>
+        </div>
+    </div>
+    
+    <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="main-image">
+    <!-- ... rest of the gallery code ... -->
+</div>
                 
             </div>
             
@@ -1403,6 +1526,75 @@ if (isset($_SESSION['message'])) {
                 });
             }
         });
+        // Add this JavaScript to handle the share functionality
+// Share button functionality
+const shareButton = document.getElementById('shareButton');
+const shareOptions = document.getElementById('shareOptions');
+
+if (shareButton && shareOptions) {
+    shareButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        shareOptions.classList.toggle('active');
+    });
+    
+    // Close share options when clicking outside
+    document.addEventListener('click', function(e) {
+        if (shareOptions.classList.contains('active') && 
+            !shareOptions.contains(e.target) && 
+            !shareButton.contains(e.target)) {
+            shareOptions.classList.remove('active');
+        }
+    });
+    
+    // Handle share option clicks
+    const shareOptionButtons = document.querySelectorAll('.share-option');
+    const productName = "<?php echo addslashes($product['name']); ?>";
+    const productUrl = window.location.href;
+    
+    shareOptionButtons.forEach(option => {
+        option.addEventListener('click', function() {
+            const platform = this.getAttribute('data-platform');
+            let shareUrl = '';
+            
+            switch(platform) {
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
+                    window.open(shareUrl, '_blank');
+                    break;
+                    
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(productName)}&url=${encodeURIComponent(productUrl)}`;
+                    window.open(shareUrl, '_blank');
+                    break;
+                    
+                case 'pinterest':
+                    const imageUrl = document.querySelector('.main-image').src;
+                    shareUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(productUrl)}&media=${encodeURIComponent(imageUrl)}&description=${encodeURIComponent(productName)}`;
+                    window.open(shareUrl, '_blank');
+                    break;
+                    
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${encodeURIComponent(productName + ' ' + productUrl)}`;
+                    window.open(shareUrl, '_blank');
+                    break;
+                    
+                case 'copy':
+                    navigator.clipboard.writeText(productUrl).then(() => {
+                        // Show a brief notification that link was copied
+                        const originalText = this.querySelector('span').textContent;
+                        this.querySelector('span').textContent = 'Copied!';
+                        
+                        setTimeout(() => {
+                            this.querySelector('span').textContent = originalText;
+                        }, 2000);
+                    });
+                    break;
+            }
+            
+            shareOptions.classList.remove('active');
+        });
+    });
+}
     </script>
 </body>
 </html>
