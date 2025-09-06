@@ -192,38 +192,6 @@ if ($products && $products->num_rows > 0) {
     </div>
   </div>
 
-
-  <script>
-    const shareButtons = document.querySelectorAll('.share-btn');
-    const shareModal = document.getElementById('shareModal');
-    const shareLinkInput = document.getElementById('shareLink');
-
-    shareButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const link = btn.getAttribute('data-link');
-        shareLinkInput.value = link;
-
-        document.getElementById('fbShare').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`;
-        document.getElementById('waShare').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(link)}`;
-        document.getElementById('twShare').href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(link)}`;
-
-        shareModal.style.display = 'block';
-      });
-    });
-
-    function copyLink() {
-      shareLinkInput.select();
-      document.execCommand('copy');
-      alert("Link copied to clipboard!");
-      shareModal.style.display = 'none';
-    }
-
-    shareModal.addEventListener('click', function (e) {
-      if (e.target === shareModal) {
-        shareModal.style.display = 'none';
-      }
-    });
-  </script>
 </body>
 </html>
 
