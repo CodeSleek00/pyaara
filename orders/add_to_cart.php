@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
     }
 
     $stmt->close();
-    header("Location: ../index.php"); // Redirect back to product listing
+    header("Location: cart.php"); // Redirect back to product listing
     exit();
 } else {
     $_SESSION['message'] = "Invalid request.";
