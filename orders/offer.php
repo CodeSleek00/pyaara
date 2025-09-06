@@ -314,7 +314,7 @@ if ($products && $products->num_rows > 0) {
     <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
     <input type="hidden" name="quantity" value="1">
     <button type="submit" class="btn btn-primary">
-      <i class="fas fa-cart-plus"></i> Add to Cart
+     Add to Cart
     </button>
   </form>
 </div>
