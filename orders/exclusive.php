@@ -169,10 +169,18 @@ if ($products && $products->num_rows > 0) {
                   <span class="current-price">₹<?php echo number_format($row['original_price'], 2); ?></span>
                 <?php endif; ?>
               </div>
-              <div class="product-actions">
-                <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Buy Now</a>
-                <button class="btn btn-primary share-btn" data-link="https://pyaara.in/orders/product_detail.php?id=<?php echo $row['id']; ?>"><i class="fas fa-share-alt"></i> Share</button>
-              </div>
+             <div class="product-actions">
+  <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Buy Now</a>
+
+  <form method="POST" action="add_to_cart.php" style="flex:1;">
+    <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
+    <input type="hidden" name="quantity" value="1">
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-cart-plus"></i> Add to Cart
+    </button>
+  </form>
+</div>
+
             </div>
           </div>
         <?php endforeach; ?>
