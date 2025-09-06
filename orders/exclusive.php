@@ -192,19 +192,6 @@ if ($products && $products->num_rows > 0) {
     </div>
   </div>
 
-  <!-- Share Modal -->
-  <div id="shareModal">
-    <div class="modal-content">
-      <h3>Share Product</h3>
-      <input type="text" id="shareLink" readonly>
-      <button onclick="copyLink()" class="btn btn-primary" style="width:100%; margin-bottom: 10px;">Copy Link</button>
-      <div class="social-icons" style="text-align:center;">
-        <a id="fbShare" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a id="waShare" target="_blank"><i class="fab fa-whatsapp"></i></a>
-        <a id="twShare" target="_blank"><i class="fab fa-twitter"></i></a>
-      </div>
-    </div>
-  </div>
 
   <script>
     const shareButtons = document.querySelectorAll('.share-btn');
