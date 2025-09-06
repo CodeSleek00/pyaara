@@ -936,7 +936,7 @@ if (isset($_SESSION['message'])) {
         <div class="product-hero">
             <div class="product-gallery">
                 <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="main-image">
-                
+                 <button class="btn btn-primary share-btn" data-link="https://pyaara.in/orders/product_detail.php?id=<?php echo $row['id']; ?>"><i class="fas fa-share-alt"></i> Share</button>
                 
             </div>
             
