@@ -1,14 +1,125 @@
 <?php
+session_start();
 include 'db_connect.php';
 
-// --- VERY BASIC ADMIN AUTHENTICATION (PLACEHOLDER) ---
-// In a real application, you'd have a login page and check session/user ID.
-// For this example, anyone can access it. REMOVE THIS FOR PRODUCTION!
-// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-//     header("Location: admin_login.php"); // Redirect to a login page
-//     exit();
-// }
-// -----------------------------------------------------
+// ----------------- ADMIN PASSWORD (CHANGE BEFORE PRODUCTION) -----------------
+// Change this to a strong password before deploying. For better security,
+// store password in environment variable or config file outside web root.
+$ADMIN_PASSWORD = 'admin123';
+// ---------------------------------------------------------------------------
+
+// Handle logout (use ?action=logout)
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+    session_unset();
+    session_destroy();
+    header("Location: admin_dashboard.php");
+    exit();
+}
+
+// If not logged in, handle login form submission or show login form
+$login_error = '';
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_password'])) {
+        $entered = $_POST['admin_password'];
+        if ($entered === $ADMIN_PASSWORD) {
+            // Successful login
+            $_SESSION['admin_logged_in'] = true;
+            // Redirect to avoid form resubmission
+            header("Location: admin_dashboard.php");
+            exit();
+        } else {
+            $login_error = "Invalid password. Try again.";
+        }
+    }
+
+    // Show login form and stop further execution
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin Login</title>
+        <style>
+            :root {
+                --primary-color: #4a6bff;
+                --border-radius: 6px;
+                --box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+            }
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                margin: 0;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: #f5f7fa;
+            }
+            .login-card {
+                background: white;
+                padding: 30px;
+                border-radius: var(--border-radius);
+                width: 360px;
+                box-shadow: var(--box-shadow);
+                text-align: center;
+            }
+            .login-card h2 {
+                margin-bottom: 18px;
+                color: var(--primary-color);
+            }
+            .login-card input[type="password"] {
+                width: 100%;
+                padding: 10px;
+                border-radius: 6px;
+                border: 1px solid #ddd;
+                margin-bottom: 12px;
+                font-size: 1rem;
+            }
+            .login-card button {
+                background: var(--primary-color);
+                color: white;
+                padding: 10px 14px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 1rem;
+                width: 100%;
+            }
+            .error {
+                margin-bottom: 12px;
+                color: #721c24;
+                background: #f8d7da;
+                padding: 8px;
+                border-radius: 6px;
+                border: 1px solid #f5c6cb;
+            }
+            .note {
+                margin-top: 12px;
+                font-size: 0.9rem;
+                color: #666;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-card" role="main" aria-labelledby="loginHeading">
+            <h2 id="loginHeading">Admin Login</h2>
+            <?php if ($login_error): ?>
+                <div class="error"><?php echo htmlspecialchars($login_error); ?></div>
+            <?php endif; ?>
+            <form method="post" action="admin_dashboard.php">
+                <input type="password" name="admin_password" placeholder="Enter admin password" required autofocus>
+                <button type="submit">Login</button>
+            </form>
+            <p class="note">Change <code>$ADMIN_PASSWORD</code> in this file before production.</p>
+        </div>
+    </body>
+    </html>
+    <?php
+    $conn->close();
+    exit();
+}
+
+// ------------------------- (From here user is authenticated) -------------------------
 
 $message = '';
 $message_type = '';
@@ -32,7 +143,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete_product' && isset($_GET
 }
 
 // Handle order status update
-if (isset($_POST['update_order_status'])) {
+if (isset($_POST['update_order_status']) || (isset($_POST['new_status']) && isset($_POST['order_id']))) {
+    // allow both cases (JS auto-submit via select or explicit submit)
     $order_id = (int)$_POST['order_id'];
     $new_status = $conn->real_escape_string($_POST['new_status']);
 
@@ -46,6 +158,10 @@ if (isset($_POST['update_order_status'])) {
         $message_type = "error";
     }
     $stmt->close();
+
+    // Redirect to show message and avoid resubmission
+    header("Location: admin_dashboard.php?message=" . urlencode($message) . "&type=" . urlencode($message_type));
+    exit();
 }
 
 // Display messages passed via GET after redirects
@@ -76,11 +192,10 @@ if ($stmt_products) {
     $total_products_count = $row_products['count'] ?? 0;
 }
 
-
 // Fetch all products
 $products = [];
 $result_products = $conn->query("SELECT * FROM products ORDER BY id DESC");
-if ($result_products->num_rows > 0) {
+if ($result_products && $result_products->num_rows > 0) {
     while ($row = $result_products->fetch_assoc()) {
         $products[] = $row;
     }
@@ -89,7 +204,7 @@ if ($result_products->num_rows > 0) {
 // Fetch all orders
 $orders = [];
 $result_orders = $conn->query("SELECT * FROM orders ORDER BY order_date DESC");
-if ($result_orders->num_rows > 0) {
+if ($result_orders && $result_orders->num_rows > 0) {
     while ($row = $result_orders->fetch_assoc()) {
         $orders[] = $row;
     }
@@ -147,6 +262,8 @@ if ($result_orders->num_rows > 0) {
     header nav ul {
         display: flex;
         list-style: none;
+        align-items: center;
+        gap: 12px;
     }
 
     header nav ul li a {
@@ -354,6 +471,10 @@ if ($result_orders->num_rows > 0) {
             <nav>
                 <ul>
                     <li><a href="files.html"> access all the files</a></li>
+                    <li><a href="add_product.php">Add Product</a></li>
+                    <li><a href="admin_dashboard.php?action=logout" style="background:#ff6b6b;padding:8px 12px;border-radius:6px;">Logout</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
 
