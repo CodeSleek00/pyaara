@@ -1,5 +1,4 @@
 <?php
-session_start();
 include 'db_connect.php';
 
 // ----------------- ADMIN PASSWORD (CHANGE BEFORE PRODUCTION) -----------------
