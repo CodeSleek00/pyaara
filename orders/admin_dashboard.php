@@ -4,7 +4,7 @@ include 'db_connect.php';
 // ----------------- ADMIN PASSWORD (CHANGE BEFORE PRODUCTION) -----------------
 // Change this to a strong password before deploying. For better security,
 // store password in environment variable or config file outside web root.
-$ADMIN_PASSWORD = 'admin123';
+$ADMIN_PASSWORD = 'anant@123';
 // ---------------------------------------------------------------------------
 
 // Handle logout (use ?action=logout)
@@ -109,7 +109,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 <input type="password" name="admin_password" placeholder="Enter admin password" required autofocus>
                 <button type="submit">Login</button>
             </form>
-            <p class="note">Change <code>$ADMIN_PASSWORD</code> in this file before production.</p>
         </div>
     </body>
     </html>
