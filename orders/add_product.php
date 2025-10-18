@@ -3,7 +3,7 @@ include 'db_connect.php';
 $message = '';
 $message_type = '';
 
-$pages = ['anime.php', 'exclusive.php', 'men.php', 'women.php' , 'round.php', 'full.php', 'polo.php', 'cutie.php'];
+$pages = ['anime.php', 'exclusive.php', 'men.php', 'women.php' , 'round.php', 'full.php', 'polo.php', 'cutie.php' ,' classic_women.php ','Crop_Top.php','Cropped_Hoodies.php'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $conn->real_escape_string($_POST['name']);
