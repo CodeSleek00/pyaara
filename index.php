@@ -126,9 +126,9 @@
             <div class="dropdown-content">
                <a href="orders/cutie.php">Cutiesssss</a>
               <a href="orders/exclusive.php">Exclusive</a>
-              <a href="orders/classic_women.php">Half Sleeves Classic T-shirt </a>
+              <a href="orders/classic_women.php">Half Sleeves T-shirt </a>
               <a href="orders/Crop_Top.php">Crop Top</a>
-              <a href="orders/Cropped_Hoodies.php">Cropped Hoodies </a>
+              <a href="orders/Cropped_Hoodies.php">Cropped Hoodies</a>
             </div>
           </li>
           <li><a href="orders/oversized.php">Oversized</a></li>
