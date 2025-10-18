@@ -117,8 +117,8 @@
               <a href="orders/exclusive.php">Exclusive</a>
               <a href="orders/anime.php">Anime</a>
               <a href="orders/round.php">Round Neck Half Sleeves T-shirt</a>
-              <a href="orders/full.php">Men Full Sleeves T-shirt</a>
-              <a href="orders/polo.php">Men Premium Polo T-shirt</a>
+              <a href="orders/full.php"> Full Sleeves T-shirt</a>
+              <a href="orders/polo.php">Premium Polo T-shirt</a>
             </div>
           </li>
           <li class="dropdown">
