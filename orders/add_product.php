@@ -3,7 +3,7 @@ include 'db_connect.php';
 $message = '';
 $message_type = '';
 
-$pages = ['anime.php', 'exclusive.php', 'men.php', 'women.php' , 'round.php', 'full.php', 'polo.php', 'cutie.php' ,' classic_women.php ','Crop_Top.php','Cropped_Hoodies.php'];
+$pages = ['anime.php', 'exclusive.php', 'men.php', 'women.php' , 'round.php', 'full.php', 'polo.php', 'cutie.php' ,' classic_women.php ','Crop_Top.php','Cropped_Hoodies.php', 'Shorts.php', 'Joggers.php', 'sweatshirt.php', 'hoodies.php', 'Acid_Washed.php'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $conn->real_escape_string($_POST['name']);
