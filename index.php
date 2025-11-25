@@ -134,11 +134,11 @@
           <li class="dropdown">
             <a href="#">Unisex</a>
             <div class="dropdown-content">
-               <a href="orders/cutie.php">Acid Washed Oversized Tee </a>
-              <a href="orders/exclusive.php">Hoodies</a>
-              <a href="orders/classic_women.php">Sweatshirt </a>
-              <a href="orders/Crop_Top.php">Unisex Joggers</a>
-              <a href="orders/Cropped_Hoodies.php">Unisex Zip Pocket Shorts</a>
+               <a href="orders/Acid_Washed.php">Acid Washed Oversized Tee </a>
+              <a href="orders/hoodies.php">Hoodies</a>
+              <a href="orders/sweatshirt.php">Sweatshirt </a>
+              <a href="orders/Joggers.php">Unisex Joggers</a>
+            
             </div>
           </li>
           <li><a href="orders/oversized.php">Oversized</a></li>
@@ -184,11 +184,11 @@
            <li class="mobile-dropdown">
             <a href="#">Unisex</a>
             <div class="mobile-dropdown-content">
-              <a href="orders/cutie.php">Acid Washed Oversized Tee </a>
-              <a href="orders/exclusive.php">Hoodies</a>
-              <a href="orders/classic_women.php">Sweatshirt </a>
-              <a href="orders/Crop_Top.php">Unisex Joggers</a>
-              <a href="orders/Cropped_Hoodies.php">Unisex Zip Pocket Shorts</a>
+               <a href="orders/Acid_Washed.php">Acid Washed Oversized Tee </a>
+              <a href="orders/hoodies.php">Hoodies</a>
+              <a href="orders/sweatshirt.php">Sweatshirt </a>
+              <a href="orders/Joggers.php">Unisex Joggers</a>
+            
             </div>
           </li>
           <li><a href="orders/oversized.php">Oversized</a></li>
