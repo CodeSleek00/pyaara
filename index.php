@@ -164,8 +164,11 @@
           <li class="mobile-dropdown">
             <a href="#">Men's</a>
             <div class="mobile-dropdown-content">
-              <a href="orders/exclusive.php">Exclusive</a>
+               <a href="orders/exclusive.php">Exclusive</a>
               <a href="orders/anime.php">Anime</a>
+              <a href="orders/round.php"> Half Sleeves T-shirt</a>
+              <a href="orders/full.php"> Full Sleeves T-shirt</a>
+              <a href="orders/polo.php">Premium Polo T-shirt</a>
             </div>
           </li>
           <li class="mobile-dropdown">
@@ -173,6 +176,19 @@
             <div class="mobile-dropdown-content">
               <a href="orders/cutie.php">Cutiesssss</a>
               <a href="orders/exclusive.php">Exclusive</a>
+              <a href="orders/classic_women.php">Half Sleeves T-shirt </a>
+              <a href="orders/Crop_Top.php">Crop Top</a>
+              <a href="orders/Cropped_Hoodies.php">Cropped Hoodies</a>
+            </div>
+          </li>
+           <li class="mobile-dropdown">
+            <a href="#">Unisex</a>
+            <div class="mobile-dropdown-content">
+              <a href="orders/cutie.php">Acid Washed Oversized Tee </a>
+              <a href="orders/exclusive.php">Hoodies</a>
+              <a href="orders/classic_women.php">Sweatshirt </a>
+              <a href="orders/Crop_Top.php">Unisex Joggers</a>
+              <a href="orders/Cropped_Hoodies.php">Unisex Zip Pocket Shorts</a>
             </div>
           </li>
           <li><a href="orders/oversized.php">Oversized</a></li>
