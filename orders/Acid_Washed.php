@@ -177,7 +177,7 @@ $products = $conn->query("SELECT * FROM products WHERE page = '$page' ORDER BY i
         <?php endwhile; ?>
       <?php else: ?>
         <div class="no-products">
-          <p>Comming Soon.</p>
+          <p>Coming Soon.</p>
         </div>
       <?php endif; ?>
     </div>

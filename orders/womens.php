@@ -326,7 +326,7 @@ if ($products && $products->num_rows > 0) {
                 <?php endforeach; ?>
             <?php else: ?>
                 <div class="no-products">
-                    <p>Comming Soon.</p>
+                    <p>Coming Soon.</p>
                     <p>Check back later for new arrivals!</p>
                 </div>
             <?php endif; ?>
