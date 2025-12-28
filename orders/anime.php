@@ -185,7 +185,7 @@ if ($products && $products->num_rows > 0) {
         <?php endforeach; ?>
       <?php else: ?>
         <div class="no-products">
-          <p>No products found in this category.</p>
+          <p>Comming Soon.</p>
         </div>
       <?php endif; ?>
     </div>
