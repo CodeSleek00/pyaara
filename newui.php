@@ -56,7 +56,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
 .exclusive-header h2 {
@@ -77,7 +77,7 @@ body {
   text-decoration: underline;
 }
 
-/* ===== Products Grid ===== */
+/* ===== Products Grid (Desktop) ===== */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -138,7 +138,7 @@ body {
 }
 
 .price {
-  margin-top: 8px;
+  margin: 8px 0 12px;
 }
 
 .current-price {
@@ -154,16 +154,52 @@ body {
   font-size: 0.9rem;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 992px) {
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Buttons */
+.product-actions {
+  display: flex;
+  gap: 10px;
 }
 
-@media (max-width: 480px) {
+.btn {
+  flex: 1;
+  padding: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-buy {
+  background: var(--red);
+  color: #fff;
+}
+
+.btn-cart {
+  background: #fff;
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+/* ===== Mobile Horizontal Scroll ===== */
+@media (max-width: 768px) {
   .products-grid {
-    grid-template-columns: repeat(1, 1fr);
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding-bottom: 10px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .products-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-card {
+    min-width: 70%;
+    scroll-snap-align: start;
   }
 }
 </style>
@@ -204,11 +240,20 @@ body {
                 <span class="current-price">₹<?php echo number_format($row['original_price']); ?></span>
               <?php endif; ?>
             </div>
+
+            <div class="product-actions">
+              <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-buy">Buy Now</a>
+
+              <form action="add_to_cart.php" method="POST">
+                <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-cart">Cart</button>
+              </form>
+            </div>
+
           </div>
         </div>
       <?php endwhile; ?>
-    <?php else: ?>
-      <p>No exclusive products found.</p>
     <?php endif; ?>
   </div>
 </section>
