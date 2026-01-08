@@ -1,5 +1,5 @@
 <?php
-include 'db_connect.php';
+include 'db.php';
 
 /* Fetch 4 random exclusive products */
 $exclusiveProducts = $conn->query("
