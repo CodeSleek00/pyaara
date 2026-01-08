@@ -1061,7 +1061,7 @@ $exclusiveProducts = $conn->query("
       Exclusive Collection
     </h2>
 
-    <a href="exclusive.php"
+    <a href="orders/exclusive.php"
        class="text-primary font-semibold flex items-center gap-2 hover:underline">
       More Products <i class="fa fa-arrow-right text-sm"></i>
     </a>
