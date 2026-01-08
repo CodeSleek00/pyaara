@@ -185,7 +185,7 @@ body {
         <div class="product-card">
           <div class="product-image-container">
             <a href="product_detail.php?id=<?php echo $row['id']; ?>">
-              <img src="uploads/<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
+              <img src="orders/uploads/<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
             </a>
 
             <?php if ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0): ?>
