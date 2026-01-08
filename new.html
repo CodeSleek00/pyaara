@@ -1,913 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f9f9f9;
-        }
-
-        /* News Ticker - Premium Red */
-        .news-ticker {
-            background: linear-gradient(90deg, #8B0000, #D32F2F);
-            color: white;
-            padding: 10px 0;
-            position: relative;
-            overflow: hidden;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            box-shadow: 0 2px 10px rgba(139, 0, 0, 0.1);
-        }
-
-        .news-item {
-            display: inline-block;
-            white-space: nowrap;
-            animation: ticker 25s linear infinite;
-            padding: 0 20px;
-        }
-
-        .news-ticker:before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 50px;
-            background: linear-gradient(90deg, rgba(139, 0, 0, 1), rgba(139, 0, 0, 0));
-            z-index: 2;
-        }
-
-        .news-ticker:after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
-            width: 50px;
-            background: linear-gradient(90deg, rgba(139, 0, 0, 0), rgba(139, 0, 0, 1));
-            z-index: 2;
-        }
-
-        @keyframes ticker {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-
-        /* Main Header */
-        header {
-            background-color: #fff;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            position: relative;
-            z-index: 100;
-        }
-
-        /* Desktop Header */
-        .desktop-header {
-            padding: 15px 5%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-container {
-            flex: 0 0 180px;
-        }
-
-        .logo {
-            height: 42px;
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        /* Search Bar */
-        .search-container {
-            flex: 1;
-            max-width: 600px;
-            margin: 0 30px;
-        }
-
-        .search-form {
-            display: flex;
-            position: relative;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #e0e0e0;
-            transition: all 0.3s ease;
-        }
-
-        .search-form:focus-within {
-            border-color: #D32F2F;
-            box-shadow: 0 2px 15px rgba(211, 47, 47, 0.15);
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 14px 20px;
-            border: none;
-            font-size: 15px;
-            font-family: 'Inter', sans-serif;
-            color: #333;
-            background: #fff;
-        }
-
-        .search-input::placeholder {
-            color: #999;
-            font-weight: 400;
-        }
-
-        .search-button {
-            background: #D32F2F;
-            color: white;
-            border: none;
-            padding: 0 25px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .search-button:hover {
-            background: #B71C1C;
-        }
-
-        /* Header Actions */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .header-icon {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #333;
-            transition: color 0.3s ease;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .header-icon i {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-
-        .header-icon:hover {
-            color: #D32F2F;
-        }
-
-        .cart-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #D32F2F;
-            color: white;
-            font-size: 11px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
-        /* Account Menu */
-        .account-menu {
-            position: relative;
-        }
-
-        .account-trigger {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            color: #333;
-            transition: color 0.3s ease;
-            padding: 8px 12px;
-            border-radius: 6px;
-            background: #f8f8f8;
-        }
-
-        .account-trigger:hover {
-            color: #D32F2F;
-            background: #f0f0f0;
-        }
-
-        .account-trigger i {
-            font-size: 18px;
-        }
-
-        .account-dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            width: 220px;
-            background: white;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-            border-radius: 8px;
-            margin-top: 10px;
-            overflow: hidden;
-            z-index: 1000;
-            border: 1px solid #eee;
-        }
-
-        .account-menu:hover .account-dropdown {
-            display: block;
-            animation: fadeIn 0.2s ease;
-        }
-
-        .account-dropdown a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 18px;
-            text-decoration: none;
-            color: #333;
-            border-bottom: 1px solid #f5f5f5;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
-        .account-dropdown a i {
-            width: 20px;
-            color: #777;
-        }
-
-        .account-dropdown a:hover {
-            background-color: #f9f9f9;
-            color: #D32F2F;
-            padding-left: 22px;
-        }
-
-        .account-dropdown a:hover i {
-            color: #D32F2F;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Desktop Navigation */
-        .desktop-nav {
-            background: #1a1a1a;
-            border-top: 1px solid #333;
-        }
-
-        .nav-container {
-            padding: 0 5%;
-        }
-
-        .nav-list {
-            display: flex;
-            list-style: none;
-            justify-content: center;
-        }
-
-        .nav-item {
-            position: relative;
-        }
-
-        .nav-link {
-            display: block;
-            padding: 18px 22px;
-            text-decoration: none;
-            color: #fff;
-            font-weight: 500;
-            font-size: 15px;
-            letter-spacing: 0.2px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-link:hover {
-            color: #fff;
-            background: #D32F2F;
-        }
-
-        .nav-link:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 3px;
-            background: #D32F2F;
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover:after {
-            width: 100%;
-        }
-
-        /* Dropdowns */
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            min-width: 220px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-            border-radius: 0 0 8px 8px;
-            z-index: 1000;
-            overflow: hidden;
-            border-top: 3px solid #D32F2F;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        .dropdown-content a {
-            padding: 14px 20px;
-            border-bottom: 1px solid #f0f0f0;
-            white-space: nowrap;
-            color: #333;
-            text-decoration: none;
-            display: block;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .dropdown-content a:hover {
-            background: #f9f9f9;
-            color: #D32F2F;
-            padding-left: 25px;
-        }
-
-        .dropdown-content a:last-child {
-            border-bottom: none;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Mobile Header */
-        .mobile-header {
-            display: none;
-            padding: 15px 20px;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #eee;
-        }
-
-        .menu-toggle {
-            width: 30px;
-            height: 24px;
-            cursor: pointer;
-            position: relative;
-            z-index: 1001;
-        }
-
-        .menu-toggle span {
-            display: block;
-            height: 3px;
-            width: 100%;
-            background: #333;
-            margin-bottom: 5px;
-            border-radius: 3px;
-            transition: 0.3s;
-        }
-
-        .menu-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translate(6px, 6px);
-        }
-
-        .menu-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
-        .mobile-logo {
-            height: 32px;
-        }
-
-        .mobile-actions {
-            display: flex;
-            gap: 18px;
-            align-items: center;
-        }
-
-        /* Mobile Navigation Sidebar */
-        .mobile-nav {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 85%;
-            max-width: 320px;
-            height: 100%;
-            background: white;
-            z-index: 1000;
-            transition: 0.4s cubic-bezier(0.65, 0, 0.35, 1);
-            padding-top: 80px;
-            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-        }
-
-        .mobile-nav.active {
-            left: 0;
-        }
-
-        .mobile-nav ul {
-            list-style: none;
-        }
-
-        .mobile-nav ul li a {
-            display: block;
-            padding: 18px 25px;
-            text-decoration: none;
-            color: #333;
-            border-bottom: 1px solid #f5f5f5;
-            font-weight: 500;
-            font-size: 16px;
-            transition: all 0.2s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .mobile-nav ul li a:hover {
-            background: #f9f9f9;
-            color: #D32F2F;
-            padding-left: 30px;
-        }
-
-        .mobile-nav ul li a i {
-            font-size: 14px;
-            transition: transform 0.3s ease;
-        }
-
-        .mobile-nav ul li a.active i {
-            transform: rotate(180deg);
-        }
-
-        .mobile-dropdown-content {
-            display: none;
-            background: #f9f9f9;
-        }
-
-        .mobile-dropdown-content a {
-            padding-left: 40px !important;
-            font-size: 15px;
-            color: #666;
-        }
-
-        /* Mobile Search Bar */
-        .mobile-search-container {
-            padding: 15px 20px;
-            background: #f8f8f8;
-            display: none;
-        }
-
-        .mobile-search-container.active {
-            display: block;
-        }
-
-        /* Mobile Footer Menu */
-        .mobile-footer-menu {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
-            z-index: 999;
-            border-top: 1px solid #eee;
-        }
-
-        .footer-menu-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #666;
-            font-size: 11px;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            flex: 1;
-        }
-
-        .footer-menu-item i {
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-
-        .footer-menu-item:hover, .footer-menu-item.active {
-            color: #D32F2F;
-        }
-
-        /* Overlay for mobile menu */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
-        }
-
-        .overlay.active {
-            display: block;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 992px) {
-            .desktop-header, .desktop-nav {
-                display: none;
-            }
-            
-            .mobile-header {
-                display: flex;
-            }
-            
-            .news-ticker {
-                font-size: 14px;
-                padding: 8px 0;
-            }
-        }
-
-        @media (min-width: 993px) {
-            .mobile-header,
-            .mobile-nav,
-            .mobile-footer-menu,
-            .mobile-search-container {
-                display: none !important;
-            }
-        }
-
-        /* Utility Classes */
-        .text-red {
-            color: #D32F2F;
-        }
-
-        .bg-red {
-            background: #D32F2F;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pyaara Store | Anime Streetwear</title>
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- NEW FONT: SORA -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* =========================
+   RESET + ROOT
+========================= */
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    font-family:'Sora',sans-serif;
+    background:#f9f9f9;
+}
+:root{
+    --anime-red:#ff2e2e;
+    --dark:#111;
+    --glow:0 0 8px rgba(255,46,46,.6),0 0 18px rgba(255,46,46,.35);
+}
+
+/* =========================
+   ANIME NEWS TICKER
+========================= */
+.news-ticker{
+    background:linear-gradient(90deg,#0f0f0f,var(--anime-red),#0f0f0f);
+    color:#fff;
+    padding:10px 0;
+    overflow:hidden;
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    box-shadow:0 0 15px rgba(255,46,46,.4);
+}
+.news-item{
+    display:inline-block;
+    white-space:nowrap;
+    animation:ticker 22s linear infinite;
+    padding:0 25px;
+}
+@keyframes ticker{
+    from{transform:translateX(100%)}
+    to{transform:translateX(-100%)}
+}
+
+/* =========================
+   HEADER
+========================= */
+header{
+    background:#fff;
+    box-shadow:0 4px 20px rgba(0,0,0,.08);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+.desktop-header{
+    padding:16px 5%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+.logo{
+    height:42px;
+    transition:.3s;
+}
+.logo:hover{
+    filter:drop-shadow(0 0 8px rgba(255,46,46,.7));
+    transform:scale(1.08) rotate(-1deg);
+}
+
+/* Search */
+.search-form{
+    display:flex;
+    border:1px solid #ddd;
+    border-radius:8px;
+    overflow:hidden;
+    width:600px;
+}
+.search-input{
+    flex:1;
+    padding:14px 18px;
+    border:none;
+    font-family:'Sora',sans-serif;
+    font-size:14px;
+}
+.search-button{
+    background:var(--anime-red);
+    color:#fff;
+    border:none;
+    padding:0 22px;
+    cursor:pointer;
+}
+.search-button:hover{box-shadow:var(--glow)}
+
+/* Icons */
+.header-actions{
+    display:flex;
+    gap:24px;
+}
+.header-icon{
+    text-decoration:none;
+    color:#222;
+    font-size:12px;
+    font-weight:500;
+    text-align:center;
+}
+.header-icon i{
+    font-size:22px;
+}
+.header-icon:hover i{
+    color:var(--anime-red);
+    text-shadow:0 0 6px rgba(255,46,46,.6);
+}
+
+/* Account */
+.account-menu{position:relative}
+.account-trigger{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    cursor:pointer;
+    font-weight:600;
+}
+.account-dropdown{
+    display:none;
+    position:absolute;
+    right:0;
+    top:120%;
+    width:220px;
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+}
+.account-menu:hover .account-dropdown{display:block}
+.account-dropdown a{
+    display:block;
+    padding:14px 18px;
+    text-decoration:none;
+    color:#222;
+    font-weight:500;
+}
+.account-dropdown a:hover{
+    background:#ffecec;
+    color:var(--anime-red);
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+.desktop-nav{background:#111}
+.nav-list{
+    display:flex;
+    justify-content:center;
+    list-style:none;
+}
+.nav-link{
+    color:#fff;
+    text-decoration:none;
+    padding:18px 24px;
+    display:block;
+    font-weight:600;
+    letter-spacing:.5px;
+}
+.nav-link:hover{
+    background:var(--anime-red);
+    box-shadow:var(--glow);
+}
+
+/* Dropdown */
+.dropdown{position:relative}
+.dropdown-content{
+    display:none;
+    position:absolute;
+    background:#fff;
+    min-width:220px;
+    border-top:3px solid var(--anime-red);
+    box-shadow:0 0 25px rgba(255,46,46,.25);
+}
+.dropdown:hover .dropdown-content{display:block}
+.dropdown-content a{
+    display:block;
+    padding:14px 18px;
+    color:#222;
+    text-decoration:none;
+    font-weight:500;
+}
+.dropdown-content a:hover{
+    background:#fff1f1;
+    padding-left:24px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+.mobile-header,
+.mobile-nav,
+.mobile-footer-menu{display:none}
+
+@media(max-width:992px){
+.desktop-header,.desktop-nav{display:none}
+.mobile-header{
+    display:flex;
+    padding:15px;
+    justify-content:space-between;
+    align-items:center;
+}
+.mobile-logo{height:34px}
+.mobile-nav{
+    display:block;
+    position:fixed;
+    left:-100%;
+    top:0;
+    width:80%;
+    height:100%;
+    background:linear-gradient(180deg,#fff,#fdf2f2);
+    transition:.4s;
+    z-index:999;
+}
+.mobile-nav.active{left:0}
+.mobile-nav a{
+    display:block;
+    padding:18px;
+    text-decoration:none;
+    color:#222;
+    font-weight:600;
+}
+.mobile-nav a:hover{
+    background:rgba(255,46,46,.08);
+    box-shadow:inset 4px 0 var(--anime-red);
+}
+.mobile-footer-menu{
+    display:flex;
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:#fff;
+    justify-content:space-around;
+    padding:10px 0;
+    box-shadow:0 -4px 12px rgba(0,0,0,.1);
+}
+.mobile-footer-menu a{
+    font-size:11px;
+    color:#666;
+    text-decoration:none;
+    text-align:center;
+}
+.mobile-footer-menu a.active{color:var(--anime-red)}
+}
+</style>
 </head>
+
 <body>
-    <!-- News Ticker -->
-    <div class="news-ticker">
-        <div class="news-item" id="news-item">
-            <i class="fas fa-shipping-fast"></i> Free shipping on orders over $50! &nbsp;&nbsp;|&nbsp;&nbsp;
-            <i class="fas fa-star"></i> New collection coming soon! &nbsp;&nbsp;|&nbsp;&nbsp;
-            <i class="fas fa-tag"></i> Extra 10% off on first order!
+
+<div class="news-ticker">
+    <div class="news-item">
+        ⚡ ANIME STREETWEAR DROP LIVE • 🔥 FREE SHIPPING • 🩸 LIMITED EDITION
+    </div>
+</div>
+
+<header>
+
+<div class="desktop-header">
+    <img src="images/Pyaara Site Svg.svg" class="logo">
+    <form class="search-form">
+        <input class="search-input" placeholder="Search Anime Fits...">
+        <button class="search-button"><i class="fa fa-search"></i></button>
+    </form>
+    <div class="header-actions">
+        <a class="header-icon"><i class="fa fa-shopping-bag"></i><br>Cart</a>
+        <a class="header-icon"><i class="fa fa-box"></i><br>Orders</a>
+        <div class="account-menu">
+            <div class="account-trigger"><i class="fa fa-user-circle"></i> Account</div>
+            <div class="account-dropdown">
+                <a href="#">Login</a>
+                <a href="#">Signup</a>
+                <a href="#">Profile</a>
+                <a href="#">Logout</a>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- Overlay for Mobile Menu -->
-    <div class="overlay" id="overlay"></div>
+<nav class="desktop-nav">
+<ul class="nav-list">
+<li><a class="nav-link">Home</a></li>
+<li class="dropdown">
+<a class="nav-link">Anime</a>
+<div class="dropdown-content">
+<a>Naruto</a>
+<a>Attack on Titan</a>
+<a>One Piece</a>
+</div>
+</li>
+<li><a class="nav-link">Oversized</a></li>
+<li><a class="nav-link">Offers</a></li>
+</ul>
+</nav>
 
-    <!-- Header Section -->
-    <header>
-        <!-- Desktop Header -->
-        <div class="desktop-header">
-            <div class="logo-container">
-                <img src="images/Pyaara Site Svg.svg" alt="Logo" class="logo" />
-            </div>
+</header>
 
-            <div class="search-container">
-                <form action="search_results.php" method="GET" class="search-form">
-                    <input type="search" name="query" placeholder="Search for products, brands, and more..." class="search-input" required>
-                    <button type="submit" class="search-button">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </form>
-            </div>
-
-            <div class="header-actions">
-                <a href="orders/cart.php" class="header-icon">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>Cart</span>
-                    <span class="cart-count">3</span>
-                </a>
-                
-                <a href="orders/order_history.php" class="header-icon">
-                    <i class="fa-solid fa-box"></i>
-                    <span>Orders</span>
-                </a>
-                
-                <div class="account-menu">
-                    <div class="account-trigger">
-                        <i class="fas fa-user-circle"></i>
-                        <span>Account</span>
-                        <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
-                    </div>
-                    <div class="account-dropdown">
-                        <a href="login.html" id="loginLink">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </a>
-                        <a href="signup.html" id="signupLink">
-                            <i class="fas fa-user-plus"></i> Sign Up
-                        </a>
-                        <a href="orders/search_order.php">
-                            <i class="fas fa-truck"></i> Track Order
-                        </a>
-                        <a href="profile.php" id="profileLink" style="display:none;">
-                            <i class="fas fa-user"></i> My Profile
-                        </a>
-                        <a href="logout.php" id="logoutLink" style="display:none;">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Desktop Navigation -->
-        <nav class="desktop-nav">
-            <div class="nav-container">
-                <ul class="nav-list">
-                    <li><a href="index.php" class="nav-link">Home</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="nav-link">Categories</a>
-                        <div class="dropdown-content">
-                            <a href="orders/anime.php">Anime</a>
-                            <a href="orders/exclusive.php">Exclusive</a>
-                            <a href="orders/womens.php">Women's</a>
-                            <a href="#" style="color: #999;">F1 Racing (Coming Soon)</a>
-                        </div>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="nav-link">Men's</a>
-                        <div class="dropdown-content">
-                            <a href="orders/exclusive.php">Exclusive</a>
-                            <a href="orders/anime.php">Anime</a>
-                            <a href="orders/round.php">Half Sleeves T-shirt</a>
-                            <a href="orders/full.php">Full Sleeves T-shirt</a>
-                            <a href="orders/polo.php">Premium Polo T-shirt</a>
-                        </div>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="nav-link">Women's</a>
-                        <div class="dropdown-content">
-                            <a href="orders/cutie.php">Cutiesssss</a>
-                            <a href="orders/exclusive.php">Exclusive</a>
-                            <a href="orders/classic_women.php">Half Sleeves T-shirt</a>
-                            <a href="orders/Crop_Top.php">Crop Top</a>
-                            <a href="orders/Cropped_Hoodies.php">Cropped Hoodies</a>
-                        </div>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="nav-link">Unisex</a>
-                        <div class="dropdown-content">
-                            <a href="orders/Acid_Washed.php">Acid Washed Oversized Tee</a>
-                            <a href="orders/hoodies.php">Hoodies</a>
-                            <a href="orders/sweatshirt.php">Sweatshirt</a>
-                            <a href="orders/Joggers.php">Unisex Joggers</a>
-                            <a href="orders/Shorts.php">Unisex Zip Pocket Shorts</a>
-                        </div>
-                    </li>
-                    <li><a href="orders/oversized.php" class="nav-link">Oversized</a></li>
-                    <li><a href="orders/anime.php" class="nav-link">Anime</a></li>
-                    <li><a href="orders/offer.php" class="nav-link">Offers</a></li>
-                </ul>
-            </div>
-        </nav>
-
-        <!-- Mobile Header -->
-        <div class="mobile-header">
-            <div class="menu-toggle" id="mobileMenuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            
-            <img src="images/Pyaara Site Svg.svg" alt="Logo" class="mobile-logo" />
-            
-            <div class="mobile-actions">
-                <a href="search_results.php" id="mobileSearchToggle">
-                    <i class="fas fa-search" style="font-size: 20px; color: #333;"></i>
-                </a>
-                <a href="orders/cart.php">
-                    <i class="fas fa-shopping-bag" style="font-size: 20px; color: #333; position: relative;">
-                        <span class="cart-count" style="top: -8px; right: -8px;">3</span>
-                    </i>
-                </a>
-            </div>
-        </div>
-
-        <!-- Mobile Search Bar -->
-        <div class="mobile-search-container" id="mobileSearchContainer">
-            <form action="search_results.php" method="GET" class="search-form">
-                <input type="search" name="query" placeholder="Search products..." class="search-input" required>
-                <button type="submit" class="search-button" style="padding: 0 20px;">
-                    <i class="fa fa-search"></i>
-                </button>
-            </form>
-        </div>
-
-        <!-- Mobile Navigation Sidebar -->
-        <nav class="mobile-nav" id="mobileNav">
-            <ul>
-                <li><a href="index.php">Home <i class="fas fa-chevron-right"></i></a></li>
-                <li class="mobile-dropdown">
-                    <a href="#">Categories <i class="fas fa-chevron-down"></i></a>
-                    <div class="mobile-dropdown-content">
-                        <a href="orders/anime.php">Anime</a>
-                        <a href="orders/exclusive.php">Exclusive</a>
-                        <a href="orders/womens.php">Women's</a>
-                        <a href="#" style="color: #999;">F1 Racing (Coming Soon)</a>
-                    </div>
-                </li>
-                <li class="mobile-dropdown">
-                    <a href="#">Men's <i class="fas fa-chevron-down"></i></a>
-                    <div class="mobile-dropdown-content">
-                        <a href="orders/exclusive.php">Exclusive</a>
-                        <a href="orders/anime.php">Anime</a>
-                        <a href="orders/round.php">Half Sleeves T-shirt</a>
-                        <a href="orders/full.php">Full Sleeves T-shirt</a>
-                        <a href="orders/polo.php">Premium Polo T-shirt</a>
-                    </div>
-                </li>
-                <li class="mobile-dropdown">
-                    <a href="#">Women's <i class="fas fa-chevron-down"></i></a>
-                    <div class="mobile-dropdown-content">
-                        <a href="orders/cutie.php">Cutiesssss</a>
-                        <a href="orders/exclusive.php">Exclusive</a>
-                        <a href="orders/classic_women.php">Half Sleeves T-shirt</a>
-                        <a href="orders/Crop_Top.php">Crop Top</a>
-                        <a href="orders/Cropped_Hoodies.php">Cropped Hoodies</a>
-                    </div>
-                </li>
-                <li><a href="orders/oversized.php">Oversized <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="orders/anime.php">Anime <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="orders/offer.php">Offers <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="orders/order_history.php">My Orders <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="orders/search_order.php">Track Order <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="login.html">Login <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="signup.html">Sign Up <i class="fas fa-chevron-right"></i></a></li>
-            </ul>
-        </nav>
-
-        <!-- Mobile Footer Menu -->
-        <div class="mobile-footer-menu">
-            <a href="#" class="footer-menu-item active" id="mobileMenuToggleFooter">
-                <i class="fas fa-bars"></i>
-                <span>Menu</span>
-            </a>
-            <a href="index.php" class="footer-menu-item">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
-            </a>
-            <a href="orders/cart.php" class="footer-menu-item">
-                <i class="fas fa-shopping-bag"></i>
-                <span>Cart</span>
-            </a>
-            <a href="orders/order_history.php" class="footer-menu-item">
-                <i class="fa-solid fa-box"></i> 
-                <span>Orders</span>
-            </a>
-            <a href="user.php" class="footer-menu-item">
-                <i class="fas fa-user"></i>
-                <span>Account</span>
-            </a>
-        </div>
-    </header>
-
-    <!-- Sample Content for Demo -->
-    <div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
-        <h1 style="font-weight: 600; margin-bottom: 20px; color: #1a1a1a;">Premium Fashion Store</h1>
-        <p style="color: #666; line-height: 1.6; margin-bottom: 30px;">
-            This is a demonstration of the premium red, white, and black header design with Inter font and improved UI/UX. 
-            The header includes a news ticker, search bar, account dropdown, and responsive navigation for both desktop and mobile.
-        </p>
-        <div style="background: white; border-radius: 10px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
-            <h3 style="font-weight: 600; margin-bottom: 15px; color: #D32F2F;">Key Features:</h3>
-            <ul style="color: #666; line-height: 1.8;">
-                <li>Premium red (#D32F2F), white, and black color scheme</li>
-                <li>Inter font family for modern typography</li>
-                <li>Smooth animations and transitions</li>
-                <li>Responsive design for all devices</li>
-                <li>Improved dropdown menus with icons</li>
-                <li>Mobile-first approach with bottom navigation</li>
-                <li>Enhanced visual hierarchy and spacing</li>
-            </ul>
-        </div>
-    </div>
-
-    <script>
-        // Mobile menu toggle
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const mobileMenuToggleFooter = document.getElementById('mobileMenuToggleFooter');
-        const mobileNav = document.getElementById('mobileNav');
-        const overlay = document.getElementById('overlay');
-        const mobileSearchToggle = document.getElementById('mobileSearchToggle');
-        const mobileSearchContainer = document.getElementById('mobileSearchContainer');
-        
-        function toggleMobileMenu() {
-            mobileNav.classList.toggle('active');
-            overlay.classList.toggle('active');
-            mobileMenuToggle.classList.toggle('active');
-            document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
-        }
-        
-        if (mobileMenuToggle) {
-            mobileMenuToggle.addEventListener('click', toggleMobileMenu);
-        }
-        
-        if (mobileMenuToggleFooter) {
-            mobileMenuToggleFooter.addEventListener('click', function(e) {
-                e.preventDefault();
-                toggleMobileMenu();
-            });
-        }
-        
-        // Close mobile menu when clicking overlay
-        overlay.addEventListener('click', toggleMobileMenu);
-        
-        // Mobile search toggle
-        if (mobileSearchToggle && mobileSearchContainer) {
-            mobileSearchToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                mobileSearchContainer.classList.toggle('active');
-            });
-        }
-        
-        // Mobile dropdown toggle
-        const mobileDropdowns = document.querySelectorAll('.mobile-dropdown > a');
-        mobileDropdowns.forEach(dropdown => {
-            dropdown.addEventListener('click', function(e) {
-                e.preventDefault();
-                const icon = this.querySelector('i');
-                const content = this.nextElementSibling;
-                
-                // Toggle active class on the link
-                this.classList.toggle('active');
-                
-                // Toggle icon rotation
-                if (icon.classList.contains('fa-chevron-down')) {
-                    icon.classList.toggle('fa-rotate-180');
-                }
-                
-                // Toggle content visibility
-                content.style.display = content.style.display === 'block' ? 'none' : 'block';
-            });
-        });
-        
-        // Update footer menu active state
-        const footerMenuItems = document.querySelectorAll('.footer-menu-item');
-        footerMenuItems.forEach(item => {
-            item.addEventListener('click', function() {
-                footerMenuItems.forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-        
-        // Check session via cookie
-        fetch('session_check.php')
-            .then(res => res.json())
-            .then(data => {
-                if (data.loggedIn) {
-                    document.getElementById('signupLink').style.display = 'none';
-                    document.getElementById('loginLink').style.display = 'none';
-                    document.getElementById('profileLink').style.display = 'block';
-                    document.getElementById('logoutLink').style.display = 'block';
-                }
-            })
-            .catch(err => console.log('Session check failed:', err));
-            
-        // Update cart count (example - would come from backend)
-        // document.querySelectorAll('.cart-count').forEach(el => {
-        //     el.textContent = '3'; // This would be dynamic from your backend
-        // });
-    </script>
 </body>
 </html>

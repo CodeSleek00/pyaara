@@ -1,145 +1,219 @@
-<!doctype html>
+<?php
+include 'db_connect.php';
+
+/* Fetch 4 random exclusive products */
+$exclusiveProducts = $conn->query("
+    SELECT * FROM products 
+    WHERE page = 'exclusive.php'
+    ORDER BY RAND()
+    LIMIT 4
+");
+?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Fullscreen Anime Intro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pyaara Store | Exclusive Collection</title>
+
+<link rel="icon" type="image/png" href="../images/Pyaara Circle.png">
+<link rel="apple-touch-icon" href="../images/Pyaara Circle.png">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-
-  body{
-    min-height:100vh;
-    font-family:sans-serif;
-    background:#e8f5ff;
-    overflow:hidden;
-  }
-
-  /* Website content (hidden initially) */
-  #site{
-    opacity:0;
-    transform:translateY(20px);
-    transition:.6s ease;
-    text-align:center;
-    padding:3rem 2rem;
-  }
-  #site.show{
-    opacity:1;
-    transform:translateY(0);
-  }
-
-  /* Intro overlay */
-  .intro{
-    position:fixed;
-    inset:0;
-    z-index:99;
-    overflow:hidden;
-    pointer-events:none;
-  }
-
-  /* Clouds container */
-  .clouds{
-    position:absolute;
-    inset:0;
-    z-index:5;
-  }
-  .cloud{
-    position:absolute;
-    width:140vw;
-    height:60vh;
-    left:-20vw;
-    filter:blur(25px);
-    opacity:0;
-    background:radial-gradient(circle,rgba(20,20,25,.95),rgba(10,10,15,.85));
-    border-radius:50%;
-    transition:opacity .6s ease, transform 1.2s ease;
-  }
-  .c1{top:-20vh;}
-  .c2{top:10vh;height:50vh;filter:blur(30px);}
-  
-  .clouds.show .cloud{opacity:1;}
-  .clouds.exit .cloud{
-    opacity:0;
-    transform:translateY(-120vh);
-    transition:1s ease;
-  }
-
-  /* FULLSCREEN ANIME IMAGE */
-  .anime{
-    position:absolute;
-    inset:0;
-    z-index:10;
-    opacity:0;
-    transform:scale(1.1);
-    transition:opacity .7s ease, transform .8s ease;
-  }
-  .anime.show{
-    opacity:1;
-    transform:scale(1);
-  }
-  .anime.hide{
-    opacity:0;
-    transform:scale(0.95);
-  }
-  .anime img{
-    width:100%;
-    height:100%;
-    object-fit:cover;   /* FULL SCREEN IMAGE */
-  }
-</style>
-</head>
-<body>
-
-<!-- Intro Layer -->
-<div class="intro" id="intro">
-    <div class="clouds" id="clouds">
-        <div class="cloud c1"></div>
-        <div class="cloud c2"></div>
-    </div>
-
-    <div class="anime" id="anime">
-        <!-- Replace with your anime image -->
-        <img src="image.png" alt="anime">
-    </div>
-</div>
-
-<!-- Main Website Content -->
-<div id="site">
-    <h1>Welcome to the Website</h1>
-    <p>Your real content appears here after intro animation.</p>
-</div>
-
-<script>
-const clouds = document.getElementById("clouds");
-const anime = document.getElementById("anime");
-const site = document.getElementById("site");
-const intro = document.getElementById("intro");
-
-function startIntro(){
-  
-  // Step 1: Clouds fade-in
-  requestAnimationFrame(()=> clouds.classList.add("show"));
-
-  // Step 2: Show fullscreen anime after cloud appear
-  setTimeout(()=> anime.classList.add("show"), 800);
-
-  // Step 3: Hide anime
-  setTimeout(()=> {
-    anime.classList.remove("show");
-    anime.classList.add("hide");
-  }, 2500);
-
-  // Step 4: Clouds exit
-  setTimeout(()=> clouds.classList.add("exit"), 3000);
-
-  // Step 5: Reveal website
-  setTimeout(()=> {
-    site.classList.add("show");
-    intro.style.display="none";
-  }, 4200);
+:root {
+  --red: #E63946;
+  --yellow: #FFD166;
+  --dark: #2D3436;
+  --light: #F8F9FA;
+  --radius: 10px;
+  --shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 
-document.addEventListener("DOMContentLoaded", startIntro);
-</script>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background: #fff;
+  color: var(--dark);
+}
+
+/* ===== Exclusive Section ===== */
+.exclusive-section {
+  max-width: 1400px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.exclusive-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.exclusive-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.more-btn {
+  color: var(--red);
+  font-weight: 600;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.more-btn:hover {
+  text-decoration: underline;
+}
+
+/* ===== Products Grid ===== */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+}
+
+/* ===== Product Card ===== */
+.product-card {
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+}
+
+/* Image */
+.product-image-container {
+  width: 100%;
+  padding-top: 120%;
+  position: relative;
+  background: #f1f1f1;
+}
+
+.product-image-container img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Discount Badge */
+.discount-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--yellow);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Info */
+.product-info {
+  padding: 16px;
+}
+
+.product-name {
+  font-size: 1rem;
+  font-weight: 600;
+  height: 44px;
+  overflow: hidden;
+}
+
+.price {
+  margin-top: 8px;
+}
+
+.current-price {
+  color: var(--red);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.original-price {
+  margin-left: 6px;
+  text-decoration: line-through;
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<section class="exclusive-section">
+  <div class="exclusive-header">
+    <h2>Exclusive Collection</h2>
+    <a href="exclusive.php" class="more-btn">
+      More Products <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="products-grid">
+    <?php if ($exclusiveProducts && $exclusiveProducts->num_rows > 0): ?>
+      <?php while ($row = $exclusiveProducts->fetch_assoc()): ?>
+        <div class="product-card">
+          <div class="product-image-container">
+            <a href="product_detail.php?id=<?php echo $row['id']; ?>">
+              <img src="uploads/<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
+            </a>
+
+            <?php if ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0): ?>
+              <div class="discount-tag"><?php echo $row['discount_percent']; ?>% OFF</div>
+            <?php endif; ?>
+          </div>
+
+          <div class="product-info">
+            <div class="product-name"><?php echo htmlspecialchars($row['name']); ?></div>
+
+            <div class="price">
+              <?php if ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0): ?>
+                <span class="current-price">₹<?php echo number_format($row['discount_price']); ?></span>
+                <span class="original-price">₹<?php echo number_format($row['original_price']); ?></span>
+              <?php else: ?>
+                <span class="current-price">₹<?php echo number_format($row['original_price']); ?></span>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
+      <?php endwhile; ?>
+    <?php else: ?>
+      <p>No exclusive products found.</p>
+    <?php endif; ?>
+  </div>
+</section>
 
 </body>
 </html>
+
+<?php $conn->close(); ?>
