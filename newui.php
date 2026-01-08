@@ -242,13 +242,9 @@ body {
             </div>
 
             <div class="product-actions">
-              <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-buy">Buy Now</a>
+              <a href="orders/product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-buy">Buy Now</a>
 
-              <form action="add_to_cart.php" method="POST">
-                <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
-                <input type="hidden" name="quantity" value="1">
-                <button type="submit" class="btn btn-cart">Cart</button>
-              </form>
+              
             </div>
 
           </div>
