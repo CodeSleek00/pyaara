@@ -410,14 +410,14 @@ $conn->close();
                         <section class="form-section">
                             <h2 class="section-title"><i class="fas fa-credit-card"></i> Payment Method</h2>
                             <div class="payment-methods">
-                                <label class="payment-option">
+                                <!--<label class="payment-option">
                                     <input type="radio" name="payment_method" value="COD" required checked>
                                     <div class="payment-content">
                                         <i class="fas fa-money-bill-wave"></i>
                                         <span>Cash on Delivery (COD)</span>
                                         <small>Additional ₹<?= COD_FEE ?> fee</small>
                                     </div>
-                                </label>
+                                </label>-->
                                 <label class="payment-option">
                                     <input type="radio" name="payment_method" value="Razorpay" required>
                                     <div class="payment-content">
