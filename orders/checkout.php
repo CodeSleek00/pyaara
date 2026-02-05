@@ -39,8 +39,8 @@ if (!isset($_SESSION['csrf_token'])) {
 // Constants
 define('COD_FEE', 49);
 define('CURRENCY', 'INR');
-define('RAZORPAY_KEY_ID', 'rzp_live_pA6jgjncp78sq7');
-define('RAZORPAY_KEY_SECRET', 'N7INcRU4l61iijQ2sOjL5YTs');
+define('RAZORPAY_KEY_ID', 'rzp_test_SCVeOeMLUaAx1o');
+define('RAZORPAY_KEY_SECRET', 'u2nE8xINsgaWQcpI63hQKUGC');
 
 $user_session_id = session_id();
 
