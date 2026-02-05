@@ -6,11 +6,22 @@ use Razorpay\Api\Errors\SignatureVerificationError;
 
 include 'db_connect.php';
 
-$api = new Api('rzp_test_SCVeOeMLUaAx1o', 'u2nE8xINsgaWQcpI63hQKUGC');
+// --- CONFIGURATION ---
+// Ensure these match EXACTLY with your checkout.php test keys
+$keyId = 'rzp_test_SCVeOeMLUaAx1o'; 
+$keySecret = 'u2nE8xINsgaWQcpI63hQKUGC';
 
-$razorpay_order_id = $_POST['razorpay_order_id'];
-$razorpay_payment_id = $_POST['razorpay_payment_id'];
-$razorpay_signature = $_POST['razorpay_signature'];
+$api = new Api($keyId, $keySecret);
+
+// --- DATA FETCHING ---
+// Hum check kar rahe hain ki data GET se aaya hai ya POST se
+$razorpay_order_id = $_REQUEST['razorpay_order_id'] ?? '';
+$razorpay_payment_id = $_REQUEST['razorpay_payment_id'] ?? '';
+$razorpay_signature = $_REQUEST['razorpay_signature'] ?? '';
+
+if (empty($razorpay_order_id) || empty($razorpay_payment_id) || empty($razorpay_signature)) {
+    die("Error: Razorpay response data missing. Check if the payment was completed.");
+}
 
 $attributes = [
     'razorpay_order_id' => $razorpay_order_id,
@@ -19,77 +30,74 @@ $attributes = [
 ];
 
 try {
+    // 1. Verify Signature
     $api->utility->verifyPaymentSignature($attributes);
 
-    // ✅ Payment is verified
+    // 2. Session Validation
     if (!isset($_SESSION['razorpay_order'])) {
-        die("Order details not found in session.");
+        die("Error: Session expired or Order data not found. Please try again.");
     }
 
     $orderData = $_SESSION['razorpay_order'];
+    $formData = $orderData['post_data']; // checkout.php se save kiya hua data
 
-    // Save order to DB with pincode field included
-    $stmt = $conn->prepare("INSERT INTO orders (order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount, razorpay_payment_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed')");
-    $stmt->bind_param("sssssssds",
+    $conn->begin_transaction();
+
+    // 3. Database Insertion
+    // Check your 'orders' table columns: user_id, order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount, razorpay_payment_id, payment_status
+    $sql = "INSERT INTO orders (user_id, order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount, razorpay_payment_id, payment_status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed')";
+    
+    $stmt = $conn->prepare($sql);
+    $user_id = $_SESSION['user_id'];
+    $payment_method = 'Razorpay';
+
+    $stmt->bind_param("isssssssds",
+        $user_id,
         $orderData['order_id'],
-        $orderData['first_name'],
-        $orderData['last_name'],
-        $orderData['phone_number'],
-        $orderData['shipping_address'],
-        $orderData['pincode'], // ✅ Added pincode
-        $orderData['payment_method'],
+        $formData['first_name'],
+        $formData['last_name'],
+        $formData['phone_number'],
+        $formData['shipping_address'],
+        $formData['pincode'],
+        $payment_method,
         $orderData['total_amount'],
         $razorpay_payment_id
     );
 
     if ($stmt->execute()) {
-        $last_order_id = $conn->insert_id;
+        $db_order_id = $conn->insert_id;
 
-        // Insert order items
+        // 4. Insert Items
         $stmt_items = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
 
         foreach ($orderData['items'] as $item) {
-            $stmt_items->bind_param("iiids", $last_order_id, $item['product_id'], $item['quantity'], $item['price'], $item['size']);
+            $stmt_items->bind_param("iiids", $db_order_id, $item['product_id'], $item['quantity'], $item['price'], $item['size']);
             $stmt_items->execute();
         }
 
-        $stmt_items->close();
+        // 5. Clear Cart
+        $session_id = session_id();
+        $clear_sql = "DELETE FROM cart WHERE user_session_id = ?";
+        $clear_stmt = $conn->prepare($clear_sql);
+        $clear_stmt->bind_param("s", $session_id);
+        $clear_stmt->execute();
 
-        // Clear cart
-        $clear_cart_stmt = $conn->prepare("DELETE FROM cart WHERE user_session_id = ?");
-        $clear_cart_stmt->bind_param("s", session_id());
-        $clear_cart_stmt->execute();
-        $clear_cart_stmt->close();
+        $conn->commit();
 
-        // Clear the razorpay order session data
+        // Success - Clean up and Redirect
         unset($_SESSION['razorpay_order']);
-
-        // Set success message
-        $_SESSION['message'] = "Payment successful! Your Order ID: " . $orderData['order_id'];
-        $_SESSION['message_type'] = "success";
-
-        // ✅ Redirect to thank you page
-        header("Location: thank_you.php?order_id=" . $orderData['order_id']);
+        header("Location: thank_you.php?order_id=" . urlencode($orderData['order_id']));
         exit();
+
     } else {
-        echo "Failed to insert order in DB: " . $stmt->error;
-        exit();
+        throw new Exception("Database Insert Failed: " . $stmt->error);
     }
 
-    $stmt->close();
-
 } catch(SignatureVerificationError $e) {
-    echo "Payment verification failed: " . $e->getMessage();
-    // You might want to redirect to an error page here
-    $_SESSION['message'] = "Payment verification failed. Please contact support.";
-    $_SESSION['message_type'] = "error";
-    header("Location: checkout.php");
-    exit();
+    // Ye tab hota hai jab Secret Key galat ho ya data raste mein badal gaya ho
+    echo "Verification Failed: " . $e->getMessage();
 } catch(Exception $e) {
-    echo "An error occurred: " . $e->getMessage();
-    $_SESSION['message'] = "An error occurred while processing payment. Please contact support.";
-    $_SESSION['message_type'] = "error";
-    header("Location: checkout.php");
-    exit();
+    $conn->rollback();
+    echo "General Error: " . $e->getMessage();
 }
-?>
