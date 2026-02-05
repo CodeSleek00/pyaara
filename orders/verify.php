@@ -5,8 +5,8 @@ use Razorpay\Api\Api;
 session_start();
 
 // Replace with your actual Razorpay credentials
-$key_id = 'rzp_test_SCVeOeMLUaAx1o';
-$key_secret = 'u2nE8xINsgaWQcpI63hQKUGC';
+$key_id = 'rzp_live_pA6jgjncp78sq7';
+$key_secret = 'N7INcRU4l61iijQ2sOjL5YTs';
 
 $api = new Api($key_id, $key_secret);
 

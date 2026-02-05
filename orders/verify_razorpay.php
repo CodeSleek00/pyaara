@@ -8,8 +8,8 @@ include 'db_connect.php';
 
 // --- CONFIGURATION ---
 // Ensure these match EXACTLY with your checkout.php test keys
-$keyId = 'rzp_test_SCVeOeMLUaAx1o'; 
-$keySecret = 'u2nE8xINsgaWQcpI63hQKUGC';
+$keyId = 'rzp_live_pA6jgjncp78sq7'; 
+$keySecret = 'N7INcRU4l61iijQ2sOjL5YTs';
 
 $api = new Api($keyId, $keySecret);
 
