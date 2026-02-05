@@ -44,43 +44,47 @@ define('RAZORPAY_KEY_SECRET', 'N7INcRU4l61iijQ2sOjL5YTs');
 
 $user_session_id = session_id();
 
-// Initialize variables
+// --- 1. FETCH CART DATA ---
 $checkout_items = [];
 $total_checkout_amount = 0;
 
-// Fetch Cart Items First (Required for both GET and POST)
-$sql_cart_items = "SELECT c.product_id, c.quantity, c.size, p.name, p.image, p.original_price, p.discount_price 
-                   FROM cart c JOIN products p ON c.product_id = p.id 
-                   WHERE c.user_session_id = ?";
-$stmt_cart = $conn->prepare($sql_cart_items);
-$stmt_cart->bind_param("s", $user_session_id);
-$stmt_cart->execute();
-$result_cart = $stmt_cart->get_result();
+$sql = "SELECT c.product_id, c.quantity, c.size, p.name, p.image, p.original_price, p.discount_price
+        FROM cart c
+        JOIN products p ON c.product_id = p.id
+        WHERE c.user_session_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $user_session_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
-while ($item = $result_cart->fetch_assoc()) {
-    $price = ($item['discount_price'] < $item['original_price'] && $item['discount_price'] > 0) ? $item['discount_price'] : $item['original_price'];
-    $item['price'] = $price;
-    $checkout_items[] = $item;
-    $total_checkout_amount += ($price * $item['quantity']);
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $price_to_use = ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0) 
+                        ? $row['discount_price'] : $row['original_price'];
+        $row['price'] = $price_to_use;
+        $checkout_items[] = $row;
+        $total_checkout_amount += ($price_to_use * $row['quantity']);
+    }
+} else {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        $_SESSION['message'] = "Your cart is empty.";
+        header("Location: index.php");
+        exit();
+    }
 }
-$stmt_cart->close();
+$stmt->close();
 
-if (empty($checkout_items)) {
-    $_SESSION['message'] = "Your cart is empty.";
-    header("Location: index.php");
-    exit();
-}
-
-// Process form submission
+// --- 2. PROCESS POST REQUEST ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        die("Security token mismatch.");
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Security token mismatch.']);
+        exit();
     }
 
     $payment_method = $_POST['payment_method'];
-    $final_calculated_total = $total_checkout_amount + ($payment_method === 'COD' ? COD_FEE : 0);
-
-    // Sanitize Inputs
+    $calculated_total = $total_checkout_amount + ($payment_method === 'COD' ? COD_FEE : 0);
+    
     $first_name = $conn->real_escape_string(trim($_POST['first_name']));
     $last_name = $conn->real_escape_string(trim($_POST['last_name']));
     $phone_number = $conn->real_escape_string(trim($_POST['phone_number']));
@@ -94,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $api = new Api(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET);
             $razorpay_order = $api->order->create([
                 'receipt' => $order_id,
-                'amount' => round($final_calculated_total * 100),
+                'amount' => round($calculated_total * 100),
                 'currency' => CURRENCY,
                 'payment_capture' => 1
             ]);
@@ -102,144 +106,251 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['razorpay_order'] = [
                 'order_id' => $order_id,
                 'razorpay_order_id' => $razorpay_order['id'],
-                'details' => $_POST,
-                'total_amount' => $final_calculated_total,
-                'items' => $checkout_items
+                'post_data' => $_POST,
+                'items' => $checkout_items,
+                'total_amount' => $calculated_total
             ];
 
             header('Content-Type: application/json');
             echo json_encode([
                 'status' => 'razorpay',
                 'order_id' => $razorpay_order['id'],
-                'amount' => round($final_calculated_total * 100),
+                'amount' => round($calculated_total * 100),
                 'currency' => CURRENCY,
                 'key' => RAZORPAY_KEY_ID,
-                'prefill' => ['name' => "$first_name $last_name", 'contact' => $phone_number]
+                'name' => 'Pyaara',
+                'prefill' => ['name' => $first_name . ' ' . $last_name, 'contact' => $phone_number]
             ]);
-            exit();
+            exit(); 
         } catch (Exception $e) {
-            http_response_code(500);
+            header('Content-Type: application/json');
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
             exit();
         }
     }
 
-    // COD Logic
-    $conn->begin_transaction();
-    try {
-        $stmt = $conn->prepare("INSERT INTO orders (user_id, order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
-        $stmt->bind_param("isssssssd", $_SESSION['user_id'], $order_id, $first_name, $last_name, $phone_number, $shipping_address, $pincode, $payment_method, $final_calculated_total);
-        $stmt->execute();
-        $db_order_id = $conn->insert_id;
+    /* // --- COD PROCESSING BLOCK (UNCOMMENT TO ENABLE) ---
+    if ($payment_method === 'COD') {
+        $conn->begin_transaction();
+        try {
+            $stmt = $conn->prepare("INSERT INTO orders (user_id, order_id, first_name, last_name, phone_number, shipping_address, pincode, payment_method, total_amount, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+            $stmt->bind_param("isssssssd", $_SESSION['user_id'], $order_id, $first_name, $last_name, $phone_number, $shipping_address, $pincode, $payment_method, $calculated_total);
+            $stmt->execute();
+            $last_id = $conn->insert_id;
 
-        $stmt_items = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
-        foreach ($checkout_items as $item) {
-            $stmt_items->bind_param("iiids", $db_order_id, $item['product_id'], $item['quantity'], $item['price'], $item['size']);
-            $stmt_items->execute();
+            $stmt_items = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, size) VALUES (?, ?, ?, ?, ?)");
+            foreach ($checkout_items as $item) {
+                $stmt_items->bind_param("iiids", $last_id, $item['product_id'], $item['quantity'], $item['price'], $item['size']);
+                $stmt_items->execute();
+            }
+
+            $conn->prepare("DELETE FROM cart WHERE user_session_id = ?")->execute([$user_session_id]);
+            $conn->commit();
+            header("Location: thank_you.php?order_id=" . urlencode($order_id));
+            exit();
+        } catch (Exception $e) {
+            $conn->rollback();
+            $_SESSION['message'] = "Order Failed: " . $e->getMessage();
+            header("Location: checkout.php");
+            exit();
         }
-
-        $conn->prepare("DELETE FROM cart WHERE user_session_id = ?")->execute([$user_session_id]);
-        $conn->commit();
-        header("Location: thank_you.php?order_id=" . $order_id);
-        exit();
-    } catch (Exception $e) {
-        $conn->rollback();
-        die("Order Failed: " . $e->getMessage());
     }
+    */
 }
+
+$message = $_SESSION['message'] ?? '';
+$message_type = $_SESSION['message_type'] ?? 'success';
+unset($_SESSION['message'], $_SESSION['message_type']);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Secure Checkout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | Pyaara</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="checkout.css">
+    <link rel="stylesheet" href="checkout.css?v=<?= time() ?>">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <style>
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; text-align: center; }
-    </style>
 </head>
 <body>
     <div class="container">
-        <form action="checkout.php" method="post" id="checkoutForm">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-            
-            <input type="text" name="first_name" placeholder="First Name" required>
-            <input type="text" name="last_name" placeholder="Last Name" required>
-            <input type="tel" name="phone_number" placeholder="Phone" required pattern="[0-9]{10}">
-            <textarea name="shipping_address" placeholder="Address" required></textarea>
-            <input type="text" name="pincode" placeholder="Pincode" required pattern="[0-9]{6}">
-
-            <div class="payment-methods">
-                <label><input type="radio" name="payment_method" value="COD" checked> Cash on Delivery</label>
-                <label><input type="radio" name="payment_method" value="Razorpay"> Online Payment</label>
+        <?php if ($message): ?>
+            <div class="alert alert-<?= $message_type ?>">
+                <?= htmlspecialchars($message) ?>
+                <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
             </div>
-
-            <div class="summary">
-                <p>Subtotal: ₹<span id="displaySubtotal"><?= $total_checkout_amount ?></span></p>
-                <p id="codFeeRow">COD Fee: ₹<?= COD_FEE ?></p>
-                <h3>Total: ₹<span id="displayTotal"><?= $total_checkout_amount + COD_FEE ?></span></h3>
+        <?php endif; ?>
+        
+        <header class="checkout-header">
+            <div class="logo-container">
+                <a href="../index.php"><img src="../images/Pyaara Circle.png" alt="Logo" class="logo"></a>
             </div>
+            <div class="checkout-progress">
+                <div class="step active"><span>1</span> Cart</div>
+                <div class="step active"><span>2</span> Details</div>
+                <div class="step"><span>3</span> Payment</div>
+                <div class="step"><span>4</span> Complete</div>
+            </div>
+        </header>
 
-            <button type="submit" class="btn-submit">Place Order</button>
-        </form>
+        <main class="checkout-main">
+            <div class="checkout-container">
+                <div class="checkout-form-container">
+                    <h1 class="form-title"><i class="fas fa-shipping-fast"></i> Shipping & Payment</h1>
+                    <form action="checkout.php" method="post" id="checkoutForm" class="checkout-form">
+                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                        
+                        <section class="form-section">
+                            <h2 class="section-title"><i class="fas fa-user"></i> Personal Information</h2>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name*</label>
+                                    <input type="text" name="first_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name*</label>
+                                    <input type="text" name="last_name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number*</label>
+                                <input type="tel" name="phone_number" required pattern="[0-9]{10}">
+                            </div>
+                        </section>
+
+                        <section class="form-section">
+                            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Shipping Address</h2>
+                            <div class="form-group">
+                                <label>Full Address*</label>
+                                <textarea name="shipping_address" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Pincode*</label>
+                                <input type="text" name="pincode" required pattern="[0-9]{6}">
+                            </div>
+                        </section>
+
+                        <section class="form-section">
+                            <h2 class="section-title"><i class="fas fa-credit-card"></i> Payment Method</h2>
+                            <div class="payment-methods">
+                                <label class="payment-option">
+                                    <input type="radio" name="payment_method" value="Razorpay" checked>
+                                    <div class="payment-content">
+                                        <i class="fas fa-wallet"></i>
+                                        <span>Online Payment</span>
+                                        <small>Card/UPI/NetBanking</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </section>
+
+                        <div class="form-actions">
+                            <a href="cart.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
+                            <button type="submit" class="btn-submit" id="placeOrderBtn">
+                                <span class="btn-text">Pay Now</span>
+                                <span class="btn-icon"><i class="fas fa-lock"></i></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="order-summary-container">
+                    <div class="order-summary">
+                        <h2 class="summary-title"><i class="fas fa-receipt"></i> Summary</h2>
+                        <div class="order-items">
+                            <?php foreach ($checkout_items as $item): ?>
+                            <div class="order-item">
+                                <img src="uploads/<?= htmlspecialchars($item['image']) ?>" class="item-image">
+                                <div class="item-details">
+                                    <h3 class="item-name"><?= htmlspecialchars($item['name']) ?></h3>
+                                    <small>Size: <?= htmlspecialchars($item['size'] ?? 'N/A') ?> | Qty: <?= $item['quantity'] ?></small>
+                                </div>
+                                <div class="item-price">₹<?= number_format($item['price'] * $item['quantity'], 2) ?></div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="order-totals">
+                            <div class="total-row"><span>Subtotal:</span><span>₹<?= number_format($total_checkout_amount, 2) ?></span></div>
+                            <div class="total-row" id="codFeeRow" style="display:none;"><span>COD Fee:</span><span>₹<?= COD_FEE ?></span></div>
+                            <div class="total-row grand-total"><span>Total:</span><span id="totalDisplay">₹<?= number_format($total_checkout_amount, 2) ?></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div class="modal-overlay" id="paymentProcessing">
-        <div class="modal-content"><h3>Processing...</h3></div>
+    <div class="modal-overlay" id="paymentProcessing" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; color:white; flex-direction:column;">
+        <div class="spinner" style="border:4px solid #f3f3f3; border-top:4px solid #3498db; border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite;"></div>
+        <p style="margin-top:15px;">Securely processing payment...</p>
     </div>
+
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
 
     <script>
         const baseTotal = <?= $total_checkout_amount ?>;
         const codFee = <?= COD_FEE ?>;
         const form = document.getElementById('checkoutForm');
+        const processingModal = document.getElementById('paymentProcessing');
 
-        function updateTotals() {
-            const method = document.querySelector('input[name="payment_method"]:checked').value;
+        function updateDisplay() {
+            const selected = document.querySelector('input[name="payment_method"]:checked');
+            if(!selected) return;
+            
+            const method = selected.value;
             const feeRow = document.getElementById('codFeeRow');
-            const totalDisp = document.getElementById('displayTotal');
+            const totalDisp = document.getElementById('totalDisplay');
             
             if (method === 'COD') {
-                feeRow.style.display = 'block';
-                totalDisp.textContent = (baseTotal + codFee).toFixed(2);
+                feeRow.style.display = 'flex';
+                totalDisp.textContent = '₹' + (baseTotal + codFee).toFixed(2);
             } else {
                 feeRow.style.display = 'none';
-                totalDisp.textContent = baseTotal.toFixed(2);
+                totalDisp.textContent = '₹' + baseTotal.toFixed(2);
             }
         }
 
-        document.querySelectorAll('input[name="payment_method"]').forEach(r => r.addEventListener('change', updateTotals));
+        document.querySelectorAll('input[name="payment_method"]').forEach(r => r.addEventListener('change', updateDisplay));
+        updateDisplay();
 
-        form.addEventListener('submit', async (e) => {
-            const method = document.querySelector('input[name="payment_method"]:checked').value;
-            if (method === 'COD') return; // Allow normal submission
+        form.addEventListener('submit', async function(e) {
+            const selected = document.querySelector('input[name="payment_method"]:checked');
+            if(!selected) { alert("Please select a payment method"); e.preventDefault(); return; }
+
+            const method = selected.value;
+            if (method === 'COD') return; // Submit normally if uncommented in HTML
 
             e.preventDefault();
-            document.getElementById('paymentProcessing').style.display = 'flex';
+            processingModal.style.display = 'flex';
 
             try {
-                const formData = new FormData(form);
-                const response = await fetch('checkout.php', { method: 'POST', body: formData });
+                const response = await fetch('checkout.php', {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {'Accept': 'application/json'}
+                });
+                
                 const data = await response.json();
-
                 if (data.status === 'razorpay') {
                     const options = {
-                        "key": data.key,
-                        "amount": data.amount,
-                        "order_id": data.order_id,
-                        "handler": function (res) {
-                            window.location.href = `verify_razorpay.php?pay_id=${res.razorpay_payment_id}&ord_id=${res.razorpay_order_id}&sig=${res.razorpay_signature}`;
-                        }
+                        key: data.key,
+                        amount: data.amount,
+                        order_id: data.order_id,
+                        name: "Pyaara",
+                        handler: function(res) {
+                            window.location.href = `verify_razorpay.php?razorpay_payment_id=${res.razorpay_payment_id}&razorpay_order_id=${res.razorpay_order_id}&razorpay_signature=${res.razorpay_signature}`;
+                        },
+                        modal: { ondismiss: function() { processingModal.style.display = 'none'; } }
                     };
-                    const rzp = new Razorpay(options);
-                    rzp.open();
+                    new Razorpay(options).open();
+                } else {
+                    alert(data.message || "Error starting payment");
+                    processingModal.style.display = 'none';
                 }
             } catch (err) {
-                alert("Payment Error. Please try again.");
-            } finally {
-                document.getElementById('paymentProcessing').style.display = 'none';
+                console.error(err);
+                processingModal.style.display = 'none';
             }
         });
     </script>
