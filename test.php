@@ -7,7 +7,7 @@ include 'db.php';
 /* FETCH RANDOM 5 PRODUCTS */
 
 $exclusiveProducts = $conn->query("
-SELECT id,image,name 
+SELECT id,image,name,original_price,discount_price 
 FROM products 
 WHERE page='exclusive.php'
 ORDER BY RAND()
@@ -22,7 +22,7 @@ LIMIT 5
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Exclusive Animation</title>
+<title>Exclusive Products</title>
 
 <style>
 
@@ -32,11 +32,11 @@ LIMIT 5
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial;
 }
 
 body{
-background:#f5f7fb;
+font-family:Arial, Helvetica, sans-serif;
+background:#fafafa;
 overflow-x:hidden;
 }
 
@@ -56,8 +56,8 @@ z-index:9999;
 .spinner{
 width:50px;
 height:50px;
-border:5px solid #eee;
-border-top:5px solid #2563eb;
+border:4px solid #e5e7eb;
+border-top:4px solid #111827;
 border-radius:50%;
 animation:spin 1s linear infinite;
 }
@@ -70,17 +70,14 @@ animation:spin 1s linear infinite;
 
 #main{
 display:none;
-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
+padding-top:60px;
 }
 
 /* CARD CONTAINER */
 
 .cards{
 position:relative;
-width:90%;
+width:100%;
 height:340px;
 display:flex;
 align-items:center;
@@ -91,16 +88,17 @@ justify-content:center;
 
 .card{
 position:absolute;
-width:220px;
+width:250px;
 height:280px;
-border-radius:14px;
+border-radius:10px;
 overflow:hidden;
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
+
+background:#fff;
 
 transform:translateY(400px);
 opacity:0;
 
-transition:transform 1s ease, opacity 1s ease;
+transition:all 1s ease;
 cursor:pointer;
 }
 
@@ -110,6 +108,50 @@ height:100%;
 object-fit:cover;
 }
 
+/* PRICE OVERLAY */
+
+.card-info{
+position:absolute;
+bottom:0;
+left:0;
+right:0;
+
+padding:10px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+background:linear-gradient(
+to top,
+rgba(0,0,0,0.75),
+rgba(0,0,0,0.45),
+rgba(0,0,0,0)
+);
+
+color:white;
+}
+
+.price{
+font-weight:700;
+font-size:14px;
+}
+
+.price .old{
+text-decoration:line-through;
+opacity:0.7;
+margin-left:6px;
+}
+
+.buy-btn{
+background:white;
+color:black;
+padding:5px 10px;
+border-radius:4px;
+font-size:12px;
+font-weight:600;
+}
+
 /* STEP 1 */
 
 .cards.show .card{
@@ -117,28 +159,37 @@ transform:translateY(0);
 opacity:1;
 }
 
-/* STEP 2 SPREAD */
+/* STEP 2 DESKTOP SPREAD */
 
-.cards.spread .card:nth-child(1){transform:translate(-450px,0);}
-.cards.spread .card:nth-child(2){transform:translate(-220px,0);}
+.cards.spread .card:nth-child(1){transform:translate(-520px,0);}
+.cards.spread .card:nth-child(2){transform:translate(-260px,0);}
 .cards.spread .card:nth-child(3){transform:translate(0,0);}
-.cards.spread .card:nth-child(4){transform:translate(220px,0);}
-.cards.spread .card:nth-child(5){transform:translate(450px,0);}
+.cards.spread .card:nth-child(4){transform:translate(260px,0);}
+.cards.spread .card:nth-child(5){transform:translate(520px,0);}
 
-/* RESPONSIVE */
+/* MOBILE */
 
 @media(max-width:768px){
 
-.card{
-width:150px;
-height:200px;
+.cards{
+display:flex;
+overflow-x:auto;
+scroll-snap-type:x mandatory;
+gap:16px;
+padding:0 16px;
+height:auto;
 }
 
-.cards.spread .card:nth-child(1){transform:translate(-200px,0);}
-.cards.spread .card:nth-child(2){transform:translate(-100px,0);}
-.cards.spread .card:nth-child(3){transform:translate(0,0);}
-.cards.spread .card:nth-child(4){transform:translate(100px,0);}
-.cards.spread .card:nth-child(5){transform:translate(200px,0);}
+.card{
+position:relative;
+flex:0 0 85%;
+height:240px;
+
+transform:none !important;
+opacity:1 !important;
+
+scroll-snap-align:center;
+}
 
 }
 
@@ -161,28 +212,51 @@ height:200px;
 
 <?php
 
-/* IF DATABASE PRODUCTS EXIST */
-
 if($exclusiveProducts && $exclusiveProducts->num_rows>0){
 
 while($row=$exclusiveProducts->fetch_assoc()){
 
+$display_price = ($row['discount_price'] < $row['original_price'] && $row['discount_price'] > 0)
+? $row['discount_price']
+: $row['original_price'];
+
 echo '<a href="orders/product_detail.php?id='.$row['id'].'" class="card">
-<img src="orders/uploads/'.htmlspecialchars($row['image']).'">
+
+<img src="orders/uploads/'.htmlspecialchars($row['image']).'" alt="'.htmlspecialchars($row['name']).'">
+
+<div class="card-info">
+
+<div class="price">
+₹'.number_format($display_price).'
+'.($display_price < $row['original_price'] ? '<span class="old">₹'.number_format($row['original_price']).'</span>' : '').'
+</div>
+
+<span class="buy-btn">Buy</span>
+
+</div>
+
 </a>';
 
 }
 
 }
 
-/* DEMO IMAGES IF DATABASE EMPTY */
-
 else{
 
 for($i=1;$i<=5;$i++){
 
 echo '<a href="#" class="card">
+
 <img src="https://picsum.photos/300/400?random='.$i.'">
+
+<div class="card-info">
+
+<div class="price">₹499</div>
+
+<span class="buy-btn">Buy</span>
+
+</div>
+
 </a>';
 
 }
@@ -197,14 +271,14 @@ echo '<a href="#" class="card">
 
 <script>
 
-/* LOADER + ANIMATION */
+/* LOADER */
 
 document.addEventListener("DOMContentLoaded",function(){
 
 setTimeout(function(){
 
 document.getElementById("loader").style.display="none";
-document.getElementById("main").style.display="flex";
+document.getElementById("main").style.display="block";
 
 const cards=document.getElementById("cards");
 
@@ -224,8 +298,38 @@ cards.classList.add("spread");
 
 });
 
+/* MOBILE AUTO CAROUSEL */
+
+function startMobileCarousel(){
+
+if(window.innerWidth <= 768){
+
+const container=document.querySelector(".cards");
+
+let scrollAmount=0;
+
+setInterval(()=>{
+
+scrollAmount+=container.offsetWidth*0.85+16;
+
+if(scrollAmount>=container.scrollWidth){
+scrollAmount=0;
+}
+
+container.scrollTo({
+left:scrollAmount,
+behavior:"smooth"
+});
+
+},3000);
+
+}
+
+}
+
+startMobileCarousel();
+
 </script>
 
 </body>
 </html>
-```
