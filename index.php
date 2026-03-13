@@ -72,7 +72,7 @@ $exclusiveProducts = $conn->query("
         }
         @media (max-width:770px) {
             .mobile-header-logo-only {
-                display: flex; justify-content: center; align-items: center; padding: 0px; position: relative;"
+                display: flex; justify-content: center; align-items: center; padding: 0px; position: relative;
             }
             
         }
