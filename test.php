@@ -9,7 +9,7 @@ include 'db.php';
 $exclusiveProducts = $conn->query("
 SELECT id,image,name 
 FROM products 
-WHERE page='exclusive'
+WHERE page='exclusive.php'
 ORDER BY RAND()
 LIMIT 5
 ");
