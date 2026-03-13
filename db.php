@@ -1,5 +1,5 @@
 <?php
-$host = "178.16.136.97";
+$host = "152.58.129.160";
 $user = "u298112699_Anant";
 $pass = "Pyaara_store15";
 $db = "u298112699_pyaara_store_A";
