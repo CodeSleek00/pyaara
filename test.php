@@ -1,7 +1,10 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors',1);
+
 include 'db.php';
 
-/* ================= FETCH RANDOM 5 PRODUCTS ================= */
+/* FETCH RANDOM 5 PRODUCTS */
 
 $exclusiveProducts = $conn->query("
 SELECT id,image,name 
@@ -10,7 +13,6 @@ WHERE page='exclusive'
 ORDER BY RAND()
 LIMIT 5
 ");
-
 ?>
 
 <!DOCTYPE html>
@@ -20,11 +22,11 @@ LIMIT 5
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Exclusive Collection</title>
+<title>Exclusive Animation</title>
 
 <style>
 
-/* ================= GLOBAL ================= */
+/* GLOBAL */
 
 *{
 margin:0;
@@ -35,10 +37,10 @@ font-family:Arial;
 
 body{
 background:#f5f7fb;
-overflow:hidden;
+overflow-x:hidden;
 }
 
-/* ================= LOADER ================= */
+/* LOADER */
 
 #loader{
 position:fixed;
@@ -48,7 +50,7 @@ background:white;
 display:flex;
 align-items:center;
 justify-content:center;
-z-index:999;
+z-index:9999;
 }
 
 .spinner{
@@ -64,7 +66,7 @@ animation:spin 1s linear infinite;
 100%{transform:rotate(360deg);}
 }
 
-/* ================= MAIN ================= */
+/* MAIN */
 
 #main{
 display:none;
@@ -74,24 +76,24 @@ align-items:center;
 justify-content:center;
 }
 
-/* ================= CARD CONTAINER ================= */
+/* CARD CONTAINER */
 
 .cards{
 position:relative;
 width:90%;
-height:320px;
+height:340px;
 display:flex;
 align-items:center;
 justify-content:center;
 }
 
-/* ================= PRODUCT CARD ================= */
+/* CARD */
 
 .card{
 position:absolute;
 width:220px;
 height:280px;
-border-radius:12px;
+border-radius:14px;
 overflow:hidden;
 box-shadow:0 10px 25px rgba(0,0,0,0.15);
 
@@ -99,6 +101,7 @@ transform:translateY(400px);
 opacity:0;
 
 transition:transform 1s ease, opacity 1s ease;
+cursor:pointer;
 }
 
 .card img{
@@ -107,14 +110,14 @@ height:100%;
 object-fit:cover;
 }
 
-/* ================= STEP 1: COME FROM BOTTOM ================= */
+/* STEP 1 */
 
 .cards.show .card{
 transform:translateY(0);
 opacity:1;
 }
 
-/* ================= STEP 2: SPREAD HORIZONTALLY ================= */
+/* STEP 2 SPREAD */
 
 .cards.spread .card:nth-child(1){transform:translate(-450px,0);}
 .cards.spread .card:nth-child(2){transform:translate(-220px,0);}
@@ -122,7 +125,7 @@ opacity:1;
 .cards.spread .card:nth-child(4){transform:translate(220px,0);}
 .cards.spread .card:nth-child(5){transform:translate(450px,0);}
 
-/* ================= RESPONSIVE ================= */
+/* RESPONSIVE */
 
 @media(max-width:768px){
 
@@ -144,35 +147,49 @@ height:200px;
 
 <body>
 
-<!-- ================= LOADER ================= -->
+<!-- LOADER -->
 
 <div id="loader">
 <div class="spinner"></div>
 </div>
 
-<!-- ================= MAIN ================= -->
+<!-- MAIN -->
 
 <div id="main">
 
 <div class="cards" id="cards">
 
-<?php if ($exclusiveProducts && $exclusiveProducts->num_rows > 0): ?>
+<?php
 
-<?php while ($row = $exclusiveProducts->fetch_assoc()): ?>
+/* IF DATABASE PRODUCTS EXIST */
 
-<a href="orders/product_detail.php?id=<?php echo $row['id']; ?>" class="card">
+if($exclusiveProducts && $exclusiveProducts->num_rows>0){
 
-<img
-src="orders/uploads/<?php echo htmlspecialchars($row['image']); ?>"
-alt="<?php echo htmlspecialchars($row['name']); ?>"
-loading="lazy"
->
+while($row=$exclusiveProducts->fetch_assoc()){
 
-</a>
+echo '<a href="orders/product_detail.php?id='.$row['id'].'" class="card">
+<img src="orders/uploads/'.htmlspecialchars($row['image']).'">
+</a>';
 
-<?php endwhile; ?>
+}
 
-<?php endif; ?>
+}
+
+/* DEMO IMAGES IF DATABASE EMPTY */
+
+else{
+
+for($i=1;$i<=5;$i++){
+
+echo '<a href="#" class="card">
+<img src="https://picsum.photos/300/400?random='.$i.'">
+</a>';
+
+}
+
+}
+
+?>
 
 </div>
 
@@ -180,9 +197,9 @@ loading="lazy"
 
 <script>
 
-/* ================= LOADER ================= */
+/* LOADER + ANIMATION */
 
-window.onload=function(){
+document.addEventListener("DOMContentLoaded",function(){
 
 setTimeout(function(){
 
@@ -191,21 +208,21 @@ document.getElementById("main").style.display="flex";
 
 const cards=document.getElementById("cards");
 
-/* cards rise from bottom */
+/* STEP 1 */
 
 setTimeout(()=>{
 cards.classList.add("show");
-},200);
+},100);
 
-/* cards spread horizontally */
+/* STEP 2 */
 
 setTimeout(()=>{
 cards.classList.add("spread");
-},1500);
+},1400);
 
 },2000);
 
-}
+});
 
 </script>
 
