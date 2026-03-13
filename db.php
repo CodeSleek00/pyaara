@@ -1,12 +1,27 @@
 <?php
-$host = "178.16.136.97";
-$user = "u298112699_Anant";
-$pass = "Pyaara_store15";
-$db = "u298112699_pyaara_store_A";
+
+if ($_SERVER['SERVER_NAME'] == 'localhost') {
+
+    // LOCAL DATABASE
+    $host = "localhost";
+    $user = "root";
+    $pass = "";
+    $db   = "pyaara_store";
+
+} else {
+
+    // LIVE HOSTINGER DATABASE
+    $host = "localhost";
+    $user = "u298112699_Anant";
+    $pass = "Pyaara_store15";
+    $db   = "u298112699_pyaara_store_A";
+
+}
 
 $conn = new mysqli($host, $user, $pass, $db);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
 ?>
