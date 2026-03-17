@@ -17,142 +17,239 @@ $animeProducts = $conn->query("
 
 /* ANIME SECTION - LIGHT THEME */
 .anime-section {
-  padding: 70px 20px;
+  padding: 80px 20px;
   background: linear-gradient(135deg, #fff9f0 0%, #fff5e6 100%);
   font-family: 'Poppins', sans-serif;
   position: relative;
   overflow: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
-/* Anime Decorative Elements */
-.anime-section::before {
-  content: '';
+.anime-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Decorative Elements */
+.anime-glow {
   position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(255, 230, 0, 0.1) 0%, transparent 70%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.08) 0%, transparent 70%);
   border-radius: 50%;
+  top: -200px;
+  right: -200px;
+  animation: glowPulse 8s ease-in-out infinite;
   z-index: 0;
 }
 
-.anime-section::after {
-  content: '';
+.anime-glow-2 {
   position: absolute;
-  bottom: -50px;
-  left: -50px;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(232, 0, 61, 0.08) 0%, transparent 70%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(232, 0, 61, 0.05) 0%, transparent 70%);
   border-radius: 50%;
+  bottom: -100px;
+  left: -100px;
+  animation: glowPulse 10s ease-in-out infinite reverse;
   z-index: 0;
 }
 
-/* Speed Lines Effect */
+@keyframes glowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* Floating Particles - Improved */
+.anime-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffd700;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0;
+  animation: floatParticleImproved 12s infinite linear;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.anime-particle:nth-child(2n) {
+  background: #e8003d;
+  width: 12px;
+  height: 12px;
+  animation-duration: 15s;
+}
+
+.anime-particle:nth-child(3n) {
+  background: #ff8c00;
+  width: 6px;
+  height: 6px;
+  animation-duration: 10s;
+}
+
+@keyframes floatParticleImproved {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Speed Lines Effect - Improved */
 .speed-lines-anime {
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
     90deg,
     transparent,
-    transparent 20px,
-    rgba(255, 230, 0, 0.03) 20px,
-    rgba(232, 0, 61, 0.03) 25px
+    transparent 25px,
+    rgba(255, 215, 0, 0.02) 25px,
+    rgba(232, 0, 61, 0.02) 30px
   );
   pointer-events: none;
   z-index: 1;
+  animation: speedLinesShift 20s linear infinite;
 }
 
-/* Floating Anime Particles */
-.anime-particle {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: #ffd700;
-  border-radius: 50%;
-  filter: blur(1px);
-  opacity: 0.5;
-  animation: floatParticle 15s infinite linear;
-  z-index: 1;
+@keyframes speedLinesShift {
+  0% { background-position: 0 0; }
+  100% { background-position: 100px 0; }
 }
 
-@keyframes floatParticle {
-  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.5; }
-  90% { opacity: 0.5; }
-  100% { transform: translateY(-100vh) translateX(100px) rotate(360deg); opacity: 0; }
-}
-
-/* SECTION TITLE - ANIME STYLE */
+/* SECTION TITLE - WITH APPEAR ANIMATION */
 .section-title-wrapper {
   position: relative;
   z-index: 5;
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 60px;
+  animation: titleAppear 1s ease forwards;
+}
+
+@keyframes titleAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .section-subtitle {
   font-family: 'Montserrat', sans-serif;
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: 4px;
+  letter-spacing: 6px;
   text-transform: uppercase;
   color: #e8003d;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   display: inline-block;
-  padding: 5px 15px;
+  padding: 8px 20px;
   background: rgba(232, 0, 61, 0.1);
-  border-radius: 30px;
+  border-radius: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-subtitle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+  animation: subtitleShine 3s infinite;
+}
+
+@keyframes subtitleShine {
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 .section-title {
-  font-size: 42px;
+  font-size: 48px;
   font-weight: 800;
   color: #1a1a2e;
-  margin: 0 0 10px;
+  margin: 0 0 15px;
   font-family: 'Montserrat', sans-serif;
   text-transform: uppercase;
   position: relative;
   display: inline-block;
+  letter-spacing: 2px;
 }
 
 .section-title span {
   color: #e8003d;
   position: relative;
   display: inline-block;
+  animation: titleGlow 2s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% { text-shadow: 0 0 10px rgba(232, 0, 61, 0.3); }
+  50% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
 }
 
 .section-title span::after {
   content: '';
   position: absolute;
-  bottom: -5px;
+  bottom: -8px;
   left: 0;
   width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, #ffd700, #e8003d);
-  border-radius: 3px;
+  height: 4px;
+  background: linear-gradient(90deg, #ffd700, #e8003d, #ffd700);
+  border-radius: 4px;
+  animation: titleUnderline 3s linear infinite;
+  background-size: 200% 100%;
+}
+
+@keyframes titleUnderline {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 .section-title-glow {
   font-size: 18px;
   color: #666;
   font-weight: 300;
-  letter-spacing: 2px;
+  letter-spacing: 4px;
+  position: relative;
+}
+
+.section-title-glow::before,
+.section-title-glow::after {
+  content: '〜';
+  margin: 0 10px;
+  color: #ffd700;
 }
 
 /* DESKTOP GRID */
 .anime-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 30px;
+  gap: 25px;
   max-width: 1400px;
   margin: 0 auto;
   position: relative;
   z-index: 5;
 }
 
-/* MOBILE CAROUSEL - SINGLE ROW */
+/* MOBILE CAROUSEL */
 .mobile-carousel-container {
   display: none;
   position: relative;
@@ -171,6 +268,7 @@ $animeProducts = $conn->query("
   cursor: grab;
   scroll-behavior: smooth;
   width: 100%;
+  transition: scroll 0.3s ease-out;
 }
 
 .carousel-wrapper::-webkit-scrollbar {
@@ -187,104 +285,117 @@ $animeProducts = $conn->query("
   padding: 0 20px;
   width: max-content;
   flex-wrap: nowrap;
+  transition: transform 0.1s ease;
 }
 
 .carousel-track .anime-card {
   flex: 0 0 280px;
   scroll-snap-align: start;
   margin: 5px 0;
-  scroll-snap-stop: always;
 }
 
-/* Auto-scroll indicator */
-.auto-scroll-indicator {
+/* Scroll Progress Indicator */
+.scroll-indicator-container {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin: 15px 0 10px;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 10px;
+  position: relative;
+  z-index: 10;
 }
 
-.scroll-bar {
-  width: 30px;
+.scroll-progress-bar {
+  width: 50px;
   height: 4px;
   background: rgba(232, 0, 61, 0.2);
   border-radius: 4px;
   overflow: hidden;
-  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.scroll-bar.active .scroll-progress {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
+.scroll-progress-bar.active {
+  width: 80px;
   background: linear-gradient(90deg, #ffd700, #e8003d);
-  animation: scrollProgress 4s linear infinite;
+  animation: progressPulse 2s ease-in-out infinite;
 }
 
-@keyframes scrollProgress {
+.scroll-progress-bar.active .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e8003d, #ffd700);
+  animation: progressFill 4s linear infinite;
+  transform-origin: left;
+}
+
+@keyframes progressFill {
   0% { width: 0%; }
-  100% { width: 100%; }
+  50% { width: 100%; }
+  100% { width: 0%; }
 }
 
-/* ANIME CARD - LIGHT THEME */
+@keyframes progressPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ANIME CARD - IMPROVED ANIMATIONS */
 .anime-card {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.1);
   position: relative;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05),
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08),
               0 0 0 1px rgba(232, 0, 61, 0.1);
   border: 1px solid rgba(255, 215, 0, 0.2);
+  animation: cardSlideUp 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.1) forwards;
+  opacity: 0;
+}
+
+@keyframes cardSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .anime-card:hover {
-  transform: translateY(-15px) scale(1.02);
-  box-shadow: 0 30px 45px rgba(232, 0, 61, 0.15),
-              0 0 0 2px rgba(255, 215, 0, 0.3);
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 30px 60px rgba(232, 0, 61, 0.15),
+              0 0 0 2px rgba(255, 215, 0, 0.4);
 }
 
-/* Card Badge - Anime Style */
+/* Card Badge - Improved */
 .anime-card::before {
   content: '⚡';
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 40px;
-  height: 40px;
+  top: 15px;
+  right: 15px;
+  width: 45px;
+  height: 45px;
   background: linear-gradient(135deg, #ffd700, #e8003d);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 20px;
+  font-size: 22px;
   z-index: 10;
-  box-shadow: 0 5px 15px rgba(232, 0, 61, 0.4);
+  box-shadow: 0 8px 20px rgba(232, 0, 61, 0.4);
   opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.3s ease;
+  transform: scale(0.5) rotate(-90deg);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .anime-card:hover::before {
   opacity: 1;
-  transform: scale(1);
-}
-
-/* Card Corner Decoration */
-.anime-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, transparent 100%);
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-  z-index: 1;
+  transform: scale(1) rotate(0deg);
 }
 
 /* IMAGE CONTAINER */
@@ -298,25 +409,25 @@ $animeProducts = $conn->query("
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.1);
 }
 
 .anime-card:hover img {
-  transform: scale(1.1) rotate(2deg);
+  transform: scale(1.12) rotate(1.5deg);
 }
 
-/* Image Overlay - Anime Effect */
+/* Image Overlay - Improved */
 .img-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(232, 0, 61, 0.2) 100%
+    rgba(255, 255, 255, 0.1) 40%,
+    rgba(232, 0, 61, 0.3) 100%
   );
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.5s ease;
   mix-blend-mode: overlay;
 }
 
@@ -337,52 +448,46 @@ $animeProducts = $conn->query("
   font-weight: 700;
   color: #1a1a2e;
   margin: 0 0 12px;
-  line-height: 1.4;
-  min-height: 45px;
+  line-height: 1.5;
+  min-height: 48px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   font-family: 'Montserrat', sans-serif;
+  transition: color 0.3s ease;
 }
 
-/* Anime Category Tag */
-.anime-tag {
-  display: inline-block;
-  padding: 4px 12px;
-  background: rgba(255, 215, 0, 0.15);
-  border-radius: 30px;
-  font-size: 11px;
-  font-weight: 600;
+.anime-card:hover h3 {
   color: #e8003d;
-  margin-bottom: 10px;
-  letter-spacing: 1px;
 }
 
-/* PRICE SECTION */
+/* PRICE SECTION - IMPROVED */
 .price-container {
   display: flex;
   align-items: baseline;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
   flex-wrap: wrap;
 }
 
 .current-price {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
   color: #e8003d;
   font-family: 'Montserrat', sans-serif;
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 }
 
 .current-price::before {
-  content: '¥';
-  font-size: 16px;
+  content: '₹';
+  font-size: 18px;
   margin-right: 2px;
   color: #ffd700;
+  font-weight: 600;
 }
 
 .original-price {
@@ -390,6 +495,15 @@ $animeProducts = $conn->query("
   color: #999;
   text-decoration: line-through;
   position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.original-price::before {
+  content: '₹';
+  font-size: 12px;
+  margin-right: 2px;
+  color: #999;
 }
 
 .discount-badge {
@@ -397,52 +511,61 @@ $animeProducts = $conn->query("
   color: white;
   font-size: 12px;
   font-weight: 700;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 30px;
-  margin-left: 5px;
+  margin-left: 8px;
   display: inline-block;
-  box-shadow: 0 3px 8px rgba(232, 0, 61, 0.2);
+  box-shadow: 0 4px 12px rgba(232, 0, 61, 0.3);
+  animation: badgePulse 2s ease-in-out infinite;
 }
 
-/* BUTTON */
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* BUTTON - IMPROVED */
 .anime-card button {
   width: 100%;
-  padding: 12px 20px;
+  padding: 14px 20px;
   border: none;
   background: linear-gradient(135deg, #1a1a2e, #16213e);
   color: white;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 50px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1);
   position: relative;
   overflow: hidden;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   font-family: 'Montserrat', sans-serif;
   text-transform: uppercase;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .anime-card button::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
 }
 
 .anime-card button:hover {
   background: linear-gradient(135deg, #e8003d, #ffd700);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(232, 0, 61, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(232, 0, 61, 0.4);
 }
 
 .anime-card button:hover::before {
-  left: 100%;
+  width: 300px;
+  height: 300px;
 }
 
 .anime-card a {
@@ -450,44 +573,52 @@ $animeProducts = $conn->query("
   display: block;
 }
 
-/* RATING STARS - Anime Style */
-.rating-stars {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  margin: 8px 0;
-  color: #ffd700;
-  font-size: 14px;
-}
-
-.rating-stars span {
-  color: #ddd;
-  margin-left: 5px;
-  font-size: 12px;
-}
-
-/* VIEW ALL BUTTON */
+/* VIEW ALL BUTTON - IMPROVED */
 .view-all-btn {
   text-align: center;
-  margin-top: 50px;
+  margin-top: 60px;
   position: relative;
   z-index: 5;
+  animation: viewAllAppear 1s ease 0.5s forwards;
+  opacity: 0;
+}
+
+@keyframes viewAllAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .view-all-btn a {
   display: inline-block;
-  padding: 15px 40px;
+  padding: 16px 45px;
   background: white;
   color: #e8003d;
   text-decoration: none;
   font-weight: 700;
-  border-radius: 50px;
+  border-radius: 60px;
   font-size: 16px;
   letter-spacing: 2px;
   border: 2px solid #ffd700;
-  transition: all 0.3s;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.view-all-btn a::before {
+  content: '→';
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: all 0.4s ease;
 }
 
 .view-all-btn a:hover {
@@ -495,7 +626,13 @@ $animeProducts = $conn->query("
   color: white;
   border-color: transparent;
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(232, 0, 61, 0.2);
+  box-shadow: 0 20px 40px rgba(232, 0, 61, 0.3);
+  padding-right: 65px;
+}
+
+.view-all-btn a:hover::before {
+  right: 35px;
+  opacity: 1;
 }
 
 /* RESPONSIVE BREAKPOINTS */
@@ -509,6 +646,10 @@ $animeProducts = $conn->query("
   .anime-container {
     grid-template-columns: repeat(3, 1fr);
   }
+  
+  .section-title {
+    font-size: 42px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -517,7 +658,7 @@ $animeProducts = $conn->query("
   }
   
   .section-title {
-    font-size: 36px;
+    font-size: 38px;
   }
   
   /* Hide desktop grid on mobile */
@@ -533,15 +674,26 @@ $animeProducts = $conn->query("
   .carousel-track .anime-card {
     flex: 0 0 260px;
   }
+  
+  .view-all-btn a {
+    padding: 14px 35px;
+    font-size: 15px;
+  }
+  
+  .view-all-btn a:hover {
+    padding-right: 55px;
+  }
 }
 
 @media (max-width: 480px) {
   .section-title {
-    font-size: 28px;
+    font-size: 30px;
+    letter-spacing: 1px;
   }
   
   .section-subtitle {
     font-size: 12px;
+    letter-spacing: 4px;
   }
   
   .section-title-glow {
@@ -554,16 +706,20 @@ $animeProducts = $conn->query("
   
   .anime-card h3 {
     font-size: 14px;
-    min-height: 40px;
+    min-height: 42px;
   }
   
   .current-price {
-    font-size: 20px;
+    font-size: 22px;
   }
   
-  .view-all-btn a {
-    padding: 12px 30px;
-    font-size: 14px;
+  .anime-card button {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  .scroll-progress-bar.active {
+    width: 60px;
   }
 }
 
@@ -585,28 +741,33 @@ $animeProducts = $conn->query("
     opacity: 1;
     transform: scale(1);
   }
-}
-
-/* Animation */
-@keyframes cardAppear {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+  
+  .view-all-btn a:hover {
+    background: white;
+    color: #e8003d;
+    transform: none;
+    padding-right: 45px;
   }
-  to {
+  
+  .view-all-btn a:hover::before {
+    right: 35px;
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-.anime-card {
-  animation: cardAppear 0.5s ease forwards;
-  opacity: 0;
+/* Loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
 }
 
 /* Custom scrollbar */
 .anime-section::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 .anime-section::-webkit-scrollbar-track {
@@ -624,27 +785,29 @@ $animeProducts = $conn->query("
 </style>
 
 <!-- ANIME SECTION - LIGHT THEME -->
-<section class="anime-section">
+<section class="anime-section" id="animeSection">
   <!-- Decorative Elements -->
+  <div class="anime-glow"></div>
+  <div class="anime-glow-2"></div>
   <div class="speed-lines-anime"></div>
   
-  <!-- Floating Particles -->
-  <?php for($i = 0; $i < 20; $i++): ?>
+  <!-- Floating Particles - Dynamically Generated -->
+  <?php for($i = 0; $i < 30; $i++): ?>
     <div class="anime-particle" style="
       left: <?php echo rand(0, 100); ?>%;
       top: <?php echo rand(0, 100); ?>%;
-      animation-delay: <?php echo rand(0, 10); ?>s;
-      background: <?php echo rand(0, 1) ? '#ffd700' : '#e8003d'; ?>;
+      animation-delay: <?php echo rand(0, 20); ?>s;
+      animation-duration: <?php echo rand(8, 20); ?>s;
     "></div>
   <?php endfor; ?>
 
   <!-- Section Header -->
   <div class="section-title-wrapper">
-    <div class="section-subtitle">⚡ Limited Collection</div>
+    <div class="section-subtitle">POPULAR SERIES</div>
     <h2 class="section-title">
       ANIME <span>WORLD</span>
     </h2>
-    <div class="section-title-glow">〜 人気キャラクター 〜</div>
+    <div class="section-title-glow">人気キャラクター</div>
   </div>
 
   <!-- DESKTOP GRID -->
@@ -661,23 +824,13 @@ $animeProducts = $conn->query("
       
       <div class="anime-card" style="animation-delay: <?php echo $i * 0.1; ?>s;">
         <div class="anime-card-img">
-          <img src="orders/uploads/<?php echo $row['image']; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
+          <!-- FIXED: Correct image path -->
+          <img src="uploads/<?php echo $row['image']; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
           <div class="img-overlay"></div>
         </div>
 
         <div class="anime-card-content">
-          <span class="anime-tag">
-            <?php 
-              $tags = ['Shonen', 'Shojo', 'Seinen', 'Kodomo', 'Mecha', 'Isekai'];
-              echo $tags[$i % count($tags)];
-            ?>
-          </span>
-
           <h3><?php echo htmlspecialchars($row['name']); ?></h3>
-
-          <div class="rating-stars">
-            ★★★★☆ <span>(<?php echo rand(100, 999); ?>)</span>
-          </div>
 
           <div class="price-container">
             <span class="current-price"><?php echo number_format($row['discount_price']); ?></span>
@@ -688,7 +841,7 @@ $animeProducts = $conn->query("
           </div>
 
           <a href="product_detail.php?id=<?php echo $row['id']; ?>">
-            <button>Buy Now</button>
+            <button>BUY NOW</button>
           </a>
         </div>
       </div>
@@ -696,7 +849,7 @@ $animeProducts = $conn->query("
     <?php endwhile; ?>
   </div>
 
-  <!-- MOBILE CAROUSEL - SINGLE ROW AUTO SCROLL -->
+  <!-- MOBILE CAROUSEL - IMPROVED AUTO SCROLL -->
   <div class="mobile-carousel-container">
     <div class="carousel-wrapper" id="animeCarousel">
       <div class="carousel-track">
@@ -710,23 +863,13 @@ $animeProducts = $conn->query("
           
           <div class="anime-card">
             <div class="anime-card-img">
+              <!-- FIXED: Correct image path -->
               <img src="uploads/<?php echo $row['image']; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
               <div class="img-overlay"></div>
             </div>
 
             <div class="anime-card-content">
-              <span class="anime-tag">
-                <?php 
-                  $tags = ['Shonen', 'Shojo', 'Seinen', 'Kodomo', 'Mecha', 'Isekai'];
-                  echo $tags[$i % count($tags)];
-                ?>
-              </span>
-
               <h3><?php echo htmlspecialchars($row['name']); ?></h3>
-
-              <div class="rating-stars">
-                ★★★★☆ <span>(<?php echo rand(100, 999); ?>)</span>
-              </div>
 
               <div class="price-container">
                 <span class="current-price"><?php echo number_format($row['discount_price']); ?></span>
@@ -737,7 +880,7 @@ $animeProducts = $conn->query("
               </div>
 
               <a href="product_detail.php?id=<?php echo $row['id']; ?>">
-                <button>Buy Now</button>
+                <button>BUY NOW</button>
               </a>
             </div>
           </div>
@@ -746,11 +889,11 @@ $animeProducts = $conn->query("
       </div>
     </div>
 
-    <!-- Auto-scroll indicator -->
-    <div class="auto-scroll-indicator" id="scrollIndicator">
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator-container" id="scrollIndicator">
       <?php for($d = 0; $d < count($products); $d++): ?>
-        <div class="scroll-bar <?php echo $d == 0 ? 'active' : ''; ?>" data-index="<?php echo $d; ?>">
-          <div class="scroll-progress"></div>
+        <div class="scroll-progress-bar" data-index="<?php echo $d; ?>">
+          <div class="progress-fill"></div>
         </div>
       <?php endfor; ?>
     </div>
@@ -758,73 +901,128 @@ $animeProducts = $conn->query("
 
   <!-- View All Button -->
   <div class="view-all-btn">
-    <a href="anime.php">View All Collection →</a>
+    <a href="anime.php">VIEW ALL COLLECTION</a>
   </div>
 </section>
 
 <script>
-// Mobile Carousel - Single Row Auto Scroll
+// Main initialization
 document.addEventListener('DOMContentLoaded', function() {
+  
+  // SECTION APPEAR ANIMATION
+  const animeSection = document.getElementById('animeSection');
+  
+  // Create intersection observer for section appear animation
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Once visible, stop observing
+        sectionObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2, rootMargin: '50px' });
+  
+  if (animeSection) {
+    sectionObserver.observe(animeSection);
+  }
+  
+  // MOBILE CAROUSEL FUNCTIONALITY
   const carousel = document.getElementById('animeCarousel');
-  if (!carousel) return;
+  if (!carousel || window.innerWidth > 768) return;
 
   const track = carousel.querySelector('.carousel-track');
   const cards = track ? track.querySelectorAll('.anime-card') : [];
-  const scrollBars = document.querySelectorAll('.scroll-bar');
+  const scrollBars = document.querySelectorAll('.scroll-progress-bar');
 
   if (!track || !cards.length) return;
 
+  let autoScrollInterval;
   let isDragging = false;
-  let startX = 0;
-  let scrollLeft = 0;
-  let rafId = null;
-  const autoSpeed = 0.6; // px per frame for smooth auto-scroll
+  let startX, scrollLeft;
+  let currentIndex = 0;
+  const autoScrollDelay = 4000; // 4 seconds per slide
 
+  // Get card width including gap
   const getCardWidth = () => {
     if (!cards.length) return 0;
     const gap = 20; // gap from CSS
     return cards[0].offsetWidth + gap;
   };
 
-  const updateIndexFromScroll = () => {
-    if (!scrollBars.length) return;
+  // Update active indicator
+  const updateActiveIndicator = (index) => {
+    scrollBars.forEach((bar, i) => {
+      bar.classList.toggle('active', i === index);
+    });
+    currentIndex = index;
+  };
+
+  // Scroll to specific index
+  const scrollToIndex = (index, smooth = true) => {
+    if (!track || !cards.length) return;
     const cardWidth = getCardWidth();
     if (!cardWidth) return;
-    const idx = Math.round(carousel.scrollLeft / cardWidth);
-    scrollBars.forEach((bar, i) => {
-      bar.classList.toggle('active', i === idx);
+    
+    const maxIndex = cards.length - 1;
+    const targetIndex = Math.min(Math.max(index, 0), maxIndex);
+    
+    carousel.scrollTo({
+      left: targetIndex * cardWidth,
+      behavior: smooth ? 'smooth' : 'auto'
     });
+    
+    updateActiveIndicator(targetIndex);
   };
 
-  const startAuto = () => {
-    if (rafId) cancelAnimationFrame(rafId);
-    const step = () => {
-      if (window.innerWidth <= 768 && !isDragging && !document.hidden) {
-        carousel.scrollLeft += autoSpeed;
-        if (carousel.scrollLeft >= track.scrollWidth - carousel.clientWidth - 2) {
-          carousel.scrollLeft = 0;
-        }
-        updateIndexFromScroll();
-      }
-      rafId = requestAnimationFrame(step);
-    };
-    rafId = requestAnimationFrame(step);
-  };
-
-  const stopAuto = () => {
-    if (rafId) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
+  // Update index based on scroll position
+  const updateIndexFromScroll = () => {
+    const cardWidth = getCardWidth();
+    if (!cardWidth) return;
+    const newIndex = Math.round(carousel.scrollLeft / cardWidth);
+    if (newIndex !== currentIndex && newIndex >= 0 && newIndex < cards.length) {
+      updateActiveIndicator(newIndex);
     }
   };
 
-  // Drag interactions
+  // Auto scroll function
+  const startAutoScroll = () => {
+    if (autoScrollInterval) clearInterval(autoScrollInterval);
+    
+    autoScrollInterval = setInterval(() => {
+      if (!isDragging && window.innerWidth <= 768 && !document.hidden) {
+        const cardWidth = getCardWidth();
+        if (!cardWidth) return;
+        
+        const nextIndex = (currentIndex + 1) % cards.length;
+        scrollToIndex(nextIndex, true);
+      }
+    }, autoScrollDelay);
+  };
+
+  const stopAutoScroll = () => {
+    if (autoScrollInterval) {
+      clearInterval(autoScrollInterval);
+      autoScrollInterval = null;
+    }
+  };
+
+  // Click on progress bar to navigate
+  scrollBars.forEach((bar, index) => {
+    bar.addEventListener('click', () => {
+      stopAutoScroll();
+      scrollToIndex(index, true);
+      startAutoScroll();
+    });
+  });
+
+  // DRAG INTERACTIONS
   carousel.addEventListener('mousedown', (e) => {
     isDragging = true;
     startX = e.pageX - carousel.offsetLeft;
     scrollLeft = carousel.scrollLeft;
     carousel.style.cursor = 'grabbing';
-    stopAuto();
+    stopAutoScroll();
   });
 
   carousel.addEventListener('mouseleave', () => {
@@ -832,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', function() {
     isDragging = false;
     carousel.style.cursor = 'grab';
     updateIndexFromScroll();
-    startAuto();
+    startAutoScroll();
   });
 
   carousel.addEventListener('mouseup', () => {
@@ -840,7 +1038,7 @@ document.addEventListener('DOMContentLoaded', function() {
     isDragging = false;
     carousel.style.cursor = 'grab';
     updateIndexFromScroll();
-    startAuto();
+    startAutoScroll();
   });
 
   carousel.addEventListener('mousemove', (e) => {
@@ -851,19 +1049,19 @@ document.addEventListener('DOMContentLoaded', function() {
     carousel.scrollLeft = scrollLeft - walk;
   });
 
-  // Touch interactions
+  // TOUCH INTERACTIONS
   carousel.addEventListener('touchstart', (e) => {
     isDragging = true;
     startX = e.touches[0].pageX - carousel.offsetLeft;
     scrollLeft = carousel.scrollLeft;
-    stopAuto();
+    stopAutoScroll();
   });
 
   carousel.addEventListener('touchend', () => {
     if (!isDragging) return;
     isDragging = false;
     updateIndexFromScroll();
-    startAuto();
+    startAutoScroll();
   });
 
   carousel.addEventListener('touchmove', (e) => {
@@ -878,25 +1076,54 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!isDragging) updateIndexFromScroll();
   });
 
-  // Handle resize and visibility
+  // WINDOW RESIZE HANDLING
   window.addEventListener('resize', () => {
     if (window.innerWidth <= 768) {
-      startAuto();
+      startAutoScroll();
+      // Recalculate current index
+      updateIndexFromScroll();
     } else {
-      stopAuto();
+      stopAutoScroll();
     }
   });
 
+  // VISIBILITY CHANGE
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
-      stopAuto();
+      stopAutoScroll();
     } else if (window.innerWidth <= 768) {
-      startAuto();
+      startAutoScroll();
     }
   });
 
+  // INITIAL SETUP
+  updateActiveIndicator(0);
   if (window.innerWidth <= 768) {
-    startAuto();
+    startAutoScroll();
+  }
+
+  // OPTIONAL: Add wheel event for better desktop scrolling
+  if (window.innerWidth <= 768) {
+    carousel.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        carousel.scrollLeft += e.deltaY * 0.5;
+      }
+    }, { passive: false });
   }
 });
-</script>
+
+// Add smooth parallax effect on mouse move (optional)
+document.addEventListener('mousemove', function(e) {
+  const particles = document.querySelectorAll('.anime-particle');
+  const mouseX = e.clientX / window.innerWidth;
+  const mouseY = e.clientY / window.innerHeight;
+  
+  particles.forEach((particle, index) => {
+    const speed = (index % 3) + 1;
+    const x = (mouseX * 20 * speed) + 'px';
+    const y = (mouseY * 20 * speed) + 'px';
+    particle.style.transform = `translate(${x}, ${y})`;
+  });
+});
+</script> 
