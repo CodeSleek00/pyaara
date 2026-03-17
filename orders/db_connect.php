@@ -2,7 +2,7 @@
 // Start session for managing user cart and other session data
 session_start();
 
-$host = "178.16.136.97";
+$host = "localhost"; // Hostinger MySQL host
 $user = "u298112699_Anant";
 $pass = "Pyaara_store15";
 $db = "u298112699_pyaara_store_A";
