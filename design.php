@@ -661,7 +661,7 @@ $animeProducts = $conn->query("
       
       <div class="anime-card" style="animation-delay: <?php echo $i * 0.1; ?>s;">
         <div class="anime-card-img">
-          <img src="uploads/<?php echo $row['image']; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
+          <img src="orders/uploads/<?php echo $row['image']; ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
           <div class="img-overlay"></div>
         </div>
 
