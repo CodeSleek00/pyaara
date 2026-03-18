@@ -15,7 +15,8 @@ if(isset($_POST['reset'])){
     // $query = "UPDATE users SET password='$hashed' WHERE email='$email'";
 
     if(mysqli_query($conn, $query)){
-        $message = "Password updated successfully!";
+        header("Location: login.html?reset=1");
+        exit();
     } else {
         $message = "Something went wrong. Please try again.";
     }
@@ -245,7 +246,7 @@ if(isset($_POST['reset'])){
                 </div>
             <?php } ?>
             <div class="additional-options">
-                <a href="login.php">Back to Login</a>
+                <a href="login.html">Back to Login</a>
             </div>
         </div>
     </div>

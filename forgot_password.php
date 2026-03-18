@@ -240,7 +240,7 @@ if(isset($_POST['verify'])){
                 <div class="message"><?php echo $message; ?></div>
             <?php } ?>
             <div class="additional-options">
-                <a href="login.php">Back to Login</a>
+                <a href="login.html">Back to Login</a>
             </div>
         </div>
     </div>
