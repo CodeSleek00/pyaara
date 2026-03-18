@@ -5,7 +5,7 @@ require 'db.php';
 $name = $_POST['name'];
 $email = $_POST['email'];
 $contact = $_POST['contact'];
-$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+$password = $_POST['password'];
 $dob = $_POST['dob'];
 $address = $_POST['address'];
 
