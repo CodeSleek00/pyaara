@@ -8,11 +8,9 @@ if(isset($_POST['reset'])){
     $new_password = $_POST['password'];
 
     // ❌ Plain password (NOT recommended)
-    $query = "UPDATE users SET password='$new_password' WHERE email='$email'";
+    $hashed = password_hash($new_password, PASSWORD_DEFAULT);
+    $query = "UPDATE users SET password='$hashed' WHERE email='$email'";
 
-    // ✅ Recommended (use this instead)
-    // $hashed = password_hash($new_password, PASSWORD_DEFAULT);
-    // $query = "UPDATE users SET password='$hashed' WHERE email='$email'";
 
     if(mysqli_query($conn, $query)){
         header("Location: login.html?reset=1");
