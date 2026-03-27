@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-include 'db.php';
+include 'temp_db.php';
 
 // FETCH 10 ANIME PRODUCTS
 $animeProducts = $conn->query("
@@ -9,7 +9,7 @@ $animeProducts = $conn->query("
   FROM products 
   WHERE page='anime.php'
   ORDER BY RAND()
-  LIMIT 10
+  LIMIT 12
 ");
 ?>
 <style>
@@ -840,7 +840,7 @@ $animeProducts = $conn->query("
             <?php endif; ?>
           </div>
 
-          <a href="product_detail.php?id=<?php echo $row['id']; ?>">
+          <a href="orders/product_detail.php?id=<?php echo $row['id']; ?>">
             <button>BUY NOW</button>
           </a>
         </div>
