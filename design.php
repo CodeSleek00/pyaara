@@ -797,8 +797,7 @@ $animeProducts = $conn->query("
       left: <?php echo rand(0, 100); ?>%;
       top: <?php echo rand(0, 100); ?>%;
       animation-delay: <?php echo rand(0, 20); ?>s;
-      animation-duration: <?php echo rand(8, 20); ?>s;
-    "></div>
+      animation-duration: <?php echo rand(8, 20); ?>s;"></div>
   <?php endfor; ?>
 
   <!-- Section Header -->
