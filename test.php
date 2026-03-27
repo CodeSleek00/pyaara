@@ -1359,8 +1359,9 @@ body {
         </div>
       </div>
     </section>
+  </div>
+</div>
 
- 
 <script>
 (function() {
   // Cache DOM elements
@@ -1371,6 +1372,12 @@ body {
   const stage = document.getElementById('stage');
   const scrollHint = document.getElementById('scrollHint');
   const sections = document.querySelectorAll('.content-section');
+
+  // Failsafe: if JS runs but the load event never fires, show the page anyway.
+  const failSafeTimer = setTimeout(() => {
+    if (loader) loader.style.display = 'none';
+    if (main) main.style.display = 'block';
+  }, 3500);
   
   // ===== CURSOR =====
   if (cursor) {
@@ -1394,6 +1401,7 @@ body {
       setTimeout(() => {
         loader.style.display = 'none';
         main.style.display = 'block';
+        clearTimeout(failSafeTimer);
         
         // Animate hero
         setTimeout(() => hero.classList.add('loaded'), 100);

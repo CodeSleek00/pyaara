@@ -9,7 +9,7 @@ $animeProducts = $conn->query("
   FROM products 
   WHERE page='anime.php'
   ORDER BY RAND()
-  LIMIT 12
+  LIMIT 10
 ");
 ?>
 <style>
