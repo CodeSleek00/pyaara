@@ -3,7 +3,7 @@ include 'db_connect.php';
 $message = '';
 $message_type = '';
 
-$pages = ['anime.php', 'exclusive.php', 'men.php', 'women.php' , 'round.php', 'full.php', 'polo.php', 'cutie.php' ,' classic_women.php ','Crop_Top.php','Cropped_Hoodies.php', 'Shorts.php', 'Joggers.php', 'sweatshirt.php', 'hoodies.php', 'Acid_Washed.php'];
+$pages = ['anime.php', 'exclusive.php', 'men.php', 'women.php' , 'round.php', 'full.php', 'polo.php', 'cutie.php' ,'classic_women.php','Crop_Top.php','Cropped_Hoodies.php', 'Shorts.php', 'Joggers.php', 'sweatshirt.php', 'hoodies.php', 'Acid_Washed.php'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $conn->real_escape_string($_POST['name']);
@@ -11,6 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $original_price = (float)$_POST['original_price'];
     $discount_price = (float)$_POST['discount_price'];
     $category_id = null;
+
+    // ✅ HANDLE SIZES
+    $sizes = '';
+    if (!empty($_POST['sizes'])) {
+        $sizes = implode(',', $_POST['sizes']);
+    }
 
     // Handle category logic
     if (!empty($_POST['new_category'])) {
@@ -72,8 +78,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount_price = $original_price;
         }
 
-        $stmt = $conn->prepare("INSERT INTO products (name, image, description, original_price, discount_price, discount_percent, category_id, page) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssdiiis", $name, $image_name, $description, $original_price, $discount_price, $discount_percent, $category_id, $page);
+        // ✅ UPDATED QUERY WITH SIZES
+        $stmt = $conn->prepare("INSERT INTO products 
+        (name, image, description, original_price, discount_price, discount_percent, category_id, page, sizes) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        $stmt->bind_param("sssdiiiss", $name, $image_name, $description, $original_price, $discount_price, $discount_percent, $category_id, $page, $sizes);
 
         if ($stmt->execute()) {
             $message = "Product added successfully!";
@@ -93,11 +103,11 @@ $categories = $conn->query("SELECT id, name FROM categories");
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Product</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Base styles */
+<meta charset="UTF-8">
+<title>Add Product</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
@@ -123,135 +133,108 @@ label {
     display: block;
     margin-top: 15px;
     font-weight: bold;
-    color: #333;
 }
 
-input[type="text"],
-input[type="number"],
-input[type="file"],
-textarea,
-select {
+input, textarea, select {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
-    border: 1px solid #ccc;
     border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 1rem;
-}
-
-textarea {
-    resize: vertical;
-    min-height: 80px;
+    border: 1px solid #ccc;
 }
 
 input[type="submit"] {
     margin-top: 20px;
-    width: 100%;
-    background-color: #007bff;
-    color: white;
+    background: #007bff;
+    color: #fff;
     border: none;
-    padding: 12px;
-    font-size: 1rem;
-    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.3s;
 }
 
-input[type="submit"]:hover {
-    background-color: #0056b3;
+.message.success { background:#d4edda; padding:10px; margin-bottom:10px; }
+.message.error { background:#f8d7da; padding:10px; margin-bottom:10px; }
+
+.size-box {
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:10px;
 }
 
-.message {
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    font-size: 0.95rem;
+.size-box label {
+    font-weight:normal;
+    background:#eee;
+    padding:5px 10px;
+    border-radius:5px;
+    cursor:pointer;
 }
 
-.message.success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-/* Responsive Design */
-@media (max-width: 600px) {
-    .container {
-        padding: 15px;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    label {
-        font-size: 0.95rem;
-    }
-
-    input, textarea, select {
-        font-size: 0.95rem;
-    }
-
-    input[type="submit"] {
-        font-size: 1rem;
-    }
-}
-
-    </style>
+</style>
 </head>
 <body>
+
 <div class="container">
-    <h2>Add New Product</h2>
-    <?php if ($message): ?>
-        <div class="message <?php echo $message_type; ?>"><?php echo $message; ?></div>
-    <?php endif; ?>
+<h2>Add New Product</h2>
 
-    <form action="add_product.php" method="post" enctype="multipart/form-data">
-        <label for="name">Product Name:</label>
-        <input type="text" name="name" id="name" required value="<?php echo $_POST['name'] ?? ''; ?>">
+<?php if ($message): ?>
+<div class="message <?php echo $message_type; ?>"><?php echo $message; ?></div>
+<?php endif; ?>
 
-        <label for="image">Image:</label>
-        <input type="file" name="image" id="image" accept="image/*" required>
+<form action="add_product.php" method="post" enctype="multipart/form-data">
 
-        <label for="description">Description:</label>
-        <textarea name="description" id="description" required><?php echo $_POST['description'] ?? ''; ?></textarea>
+<label>Product Name:</label>
+<input type="text" name="name" required>
 
-        <label for="original_price">Original Price (₹):</label>
-        <input type="number" name="original_price" step="0.01" min="0" required value="<?php echo $_POST['original_price'] ?? ''; ?>">
+<label>Image:</label>
+<input type="file" name="image" required>
 
-        <label for="discount_price">Discount Price (₹):</label>
-        <input type="number" name="discount_price" step="0.01" min="0" value="<?php echo $_POST['discount_price'] ?? ''; ?>">
+<label>Description:</label>
+<textarea name="description" required></textarea>
 
-        <label for="category_id">Select Category:</label>
-        <select name="category_id" id="category_id">
-            <option value="">-- Select Existing --</option>
-            <?php while ($row = $categories->fetch_assoc()): ?>
-                <option value="<?php echo $row['id']; ?>"><?php echo htmlspecialchars($row['name']); ?></option>
-            <?php endwhile; ?>
-        </select>
+<label>Original Price:</label>
+<input type="number" name="original_price" required>
 
-        <label for="new_category">Or Add New Category:</label>
-        <input type="text" name="new_category" id="new_category" placeholder="New category name">
+<label>Discount Price:</label>
+<input type="number" name="discount_price">
 
-        <label for="page">Select Page:</label>
-        <select name="page" id="page">
-            <option value="">-- Select Page --</option>
-            <?php foreach ($pages as $pg): ?>
-                <option value="<?php echo $pg; ?>"><?php echo ucfirst(str_replace('.php', '', $pg)); ?></option>
-            <?php endforeach; ?>
-        </select>
+<label>Select Category:</label>
+<select name="category_id">
+<option value="">--Select--</option>
+<?php while ($row = $categories->fetch_assoc()): ?>
+<option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
+<?php endwhile; ?>
+</select>
 
-        <label for="new_page">Or Add New Page:</label>
-        <input type="text" name="new_page" id="new_page" placeholder="e.g. sports.php">
+<label>New Category:</label>
+<input type="text" name="new_category">
 
-        <input type="submit" value="Add Product">
-    </form>
+<label>Select Page:</label>
+<select name="page">
+<option value="">--Select--</option>
+<?php foreach ($pages as $pg): ?>
+<option value="<?php echo $pg; ?>"><?php echo ucfirst(str_replace('.php','',$pg)); ?></option>
+<?php endforeach; ?>
+</select>
+
+<label>New Page:</label>
+<input type="text" name="new_page">
+
+<!-- ✅ SIZE SECTION -->
+<label>Select Sizes:</label>
+<div class="size-box">
+<?php 
+$sizesArr = ['XXS','XS','S','M','L','XL','XXL','XXXL'];
+foreach($sizesArr as $s): ?>
+<label><input type="checkbox" name="sizes[]" value="<?php echo $s; ?>"> <?php echo $s; ?></label>
+<?php endforeach; ?>
 </div>
+
+<input type="submit" value="Add Product">
+
+</form>
+</div>
+
 </body>
 </html>
+
 <?php $conn->close(); ?>
