@@ -22,6 +22,15 @@ if (!$product) {
     exit();
 }
 
+// ✅ HANDLE PRODUCT SIZES
+$all_sizes = ['XXS','XS','S','M','L','XL','XXL','XXXL'];
+
+if (!empty($product['sizes'])) {
+    $product_sizes = explode(',', $product['sizes']);
+} else {
+    $product_sizes = $all_sizes; // agar empty hai to sab sizes dikhao
+}
+
 // Determine the price to display
 $display_price = ($product['discount_price'] < $product['original_price'] && $product['discount_price'] > 0)
     ? $product['discount_price']
@@ -972,30 +981,14 @@ if (isset($_SESSION['message'])) {
                         <div class="option-group">
                             <label class="option-label">Size:</label>
                             <div class="size-options">
-                                <div class="size-option">
-                                    <input type="radio" id="size-xs" name="size" value="XS">
-                                    <label for="size-xs">XS</label>
-                                </div>
-                                <div class="size-option">
-                                    <input type="radio" id="size-s" name="size" value="S">
-                                    <label for="size-s">S</label>
-                                </div>
-                                <div class="size-option">
-                                    <input type="radio" id="size-m" name="size" value="M" checked>
-                                    <label for="size-m">M</label>
-                                </div>
-                                <div class="size-option">
-                                    <input type="radio" id="size-l" name="size" value="L">
-                                    <label for="size-l">L</label>
-                                </div>
-                                <div class="size-option">
-                                    <input type="radio" id="size-xl" name="size" value="XL">
-                                    <label for="size-xl">XL</label>
-                                </div>
-                                <div class="size-option">
-                                    <input type="radio" id="size-xxl" name="size" value="XXL">
-                                    <label for="size-xxl">XXL</label>
-                                </div>
+                                <?php foreach($product_sizes as $index => $size): 
+                                    $size_id = "size-" . strtolower($size) . "-" . $index;
+                                ?>
+                                    <div class="size-option">
+                                        <input type="radio" id="<?php echo $size_id; ?>" name="size" value="<?php echo $size; ?>" <?php echo $index == 0 ? 'checked' : ''; ?>>
+                                        <label for="<?php echo $size_id; ?>"><?php echo $size; ?></label>
+                                    </div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                         
