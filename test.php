@@ -389,13 +389,13 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.75;
   transition: all 0.35s ease;
-  filter: saturate(1.1) contrast(1.05);
+  opacity: 1;
+  filter: none;
 }
 
 .card-wrap:hover .card-front img {
-  opacity: 0.92;
+  opacity: 1;
   transform: scale(1.08);
 }
 
@@ -446,9 +446,9 @@ body {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top,
-    rgba(8, 8, 16, 0.95) 0%,
-    rgba(8, 8, 16, 0.55) 40%,
-    rgba(8, 8, 16, 0.05) 100%
+    rgba(8, 8, 16, 0.65) 0%,
+    rgba(8, 8, 16, 0.35) 40%,
+    rgba(8, 8, 16, 0.0) 100%
   );
 }
 
@@ -826,7 +826,7 @@ body.scroll-lock {
 <!-- LOADER -->
 <div id="loader">
   <div class="loader-kanji">専</div>
-  <div class="loader-text">Initializing Exclusive Mode</div>
+  <div class="loader-text">Pyaara Store</div>
   <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
 
@@ -845,7 +845,7 @@ body.scroll-lock {
     <div class="hero-head">
       <p class="hero-jp">専用コレクション — Exclusive</p>
       <h1 class="hero-title" data-text="EXCLUSIVE DROP">
-        <span class="stroke">EXCL</span><span>USIVE</span><br>
+        <span class="stroke">PY</span><span>AARA</span><br>
         <span>DR</span><span class="stroke">OP</span>
       </h1>
       <p class="hero-sub">Limited Season · Scroll to Reveal</p>
