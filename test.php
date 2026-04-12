@@ -407,6 +407,7 @@ body {
   mix-blend-mode: multiply;
   opacity: 0.6;
   pointer-events: none;
+  display: none;
 }
 
 .card-stripe {
