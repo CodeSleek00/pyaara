@@ -3,14 +3,29 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include 'temp_db.php';
 
-// Optimized query with caching headers
-$exclusiveProducts = $conn->query("
-  SELECT id, image, name, original_price, discount_price 
-  FROM products 
-  WHERE page='exclusive.php'
-  ORDER BY RAND()
-  LIMIT 5
+// Optimized random selection without ORDER BY RAND()
+$page = 'exclusive.php';
+$limit = 5;
+$offset = 0;
+
+$countRes = $conn->query("SELECT COUNT(*) AS cnt FROM products WHERE page='{$page}'");
+if ($countRes && ($countRow = $countRes->fetch_assoc())) {
+  $count = (int)$countRow['cnt'];
+  if ($count > $limit) {
+    $offset = random_int(0, $count - $limit);
+  }
+}
+
+$stmt = $conn->prepare("
+  SELECT id, image, name, original_price, discount_price
+  FROM products
+  WHERE page = ?
+  ORDER BY id DESC
+  LIMIT ? OFFSET ?
 ");
+$stmt->bind_param("sii", $page, $limit, $offset);
+$stmt->execute();
+$exclusiveProducts = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -64,6 +79,7 @@ body {
   color: var(--ink);
   overflow-x: hidden;
   cursor: none;
+
 }
 
 /* ===== CUSTOM CURSOR ===== */
@@ -350,7 +366,7 @@ body {
   height: var(--card-h);
   transform-style: preserve-3d;
   cursor: pointer;
-  transition: opacity 0.6s ease, transform 0.1s linear;
+  transition: opacity 0.6s ease, transform 0.35s ease, filter 0.35s ease, box-shadow 0.35s ease;
   will-change: transform;
 }
 
@@ -480,7 +496,16 @@ body {
   color: var(--yellow);
   letter-spacing: 1px;
 }
+.card-wrap.show {
+  box-shadow: 0 10px 36px rgba(255, 230, 0, 0.12);
+}
 
+.card-wrap.active {
+  box-shadow:
+    0 16px 50px rgba(255, 230, 0, 0.2),
+    0 0 20px rgba(232, 0, 61, 0.28);
+  filter: drop-shadow(0 0 12px rgba(255, 230, 0, 0.25));
+}
 .price-old {
   font-size: 11px;
   text-decoration: line-through;
@@ -702,12 +727,49 @@ body {
   75% { transform: translateY(20px) translateX(10px); }
 }
 
+@media (max-width: 768px) {
+  body.mobile-scroll-cards .hero {
+    min-height: 100svh;
+  }
 
+  body.mobile-scroll-cards .hero-head {
+    text-align: center;
+  }
+
+  body.mobile-scroll-cards .hero-sub {
+    opacity: 0.8;
+  }
+
+  body.mobile-scroll-cards .stage {
+    position: sticky;
+    top: 120px;
+    height: var(--card-h);
+    display: block;
+    overflow: visible;
+  }
+
+  body.mobile-scroll-cards .card-wrap {
+    left: 50%;
+    opacity: 0;
+    --card-scale: 0.94;
+    transform: translate3d(-50%, 0, 0) scale(var(--card-scale)) !important;
+    transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.5s ease;
+  }
+
+  body.mobile-scroll-cards .card-wrap.show {
+    opacity: 1;
+  }
+}
+
+body.scroll-lock {
+  height: 100%;
+  overflow: hidden;
+}
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   :root {
-    --card-w: 75vw;
-    --card-h: 270px;
+    --card-w: 82vw;
+    --card-h: 320px;
   }
 
   body {
@@ -725,24 +787,6 @@ body {
     padding: 60px 0 80px;
   }
 
-  .stage {
-    position: static;
-    height: auto;
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 18px;
-    padding: 0 20px;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .card-wrap {
-    position: relative;
-    flex: 0 0 var(--card-w);
-    transform: none !important;
-    opacity: 1 !important;
-    scroll-snap-align: center;
-  }
 
   .slash,
   .speed-lines,
@@ -825,12 +869,13 @@ body {
           $img = htmlspecialchars($row['image']);
           $id = (int)$row['id'];
           $num = str_pad($i + 1, 2, '0', STR_PAD_LEFT);
+          $loadingAttr = ($i === 0) ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
       ?>
       <div class="card-wrap" id="c<?= $i ?>" data-href="orders/product_detail.php?id=<?= $id ?>"
            style="transform: translate(<?= $positions[$i] ?>px, 0) scale(<?= $scales[$i] ?>);
                   z-index: <?= $zIndexes[$i] ?>; opacity: 0;">
         <div class="card-front">
-          <img src="orders/uploads/<?= $img ?>" alt="<?= $name ?>" loading="lazy">
+          <img src="orders/uploads/<?= $img ?>" alt="<?= $name ?>" width="210" height="295" decoding="async" <?= $loadingAttr ?>>
           <div class="card-dot"></div>
           <div class="card-stripe"></div>
           <div class="card-overlay"></div>
@@ -876,6 +921,7 @@ body {
       </div>
     </div>
   </div>
+  v vc. cv vc. v
 
 <script>
 (function() {
@@ -887,6 +933,8 @@ body {
   const stage = document.getElementById('stage');
   const scrollHint = document.getElementById('scrollHint');
   const sections = document.querySelectorAll('.content-section');
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  if (isMobile) document.body.classList.add('mobile-scroll-cards');
 
   // Failsafe: if JS runs but the load event never fires, show the page anyway.
   const failSafeTimer = setTimeout(() => {
@@ -923,15 +971,19 @@ body {
         
         // Animate cards
         const cards = Array.from({length: 5}, (_, i) => document.getElementById(`c${i}`)).filter(Boolean);
-        cards.forEach((card, i) => {
-          setTimeout(() => { card.style.opacity = '1'; }, 200 + i * 100);
-        });
+        if (!isMobile) {
+          cards.forEach((card, i) => {
+            setTimeout(() => { card.style.opacity = '1'; }, 200 + i * 100);
+          });
+        } else if (cards[0]) {
+          cards[0].style.opacity = '1';
+        }
 
         // Initialize based on device
-        if (window.innerWidth > 768) {
+        if (!isMobile) {
           initScrollFlip(cards);
         } else {
-          initMobileCarousel();
+          initMobileStackReveal(cards);
         }
         
         // Initialize section effects
@@ -947,6 +999,7 @@ body {
     const positions = [-480, -240, 0, 240, 480];
     const scales = [0.87, 0.93, 1.03, 0.93, 0.87];
     const zIndexes = [1, 2, 3, 2, 1];
+    const focusIndex = 2;
     
     let ticking = false;
     
@@ -955,11 +1008,14 @@ body {
       const maxScroll = document.body.scrollHeight - window.innerHeight;
       const progress = Math.min(sy / (maxScroll * 0.6), 1);
       const deg = progress * 180;
+      const pulse = 0.018 * Math.sin(progress * Math.PI);
       
       cards.forEach((card, i) => {
         if (!card) return;
-        card.style.transform = `translate(${positions[i]}px, 0) scale(${scales[i]}) rotateX(${deg}deg)`;
+        const scale = scales[i] + pulse + (i === focusIndex ? 0.02 : 0);
+        card.style.transform = `translate3d(${positions[i]}px, 0, 0) scale(${scale}) rotateX(${deg}deg)`;
         card.style.zIndex = zIndexes[i];
+        card.classList.toggle('active', i === focusIndex);
       });
       
       if (scrollHint) {
@@ -1065,23 +1121,6 @@ body {
     }
   }
 
-  // ===== MOBILE CAROUSEL =====
-  function initMobileCarousel() {
-    if (!stage) return;
-    
-    const firstCard = stage.querySelector('.card-wrap');
-    if (!firstCard) return;
-    
-    const step = firstCard.offsetWidth + 18;
-    let pos = 0;
-    
-    setInterval(() => {
-      pos += step;
-      if (pos >= stage.scrollWidth - stage.offsetWidth + 10) pos = 0;
-      stage.scrollTo({ left: pos, behavior: 'smooth' });
-    }, 3000);
-  }
-
   // ===== CARD CLICK HANDLER =====
   document.querySelectorAll('.card-wrap').forEach(card => {
     card.addEventListener('click', (e) => {
@@ -1129,6 +1168,110 @@ body {
     });
   }
 })();
+function initMobileStackReveal(cards) {
+  if (!cards.length || !hero) return;
+  const cardList = Array.from(cards);
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  hero.style.minHeight = '100svh';
+  document.body.classList.add('scroll-lock');
+
+  cardList.forEach((card) => {
+    card.classList.remove('show');
+    card.style.transitionDelay = '0ms';
+  });
+
+  let progress = 0;
+  let ticking = false;
+  let touchY = null;
+  const clamp = (v) => Math.min(Math.max(v, 0), 1);
+  const setScrollLock = (locked) => {
+    document.body.classList.toggle('scroll-lock', locked);
+  };
+
+  const isHeroActive = () => {
+    const rect = hero.getBoundingClientRect();
+    return rect.top <= 0 && rect.bottom >= window.innerHeight * 0.6;
+  };
+
+  function updateCards() {
+    const exactIndex = progress * cardList.length;
+    const activeIndex = Math.min(Math.floor(exactIndex), cardList.length - 1);
+    const stepProgress = exactIndex - activeIndex;
+    const nextReveal = prefersReducedMotion ? (stepProgress > 0.05 ? 1 : 0) : Math.max(0, (stepProgress - 0.12) / 0.5);
+
+    cardList.forEach((card, i) => {
+      const isActive = i === activeIndex;
+      const isNext = i === activeIndex + 1;
+      const baseScale = isActive ? 1 : 0.94;
+      const scale = baseScale + (isActive ? 0.015 : 0);
+      const opacity = isActive ? 1 - nextReveal : (isNext ? nextReveal : 0);
+
+      card.style.setProperty('--card-scale', scale.toFixed(3));
+      card.classList.toggle('show', isActive || (isNext && opacity > 0));
+      card.classList.toggle('active', isActive);
+      card.style.opacity = opacity.toFixed(3);
+      card.style.transform = `translate3d(-50%, ${isActive ? 0 : 18}px, 0) scale(${scale})`;
+    });
+
+    ticking = false;
+  }
+
+  function onWheel(e) {
+    const inHero = isHeroActive();
+    if (!inHero) {
+      setScrollLock(false);
+      return;
+    }
+
+    const delta = e.deltaY;
+    if ((delta > 0 && progress >= 1) || (delta < 0 && progress <= 0)) {
+      setScrollLock(false);
+      return;
+    }
+
+    setScrollLock(true);
+    e.preventDefault();
+    progress = clamp(progress + delta * 0.0009);
+    if (!ticking) {
+      requestAnimationFrame(updateCards);
+      ticking = true;
+    }
+  }
+
+  function onTouchStart(e) {
+    if (e.touches && e.touches.length) touchY = e.touches[0].clientY;
+  }
+
+  function onTouchMove(e) {
+    if (touchY === null || !e.touches || !e.touches.length) return;
+    const currentY = e.touches[0].clientY;
+    const delta = touchY - currentY;
+    touchY = currentY;
+    const inHero = isHeroActive();
+    if (!inHero) {
+      setScrollLock(false);
+      return;
+    }
+    if ((delta > 0 && progress >= 1) || (delta < 0 && progress <= 0)) {
+      setScrollLock(false);
+      return;
+    }
+
+    setScrollLock(true);
+    e.preventDefault();
+    progress = clamp(progress + delta * 0.0022);
+    if (!ticking) {
+      requestAnimationFrame(updateCards);
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('wheel', onWheel, { passive: false });
+  window.addEventListener('touchstart', onTouchStart, { passive: false });
+  window.addEventListener('touchmove', onTouchMove, { passive: false });
+
+  updateCards();
+}
 </script>
 
 </body>
