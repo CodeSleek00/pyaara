@@ -674,8 +674,7 @@ body {
 }
 
 .content-section {
-  min-height: 100vh;
-  padding: 4rem 2rem;
+ 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -817,6 +816,504 @@ body.scroll-lock {
     flex-direction: column;
   }
 }
+
+ 
+
+    :root {
+      --transition-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --glass-border: rgba(255, 255, 255, 0.12);
+    }
+
+    /* sections container global */
+    .sections-container {
+     
+    }
+
+    .content-section {
+      position: relative;
+     
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .section-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.9;
+    }
+
+    .section-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+    }
+
+    /* ========== SECTION 1 – ANIME CARDS (REFINED MOBILE + DESKTOP) ========== */
+    .anime-section {
+      width: 100%;
+      background: radial-gradient(ellipse at 30% 40%, #1e102a 0%, #08060c 95%);
+      border-radius: 2rem;
+      padding: 2rem 1.2rem 2.5rem;
+      box-shadow: 0 30px 40px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(168, 85, 247, 0.25);
+      backdrop-filter: blur(2px);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .section-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.4rem, 7vw, 4rem);
+      letter-spacing: 6px;
+      background: linear-gradient(135deg, #fff 20%, #c28aff 70%, #ffbefd 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 10px rgba(160, 120, 255, 0.3);
+    }
+
+    .section-header p {
+      color: #b69ed4;
+      font-size: 0.75rem;
+      letter-spacing: 5px;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+
+    /* desktop grid: 4 columns but responsive */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      perspective: 1400px;
+    }
+
+    .anime-card {
+      position: relative;
+    
+      overflow: visible;
+      cursor: pointer;
+      height: 400px;
+      width: 100%;
+      transition: transform 0.4s var(--transition-smooth);
+      transform-style: preserve-3d;
+    }
+
+    .anime-card .card-front {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #15121f;
+      border: 1px solid rgba(188, 148, 255, 0.25);
+      transition: all 0.45s var(--transition-smooth);
+      transform-origin: center bottom;
+      box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    /* desktop hover */
+    @media (min-width: 769px) {
+      .anime-card:hover .card-front {
+        transform: translateY(260px) scale(0.82) rotateX(8deg);
+        opacity: 0.35;
+      }
+      .anime-card:hover .character-3d {
+        opacity: 1;
+        transform: translateY(-20px) scale(1.08);
+      }
+      .anime-card:hover .card-info {
+        transform: translateZ(40px) rotateX(5deg) rotateY(-5deg);
+      }
+      .anime-card:hover .card-desc {
+        max-height: 90px;
+        opacity: 1;
+      }
+    }
+
+    .character-3d {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      opacity: 0;
+      transition: all 0.55s var(--transition-smooth);
+      transform: translateY(30px) scale(0.92);
+      background-size: cover;
+      background-position: center 15%;
+      border-radius: 24px;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.5rem;
+      filter: drop-shadow(0 20px 18px rgba(0, 0, 0, 0.7));
+    }
+
+    .character-3d::before {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 10%;
+      width: 80%;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      filter: blur(15px);
+      z-index: -1;
+    }
+
+    .character-3d::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #0b0712 0%, transparent 65%);
+      border-radius: 24px;
+      z-index: 1;
+    }
+
+    .char-quote {
+      position: relative;
+      z-index: 5;
+      color: white;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.9rem;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #fff8e7, #e2c5ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.2;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .char-quote small {
+      font-size: 0.7rem;
+      display: block;
+      font-family: 'Noto Sans JP', sans-serif;
+      -webkit-text-fill-color: #cfb3ff;
+      letter-spacing: 1px;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.78) contrast(1.05);
+      transition: transform 0.3s;
+    }
+
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #0f0b1a 0%, rgba(30, 15, 40, 0.5) 40%, transparent 75%);
+      z-index: 2;
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 10;
+      background: rgba(120, 90, 210, 0.4);
+      backdrop-filter: blur(10px);
+      border-radius: 40px;
+      padding: 4px 12px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #f0e4ff;
+      border: 1px solid rgba(210, 170, 255, 0.6);
+      letter-spacing: 0.5px;
+    }
+
+    .card-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 6;
+      padding: 1.2rem;
+      transition: transform 0.4s var(--transition-smooth);
+    }
+
+    .card-genre {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: #cfb9ff;
+      font-weight: 500;
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      color: #fff;
+      letter-spacing: 2px;
+      margin: 6px 0 6px;
+      line-height: 1.2;
+    }
+
+    .card-desc {
+      font-size: 0.7rem;
+      color: #ccbbe9;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s ease, opacity 0.3s;
+      opacity: 0;
+      margin-top: 6px;
+    }
+
+    .card-meta {
+      display: flex;
+      gap: 14px;
+      margin-top: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .card-rating { color: #facc15; }
+    .card-episodes { color: #a38bd6; }
+
+    /* mobile carousel section */
+    .cards-carousel {
+      display: none;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 1rem;
+      padding: 0.8rem 0.8rem 1.8rem;
+      scrollbar-width: thin;
+      scrollbar-color: #b77df2 #2a1f3a;
+    }
+    .cards-carousel::-webkit-scrollbar {
+      height: 4px;
+    }
+    .cards-carousel::-webkit-scrollbar-track {
+      background: #2a1f3a;
+      border-radius: 10px;
+    }
+    .cards-carousel::-webkit-scrollbar-thumb {
+      background: #b77df2;
+      border-radius: 10px;
+    }
+
+    .cards-carousel .anime-card {
+      flex: 0 0 78vw;
+      max-width: 280px;
+      scroll-snap-align: center;
+      height: 390px;
+      transform: scale(0.98);
+      transition: transform 0.2s ease;
+    }
+    .cards-carousel .anime-card:active {
+      transform: scale(0.97);
+    }
+
+    /* touch / mobile specific: we disable hover effects, but keep 3d tilt? we add subtle active */
+    @media (max-width: 768px) {
+      .anime-card .character-3d {
+        opacity: 0;
+        pointer-events: none;
+      }
+      /* special: on tap we show a little quote? but we keep clean: mobile only shows standard card-front and on click we could toggle? 
+         But to match smooth design, we preserve original style, but the hover effect on desktop transforms.
+         For better UX, on mobile we don't show 3D popup, but we keep full card interaction with clean swipe.
+      */
+      .anime-card .card-front {
+        transform: none !important;
+      }
+      .anime-card:hover .card-front {
+        transform: none !important;
+        opacity: 1;
+      }
+      .cards-grid {
+        display: none;
+      }
+      .cards-carousel {
+        display: flex;
+      }
+      .carousel-dots {
+        display: flex;
+      }
+      .card-desc {
+        max-height: 65px;
+        opacity: 1;
+        margin-top: 6px;
+      }
+      .card-info {
+        transform: none;
+      }
+      .anime-card .card-front {
+        transition: box-shadow 0.2s;
+      }
+      .anime-card:active .card-front {
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        transform: scale(0.99);
+      }
+    }
+
+    .carousel-dots {
+      display: none;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #5b4c7c;
+      transition: all 0.25s;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: #dbbaff;
+      width: 22px;
+      border-radius: 8px;
+    }
+
+    /* ========== OTHER SECTIONS - modern & cohesive ========== */
+    .featured-section {
+      background: linear-gradient(125deg, #0f172a 0%, #1e1b4b 100%);
+      border-radius: 2rem;
+      padding: 2.5rem 2rem;
+      margin-top: 1rem;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, #e9d5ff, #b4adff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+    }
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .featured-item {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(12px);
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border: 1px solid rgba(255,255,240,0.12);
+    }
+    .featured-item:hover {
+      transform: translateY(-8px);
+      background: rgba(139, 92, 246, 0.2);
+      border-color: rgba(188, 148, 255, 0.5);
+    }
+    .featured-item h3 {
+      font-size: 1.5rem;
+      margin: 0.7rem 0;
+      color: white;
+    }
+    .featured-item p { color: #cfc6ff; font-size: 0.85rem; }
+
+    .category-section {
+      background: radial-gradient(circle at 10% 30%, #2b1b3a, #0b0720);
+      border-radius: 2rem;
+      padding: 2.5rem 2rem;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.8rem;
+    }
+    .category-card {
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(6px);
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+      text-align: center;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(210, 170, 255, 0.2);
+    }
+    .category-card:hover { transform: scale(1.02); background: rgba(100, 70, 160, 0.5);}
+    .category-card h3 { color: #f0d9ff; font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 700;}
+    .category-card p { color: #b9a5e6; }
+
+    .newsletter-section {
+      background: linear-gradient(115deg, #0f2b3d, #1e1a4a);
+      border-radius: 2rem;
+      padding: 2.8rem 2rem;
+      text-align: center;
+    }
+    .newsletter-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      max-width: 520px;
+      margin: 1.5rem auto 0;
+    }
+    .newsletter-input {
+      flex: 2;
+      min-width: 200px;
+      padding: 0.9rem 1.3rem;
+      border-radius: 60px;
+      border: none;
+      background: #ffffffdd;
+      font-size: 0.9rem;
+      outline: none;
+      transition: 0.2s;
+    }
+    .newsletter-input:focus { background: white; box-shadow: 0 0 0 3px #b77df2; }
+    .newsletter-btn {
+      background: #7c3aed;
+      padding: 0.9rem 1.8rem;
+      border-radius: 60px;
+      font-weight: bold;
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .newsletter-btn:hover { background: #a855f7; transform: scale(0.97);}
+
+    .testimonials-section {
+      background: linear-gradient(125deg, #101728, #261c3a);
+      border-radius: 2rem;
+      padding: 2.5rem 2rem;
+    }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.8rem;
+    }
+    .testimonial-card {
+      background: rgba(20, 12, 36, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 1.5rem;
+      padding: 1.7rem;
+      border-left: 4px solid #c084fc;
+    }
+    .testimonial-card p { color: #ddd6fe; font-style: italic; }
+    .testimonial-card h4 { margin-top: 1rem; color: #e9d5ff; }
+
+    @media (max-width: 550px) {
+      .anime-section { padding: 1.5rem 0.8rem 1.8rem; }
+      .cards-carousel .anime-card { max-width: 260px; height: 380px; }
+      .featured-section, .category-section, .newsletter-section, .testimonials-section { padding: 1.8rem; }
+      .newsletter-form { flex-direction: column; }
+      .newsletter-btn { width: 100%; }
+      .section-title { font-size: 1.8rem; text-align: center; }
+    }
 </style>
 </head>
 <body>
@@ -922,7 +1419,47 @@ body.scroll-lock {
       </div>
     </div>
   </div>
-  v vc. cv vc. v
+  </div>
+  <div class="sections-container" id="sectionsContainer">
+  
+  <!-- SECTION 1 - Anime Cards (Enhanced Mobile Swipe) -->
+  <section class="content-section" data-section="1">
+    <div class="section-bg" style="background: radial-gradient(circle at 20% 30%, #0d0718, #020008);"></div>
+    <div class="section-content">
+      <div class="anime-section">
+        <div class="section-header">
+          <h1>Coming Soon</h1>
+          <p>3D STANDS // ICONIC MOMENTS</p>
+        </div>
+
+        <!-- Desktop Grid -->
+        <div class="cards-grid" id="desktopGrid">
+          <!-- card 1 -->
+          <div class="anime-card" data-tilt data-name="tanjiro">
+            <div class="card-front"><img class="card-img" src="https://i.imgur.com/0y8Ftya.jpg" alt="Demon Slayer" loading="lazy"><div class="card-overlay"></div><div class="card-badge">🔥 Trending</div><div class="card-info"><div class="card-genre">Action · Supernatural</div><div class="card-title">DEMON SLAYER</div><div class="card-desc">Tanjiro fights to save Nezuko. Flames, water, unwavering bonds.</div><div class="card-meta"><span class="card-rating">★ 9.4</span><span class="card-episodes">44 eps</span></div></div></div>
+            <div class="character-3d" style="background-image: url('https://i.imgur.com/6f8u0yA.png'); background-position: center 12%; background-size: cover;"><div class="char-quote">TANJIRO <small>水の呼吸</small></div></div>
+          </div>
+          <div class="anime-card">
+            <div class="card-front"><img class="card-img" src="https://i.imgur.com/kBSWcR9.jpg" alt="Attack on Titan" loading="lazy"><div class="card-overlay"></div><div class="card-badge">⚔️ Epic</div><div class="card-info"><div class="card-genre">Dark Fantasy · War</div><div class="card-title">ATTACK ON TITAN</div><div class="card-desc">Humanity's last stand. The truth will shatter everything.</div><div class="card-meta"><span class="card-rating">★ 9.9</span><span class="card-episodes">87 eps</span></div></div></div>
+            <div class="character-3d" style="background-image: url('https://i.imgur.com/hHRs5A8.jpg'); background-position: center 20%; background-size: cover;"><div class="char-quote">EREN <small>進撃</small></div></div>
+          </div>
+          <div class="anime-card">
+            <div class="card-front"><img class="card-img" src="https://i.imgur.com/LwzrxvJ.jpg" alt="Jujutsu Kaisen" loading="lazy"><div class="card-overlay"></div><div class="card-badge">💀 Dark</div><div class="card-info"><div class="card-genre">Occult · Shonen</div><div class="card-title">JUJUTSU KAISEN</div><div class="card-desc">Cursed energy, fingers, and the will to fight for the right death.</div><div class="card-meta"><span class="card-rating">★ 9.3</span><span class="card-episodes">48 eps</span></div></div></div>
+            <div class="character-3d" style="background-image: url('https://i.imgur.com/tfcn45t.jpg'); background-position: center 30%; background-size: cover;"><div class="char-quote">YUJI <small>呪術</small></div></div>
+          </div>
+          <div class="anime-card">
+            <div class="card-front"><img class="card-img" src="https://i.imgur.com/G4yOd9c.jpg" alt="One Piece" loading="lazy"><div class="card-overlay"></div><div class="card-badge">🌊 Legend</div><div class="card-info"><div class="card-genre">Adventure · Pirate</div><div class="card-title">ONE PIECE</div><div class="card-desc">The king of pirates, a rubber boy, and the great treasure.</div><div class="card-meta"><span class="card-rating">★ 9.7</span><span class="card-episodes">1000+ eps</span></div></div></div>
+            <div class="character-3d" style="background-image: url('https://i.imgur.com/qhPqk8d.jpg'); background-position: center 25%; background-size: cover;"><div class="char-quote">LUFFY <small>ギア5</small></div></div>
+          </div>
+        </div>
+
+        <!-- Mobile Carousel (dynamic clone) -->
+        <div class="cards-carousel" id="mobileCarousel"></div>
+        <div class="carousel-dots" id="dotsWrap"></div>
+      </div>
+    </div>
+  </section>
+
 
 <script>
 (function() {
