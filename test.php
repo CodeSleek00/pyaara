@@ -674,13 +674,14 @@ body {
 }
 
 .content-section {
- 
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.5s ease;
   position: relative;
   overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: 900px 1000px;
 }
 
 /* Section Backgrounds with Dynamic Effects */
@@ -1472,6 +1473,7 @@ body.scroll-lock {
   const scrollHint = document.getElementById('scrollHint');
   const sections = document.querySelectorAll('.content-section');
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (isMobile) document.body.classList.add('mobile-scroll-cards');
 
   // Failsafe: if JS runs but the load event never fires, show the page anyway.
@@ -1524,8 +1526,14 @@ body.scroll-lock {
           initMobileStackReveal(cards);
         }
         
-        // Initialize section effects
-        initSectionEffects();
+        // Initialize section effects (defer for perf)
+        if (!isMobile && !prefersReducedMotion) {
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => initSectionEffects(), { timeout: 1500 });
+          } else {
+            setTimeout(() => initSectionEffects(), 800);
+          }
+        }
       }, 500);
     }, 1900);
   });
@@ -1709,7 +1717,6 @@ body.scroll-lock {
 function initMobileStackReveal(cards) {
   if (!cards.length || !hero) return;
   const cardList = Array.from(cards);
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   hero.style.minHeight = '100svh';
   document.body.classList.add('scroll-lock');
 
