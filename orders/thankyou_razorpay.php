@@ -4,7 +4,7 @@ include 'db_connect.php';
 $order_id = $_GET['order_id'] ?? '';
 $payment_id = $_GET['payment_id'] ?? '';
 
-if (empty($order_id) {
+if (empty($order_id)) {
     header("Location: ../index.php");
     exit();
 }
