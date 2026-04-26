@@ -36,10 +36,12 @@ if ($stmt) {
   }
   $stmt->close();
 }
-
 function price_final($row) {
-  $o = (float)$row['original_price'];
-  $d = (float)$row['discount_price'];
+  if (!is_array($row)) return 0;
+
+  $o = (float)($row['original_price'] ?? 0);
+  $d = (float)($row['discount_price'] ?? 0);
+
   return ($d > 0 && $d < $o) ? $d : $o;
 }
 ?>
