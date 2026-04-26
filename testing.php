@@ -1,11 +1,10 @@
-```php
+
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 $conn = null;
 
-// DB connection
 if (file_exists(__DIR__ . '/orders/db_connect.php')) {
   require_once __DIR__ . '/orders/db_connect.php';
 } elseif (file_exists(__DIR__ . '/temp_db.php')) {
@@ -25,123 +24,117 @@ $stmt = $conn->prepare("
   FROM products
   WHERE page IN (?, ?)
   ORDER BY id DESC
+  LIMIT 8
 ");
 
 if ($stmt) {
   $stmt->bind_param('ss', $pageA, $pageB);
-  if ($stmt->execute()) {
-    $res = $stmt->get_result();
-    if ($res) {
-      while ($row = $res->fetch_assoc()) {
-        $products[] = $row;
-      }
-    } else {
-      $id = $image = $name = $original = $discount = null;
-      if ($stmt->bind_result($id, $image, $name, $original, $discount)) {
-        while ($stmt->fetch()) {
-          $products[] = [
-            'id' => $id,
-            'image' => $image,
-            'name' => $name,
-            'original_price' => $original,
-            'discount_price' => $discount,
-          ];
-        }
-      }
-    }
+  $stmt->execute();
+  $res = $stmt->get_result();
+  while ($row = $res->fetch_assoc()) {
+    $products[] = $row;
   }
   $stmt->close();
 }
 
-function price_final(array $row): float {
-  $original = (float)($row['original_price'] ?? 0);
-  $discount = (float)($row['discount_price'] ?? 0);
-  if ($discount > 0 && $discount < $original) return $discount;
-  return $original;
+function price_final($row) {
+  $o = (float)$row['original_price'];
+  $d = (float)$row['discount_price'];
+  return ($d > 0 && $d < $o) ? $d : $o;
 }
 ?>
-<!doctype html>
-<html lang="en">
+
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Products</title>
+<title>Anime Products</title>
 
 <style>
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background: #0a0a0f;
   color: white;
+  overflow-x: hidden;
 }
 
-/* SHUTTER */
-#shutter {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
+/* SECTION 1 (HERO) */
+.hero {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #000 0%, #120a25 100%);
 }
 
-.shutter-top,
-.shutter-bottom {
-  position: absolute;
-  width: 100%;
-  height: 50%;
-  background: radial-gradient(ellipse at center, #000000 0%, #110921 100%);
-  transition: transform 1s ease-in-out;
+.hero h1 {
+  font-size: 80px;
+  letter-spacing: 10px;
+  opacity: 0.8;
+  transform: scale(0.8);
+  transition: 1s;
 }
 
-.shutter-top { top: 0; }
-.shutter-bottom { bottom: 0; }
-
-.open .shutter-top { transform: translateY(-100%); }
-.open .shutter-bottom { transform: translateY(100%); }
-
-/* PRODUCTS */
-.container {
-  padding: 40px;
+/* SCROLL EFFECT */
+.hero.shrink h1 {
+  transform: scale(1.2);
+  opacity: 0;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
+/* PRODUCTS SECTION */
+.products {
+  padding: 60px 40px;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
+/* GRID 2 ROWS FIXED */
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 
   opacity: 0;
-  transform: translateY(50px);
-  transition: all 1s ease;
+  transform: translateY(100px);
+  transition: 1s ease;
 }
 
-.show-products ul {
+.show .grid {
   opacity: 1;
   transform: translateY(0);
 }
 
-li {
+/* PRODUCT CARD */
+.card {
   background: #111;
   padding: 15px;
-  border-radius: 12px;
-  transition: 0.3s;
+  border-radius: 15px;
+  transform: translateY(50px) scale(0.9);
+  opacity: 0;
+  transition: 0.5s ease;
 }
 
-li:hover {
-  transform: translateY(-5px);
+.show .card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
 }
 
-img {
+/* STAGGER EFFECT */
+.card:nth-child(1) { transition-delay: 0.1s; }
+.card:nth-child(2) { transition-delay: 0.2s; }
+.card:nth-child(3) { transition-delay: 0.3s; }
+.card:nth-child(4) { transition-delay: 0.4s; }
+.card:nth-child(5) { transition-delay: 0.5s; }
+.card:nth-child(6) { transition-delay: 0.6s; }
+.card:nth-child(7) { transition-delay: 0.7s; }
+.card:nth-child(8) { transition-delay: 0.8s; }
+
+.card img {
   width: 100%;
   border-radius: 10px;
-  margin-top: 10px;
+}
+
+.card:hover {
+  transform: scale(1.05);
 }
 
 a {
@@ -151,72 +144,61 @@ a {
 }
 
 .price {
-  margin-top: 5px;
   display: block;
+  margin-top: 5px;
+}
+
+/* MOBILE */
+@media(max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
-
 </head>
+
 <body>
 
-<!-- SHUTTER -->
-<div id="shutter">
-  <div class="shutter-top"></div>
-  <div class="shutter-bottom"></div>
-</div>
+<!-- HERO -->
+<section class="hero" id="hero">
+  <h1>ANIME</h1>
+</section>
 
-<div class="container">
-  <h1>🔥 Products</h1>
+<!-- PRODUCTS -->
+<section class="products" id="products">
+  <div class="grid">
+    <?php foreach ($products as $row): ?>
+      <div class="card">
+        <a href="orders/product_detail.php?id=<?= $row['id'] ?>">
+          <?= htmlspecialchars($row['name']) ?>
+        </a>
 
-  <?php if (empty($products)): ?>
-    <p>No products found.</p>
-  <?php else: ?>
-    <p>Total: <?= count($products) ?></p>
+        <span class="price">₹<?= number_format(price_final($row)) ?></span>
 
-    <ul>
-      <?php foreach ($products as $row): ?>
-        <?php
-          $id = (int)($row['id'] ?? 0);
-          $name = htmlspecialchars((string)$row['name'], ENT_QUOTES, 'UTF-8');
-          $image = htmlspecialchars((string)$row['image'], ENT_QUOTES, 'UTF-8');
-          $price = price_final($row);
-        ?>
-        <li>
-          <a href="orders/product_detail.php?id=<?= $id ?>">
-            <?= $name ?>
-          </a>
-
-          <span class="price">₹<?= number_format($price) ?></span>
-
-          <?php if ($image): ?>
-            <img src="orders/uploads/<?= $image ?>" alt="<?= $name ?>">
-          <?php endif; ?>
-        </li>
-      <?php endforeach; ?>
-    </ul>
-  <?php endif; ?>
-</div>
+        <img src="orders/uploads/<?= htmlspecialchars($row['image']) ?>">
+      </div>
+    <?php endforeach; ?>
+  </div>
+</section>
 
 <script>
-let opened = false;
+let triggered = false;
 
 window.addEventListener("scroll", () => {
-  if (!opened && window.scrollY > 50) {
-    document.getElementById("shutter").classList.add("open");
-    document.body.classList.add("show-products");
-    opened = true;
-  }
-});
+  let scroll = window.scrollY;
 
-/* OPTIONAL AUTO OPEN */
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    document.getElementById("shutter").classList.add("open");
-    document.body.classList.add("show-products");
-  }, 700);
+  // HERO shrink effect
+  if (scroll > 50) {
+    document.getElementById("hero").classList.add("shrink");
+  }
+
+  // PRODUCT reveal
+  if (!triggered && scroll > window.innerHeight / 2) {
+    document.getElementById("products").classList.add("show");
+    triggered = true;
+  }
 });
 </script>
 
 </body>
 </html>
-```
