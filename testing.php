@@ -1,3 +1,70 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$conn = null;
+
+if (file_exists(__DIR__ . '/orders/db_connect.php')) {
+  require_once __DIR__ . '/orders/db_connect.php';
+} elseif (file_exists(__DIR__ . '/temp_db.php')) {
+  require_once __DIR__ . '/temp_db.php';
+}
+
+if (!($conn instanceof mysqli)) {
+  die('Database connection not available.');
+}
+
+$pageA = 'anime.php';
+$pageB = 'orders/anime.php';
+$products = [];
+
+$stmt = $conn->prepare("
+  SELECT id, image, name, original_price, discount_price
+  FROM products
+  WHERE page IN (?, ?)
+  ORDER BY id DESC
+  LIMIT 8
+");
+
+if ($stmt) {
+  $stmt->bind_param('ss', $pageA, $pageB);
+  if ($stmt->execute()) {
+    $res = $stmt->get_result();
+    if ($res) {
+      while ($row = $res->fetch_assoc()) {
+        $products[] = $row;
+      }
+    } else {
+      // Fallback for environments without mysqlnd (no get_result()).
+      $id = null;
+      $image = null;
+      $name = null;
+      $original = null;
+      $discount = null;
+      if ($stmt->bind_result($id, $image, $name, $original, $discount)) {
+        while ($stmt->fetch()) {
+          $products[] = [
+            'id' => $id,
+            'image' => $image,
+            'name' => $name,
+            'original_price' => $original,
+            'discount_price' => $discount,
+          ];
+        }
+      }
+    }
+  }
+  $stmt->close();
+}
+function price_final($row) {
+  if (!is_array($row)) return 0;
+
+  $o = (float)($row['original_price'] ?? 0);
+  $d = (float)($row['discount_price'] ?? 0);
+
+  return ($d > 0 && $d < $o) ? $d : $o;
+}
+?>
 Here is an HTML document that creates an anime product showcase page with a Tailwind CSS framework and a dark blue to white gradient background.
 ```html
 <!DOCTYPE html>
