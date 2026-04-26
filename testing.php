@@ -1,4 +1,3 @@
-```php
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -29,10 +28,31 @@ $stmt = $conn->prepare("
 
 if ($stmt) {
   $stmt->bind_param('ss', $pageA, $pageB);
-  $stmt->execute();
-  $res = $stmt->get_result();
-  while ($row = $res->fetch_assoc()) {
-    $products[] = $row;
+  if ($stmt->execute()) {
+    $res = $stmt->get_result();
+    if ($res) {
+      while ($row = $res->fetch_assoc()) {
+        $products[] = $row;
+      }
+    } else {
+      // Fallback for environments without mysqlnd (no get_result()).
+      $id = null;
+      $image = null;
+      $name = null;
+      $original = null;
+      $discount = null;
+      if ($stmt->bind_result($id, $image, $name, $original, $discount)) {
+        while ($stmt->fetch()) {
+          $products[] = [
+            'id' => $id,
+            'image' => $image,
+            'name' => $name,
+            'original_price' => $original,
+            'discount_price' => $discount,
+          ];
+        }
+      }
+    }
   }
   $stmt->close();
 }
