@@ -728,7 +728,7 @@ body {
   75% { transform: translateY(20px) translateX(10px); }
 }
 
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
   body.mobile-scroll-cards .hero {
     min-height: 100svh;
   }
@@ -795,15 +795,15 @@ body.scroll-lock {
     display: none;
   }
 
-  .cards-grid {
+  .ac-grid {
     display: none;
   }
 
-  .cards-carousel {
+  .ac-carousel {
     display: flex;
   }
 
-  .carousel-dots {
+  .ac-dots {
     display: flex;
   }
 
@@ -851,7 +851,7 @@ body.scroll-lock {
     }
 
     /* ========== SECTION 1 – ANIME CARDS (REFINED MOBILE + DESKTOP) ========== */
-    .anime-section {
+    .ac-section {
       width: 100%;
       background: radial-gradient(ellipse at 30% 40%, #1e102a 0%, #08060c 95%);
       border-radius: 2rem;
@@ -860,12 +860,12 @@ body.scroll-lock {
       backdrop-filter: blur(2px);
     }
 
-    .section-header {
+    .ac-header {
       text-align: center;
       margin-bottom: 2rem;
     }
 
-    .section-header h1 {
+    .ac-header h1 {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(2.4rem, 7vw, 4rem);
       letter-spacing: 6px;
@@ -876,7 +876,7 @@ body.scroll-lock {
       text-shadow: 0 2px 10px rgba(160, 120, 255, 0.3);
     }
 
-    .section-header p {
+    .ac-header p {
       color: #b69ed4;
       font-size: 0.75rem;
       letter-spacing: 5px;
@@ -885,7 +885,7 @@ body.scroll-lock {
     }
 
     /* desktop grid: 4 columns but responsive */
-    .cards-grid {
+    .ac-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1.5rem;
@@ -894,7 +894,7 @@ body.scroll-lock {
       perspective: 1400px;
     }
 
-    .anime-card {
+    .ac-card {
       position: relative;
     
       overflow: visible;
@@ -905,7 +905,7 @@ body.scroll-lock {
       transform-style: preserve-3d;
     }
 
-    .anime-card .card-front {
+    .ac-card .ac-front {
       position: absolute;
       inset: 0;
       z-index: 5;
@@ -920,24 +920,24 @@ body.scroll-lock {
 
     /* desktop hover */
     @media (min-width: 769px) {
-      .anime-card:hover .card-front {
+      .ac-card:hover .ac-front {
         transform: translateY(260px) scale(0.82) rotateX(8deg);
         opacity: 0.35;
       }
-      .anime-card:hover .character-3d {
+      .ac-card:hover .ac-character {
         opacity: 1;
         transform: translateY(-20px) scale(1.08);
       }
-      .anime-card:hover .card-info {
+      .ac-card:hover .ac-info {
         transform: translateZ(40px) rotateX(5deg) rotateY(-5deg);
       }
-      .anime-card:hover .card-desc {
+      .ac-card:hover .ac-desc {
         max-height: 90px;
         opacity: 1;
       }
     }
 
-    .character-3d {
+    .ac-character {
       position: absolute;
       inset: 0;
       z-index: 20;
@@ -953,7 +953,7 @@ body.scroll-lock {
       filter: drop-shadow(0 20px 18px rgba(0, 0, 0, 0.7));
     }
 
-    .character-3d::before {
+    .ac-character::before {
       content: '';
       position: absolute;
       bottom: -20px;
@@ -966,7 +966,7 @@ body.scroll-lock {
       z-index: -1;
     }
 
-    .character-3d::after {
+    .ac-character::after {
       content: '';
       position: absolute;
       inset: 0;
@@ -975,7 +975,7 @@ body.scroll-lock {
       z-index: 1;
     }
 
-    .char-quote {
+    .ac-quote {
       position: relative;
       z-index: 5;
       color: white;
@@ -990,7 +990,7 @@ body.scroll-lock {
       text-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
-    .char-quote small {
+    .ac-quote small {
       font-size: 0.7rem;
       display: block;
       font-family: 'Noto Sans JP', sans-serif;
@@ -998,7 +998,7 @@ body.scroll-lock {
       letter-spacing: 1px;
     }
 
-    .card-img {
+    .ac-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -1006,14 +1006,14 @@ body.scroll-lock {
       transition: transform 0.3s;
     }
 
-    .card-overlay {
+    .ac-overlay {
       position: absolute;
       inset: 0;
       background: linear-gradient(to top, #0f0b1a 0%, rgba(30, 15, 40, 0.5) 40%, transparent 75%);
       z-index: 2;
     }
 
-    .card-badge {
+    .ac-badge {
       position: absolute;
       top: 16px;
       right: 16px;
@@ -1029,7 +1029,7 @@ body.scroll-lock {
       letter-spacing: 0.5px;
     }
 
-    .card-info {
+    .ac-info {
       position: absolute;
       bottom: 0;
       left: 0;
@@ -1039,14 +1039,14 @@ body.scroll-lock {
       transition: transform 0.4s var(--transition-smooth);
     }
 
-    .card-genre {
+    .ac-genre {
       font-size: 0.6rem;
       letter-spacing: 2px;
       color: #cfb9ff;
       font-weight: 500;
     }
 
-    .card-title {
+    .ac-title {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 1.6rem;
       color: #fff;
@@ -1055,7 +1055,7 @@ body.scroll-lock {
       line-height: 1.2;
     }
 
-    .card-desc {
+    .ac-desc {
       font-size: 0.7rem;
       color: #ccbbe9;
       max-height: 0;
@@ -1065,7 +1065,7 @@ body.scroll-lock {
       margin-top: 6px;
     }
 
-    .card-meta {
+    .ac-meta {
       display: flex;
       gap: 14px;
       margin-top: 10px;
@@ -1073,11 +1073,11 @@ body.scroll-lock {
       font-weight: 600;
     }
 
-    .card-rating { color: #facc15; }
-    .card-episodes { color: #a38bd6; }
+    .ac-rating { color: #facc15; }
+    .ac-episodes { color: #a38bd6; }
 
     /* mobile carousel section */
-    .cards-carousel {
+    .ac-carousel {
       display: none;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
@@ -1087,19 +1087,19 @@ body.scroll-lock {
       scrollbar-width: thin;
       scrollbar-color: #b77df2 #2a1f3a;
     }
-    .cards-carousel::-webkit-scrollbar {
+    .ac-carousel::-webkit-scrollbar {
       height: 4px;
     }
-    .cards-carousel::-webkit-scrollbar-track {
+    .ac-carousel::-webkit-scrollbar-track {
       background: #2a1f3a;
       border-radius: 10px;
     }
-    .cards-carousel::-webkit-scrollbar-thumb {
+    .ac-carousel::-webkit-scrollbar-thumb {
       background: #b77df2;
       border-radius: 10px;
     }
 
-    .cards-carousel .anime-card {
+    .ac-carousel .ac-card {
       flex: 0 0 78vw;
       max-width: 280px;
       scroll-snap-align: center;
@@ -1107,13 +1107,13 @@ body.scroll-lock {
       transform: scale(0.98);
       transition: transform 0.2s ease;
     }
-    .cards-carousel .anime-card:active {
+    .ac-carousel .ac-card:active {
       transform: scale(0.97);
     }
 
     /* touch / mobile specific: we disable hover effects, but keep 3d tilt? we add subtle active */
     @media (max-width: 768px) {
-      .anime-card .character-3d {
+      .ac-card .ac-character {
         opacity: 0;
         pointer-events: none;
       }
@@ -1121,40 +1121,40 @@ body.scroll-lock {
          But to match smooth design, we preserve original style, but the hover effect on desktop transforms.
          For better UX, on mobile we don't show 3D popup, but we keep full card interaction with clean swipe.
       */
-      .anime-card .card-front {
+      .ac-card .ac-front {
         transform: none !important;
       }
-      .anime-card:hover .card-front {
+      .ac-card:hover .ac-front {
         transform: none !important;
         opacity: 1;
       }
-      .cards-grid {
+      .ac-grid {
         display: none;
       }
-      .cards-carousel {
+      .ac-carousel {
         display: flex;
       }
-      .carousel-dots {
+      .ac-dots {
         display: flex;
       }
-      .card-desc {
+      .ac-desc {
         max-height: 65px;
         opacity: 1;
         margin-top: 6px;
       }
-      .card-info {
+      .ac-info {
         transform: none;
       }
-      .anime-card .card-front {
+      .ac-card .ac-front {
         transition: box-shadow 0.2s;
       }
-      .anime-card:active .card-front {
+      .ac-card:active .ac-front {
         box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         transform: scale(0.99);
       }
     }
 
-    .carousel-dots {
+    .ac-dots {
       display: none;
       justify-content: center;
       gap: 10px;
@@ -1162,16 +1162,18 @@ body.scroll-lock {
       margin-bottom: 0.5rem;
     }
 
-    .dot {
+    .ac-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
       background: #5b4c7c;
       transition: all 0.25s;
       cursor: pointer;
+      border: 0;
+      padding: 0;
     }
 
-    .dot.active {
+    .ac-dot.active {
       background: #dbbaff;
       width: 22px;
       border-radius: 8px;
@@ -1308,8 +1310,8 @@ body.scroll-lock {
     .testimonial-card h4 { margin-top: 1rem; color: #e9d5ff; }
 
     @media (max-width: 550px) {
-      .anime-section { padding: 1.5rem 0.8rem 1.8rem; }
-      .cards-carousel .anime-card { max-width: 260px; height: 380px; }
+      .ac-section { padding: 1.5rem 0.8rem 1.8rem; }
+      .ac-carousel .ac-card { max-width: 260px; height: 380px; }
       .featured-section, .category-section, .newsletter-section, .testimonials-section { padding: 1.8rem; }
       .newsletter-form { flex-direction: column; }
       .newsletter-btn { width: 100%; }
@@ -1427,36 +1429,36 @@ body.scroll-lock {
   <section class="content-section" data-section="1">
     <div class="section-bg" style="background: radial-gradient(circle at 20% 30%, #0d0718, #020008);"></div>
     <div class="section-content">
-      <div class="anime-section">
-        <div class="section-header">
+      <div class="ac-section">
+        <div class="ac-header">
           <h1>Coming Soon</h1>
           <p>3D STANDS // ICONIC MOMENTS</p>
         </div>
 
         <!-- Desktop Grid -->
-        <div class="cards-grid" id="desktopGrid">
+        <div class="ac-grid" id="desktopGrid">
           <!-- card 1 -->
-          <div class="anime-card" data-tilt data-name="tanjiro">
-            <div class="card-front"><img class="card-img" src="https://i.imgur.com/0y8Ftya.jpg" alt="Demon Slayer" loading="lazy"><div class="card-overlay"></div><div class="card-badge">🔥 Trending</div><div class="card-info"><div class="card-genre">Action · Supernatural</div><div class="card-title">DEMON SLAYER</div><div class="card-desc">Tanjiro fights to save Nezuko. Flames, water, unwavering bonds.</div><div class="card-meta"><span class="card-rating">★ 9.4</span><span class="card-episodes">44 eps</span></div></div></div>
-            <div class="character-3d" style="background-image: url('https://i.imgur.com/6f8u0yA.png'); background-position: center 12%; background-size: cover;"><div class="char-quote">TANJIRO <small>水の呼吸</small></div></div>
+          <div class="ac-card" data-tilt data-name="tanjiro">
+            <div class="ac-front"><img class="ac-img" src="https://i.imgur.com/0y8Ftya.jpg" alt="Demon Slayer" loading="lazy"><div class="ac-overlay"></div><div class="ac-badge">🔥 Trending</div><div class="ac-info"><div class="ac-genre">Action · Supernatural</div><div class="ac-title">DEMON SLAYER</div><div class="ac-desc">Tanjiro fights to save Nezuko. Flames, water, unwavering bonds.</div><div class="ac-meta"><span class="ac-rating">★ 9.4</span><span class="ac-episodes">44 eps</span></div></div></div>
+            <div class="ac-character" style="background-image: url('https://i.imgur.com/6f8u0yA.png'); background-position: center 12%; background-size: cover;"><div class="ac-quote">TANJIRO <small>水の呼吸</small></div></div>
           </div>
-          <div class="anime-card">
-            <div class="card-front"><img class="card-img" src="https://i.imgur.com/kBSWcR9.jpg" alt="Attack on Titan" loading="lazy"><div class="card-overlay"></div><div class="card-badge">⚔️ Epic</div><div class="card-info"><div class="card-genre">Dark Fantasy · War</div><div class="card-title">ATTACK ON TITAN</div><div class="card-desc">Humanity's last stand. The truth will shatter everything.</div><div class="card-meta"><span class="card-rating">★ 9.9</span><span class="card-episodes">87 eps</span></div></div></div>
-            <div class="character-3d" style="background-image: url('https://i.imgur.com/hHRs5A8.jpg'); background-position: center 20%; background-size: cover;"><div class="char-quote">EREN <small>進撃</small></div></div>
+          <div class="ac-card">
+            <div class="ac-front"><img class="ac-img" src="https://i.imgur.com/kBSWcR9.jpg" alt="Attack on Titan" loading="lazy"><div class="ac-overlay"></div><div class="ac-badge">⚔️ Epic</div><div class="ac-info"><div class="ac-genre">Dark Fantasy · War</div><div class="ac-title">ATTACK ON TITAN</div><div class="ac-desc">Humanity's last stand. The truth will shatter everything.</div><div class="ac-meta"><span class="ac-rating">★ 9.9</span><span class="ac-episodes">87 eps</span></div></div></div>
+            <div class="ac-character" style="background-image: url('https://i.imgur.com/hHRs5A8.jpg'); background-position: center 20%; background-size: cover;"><div class="ac-quote">EREN <small>進撃</small></div></div>
           </div>
-          <div class="anime-card">
-            <div class="card-front"><img class="card-img" src="https://i.imgur.com/LwzrxvJ.jpg" alt="Jujutsu Kaisen" loading="lazy"><div class="card-overlay"></div><div class="card-badge">💀 Dark</div><div class="card-info"><div class="card-genre">Occult · Shonen</div><div class="card-title">JUJUTSU KAISEN</div><div class="card-desc">Cursed energy, fingers, and the will to fight for the right death.</div><div class="card-meta"><span class="card-rating">★ 9.3</span><span class="card-episodes">48 eps</span></div></div></div>
-            <div class="character-3d" style="background-image: url('https://i.imgur.com/tfcn45t.jpg'); background-position: center 30%; background-size: cover;"><div class="char-quote">YUJI <small>呪術</small></div></div>
+          <div class="ac-card">
+            <div class="ac-front"><img class="ac-img" src="https://i.imgur.com/LwzrxvJ.jpg" alt="Jujutsu Kaisen" loading="lazy"><div class="ac-overlay"></div><div class="ac-badge">💀 Dark</div><div class="ac-info"><div class="ac-genre">Occult · Shonen</div><div class="ac-title">JUJUTSU KAISEN</div><div class="ac-desc">Cursed energy, fingers, and the will to fight for the right death.</div><div class="ac-meta"><span class="ac-rating">★ 9.3</span><span class="ac-episodes">48 eps</span></div></div></div>
+            <div class="ac-character" style="background-image: url('https://i.imgur.com/tfcn45t.jpg'); background-position: center 30%; background-size: cover;"><div class="ac-quote">YUJI <small>呪術</small></div></div>
           </div>
-          <div class="anime-card">
-            <div class="card-front"><img class="card-img" src="https://i.imgur.com/G4yOd9c.jpg" alt="One Piece" loading="lazy"><div class="card-overlay"></div><div class="card-badge">🌊 Legend</div><div class="card-info"><div class="card-genre">Adventure · Pirate</div><div class="card-title">ONE PIECE</div><div class="card-desc">The king of pirates, a rubber boy, and the great treasure.</div><div class="card-meta"><span class="card-rating">★ 9.7</span><span class="card-episodes">1000+ eps</span></div></div></div>
-            <div class="character-3d" style="background-image: url('https://i.imgur.com/qhPqk8d.jpg'); background-position: center 25%; background-size: cover;"><div class="char-quote">LUFFY <small>ギア5</small></div></div>
+          <div class="ac-card">
+            <div class="ac-front"><img class="ac-img" src="https://i.imgur.com/G4yOd9c.jpg" alt="One Piece" loading="lazy"><div class="ac-overlay"></div><div class="ac-badge">🌊 Legend</div><div class="ac-info"><div class="ac-genre">Adventure · Pirate</div><div class="ac-title">ONE PIECE</div><div class="ac-desc">The king of pirates, a rubber boy, and the great treasure.</div><div class="ac-meta"><span class="ac-rating">★ 9.7</span><span class="ac-episodes">1000+ eps</span></div></div></div>
+            <div class="ac-character" style="background-image: url('https://i.imgur.com/qhPqk8d.jpg'); background-position: center 25%; background-size: cover;"><div class="ac-quote">LUFFY <small>ギア5</small></div></div>
           </div>
         </div>
 
         <!-- Mobile Carousel (dynamic clone) -->
-        <div class="cards-carousel" id="mobileCarousel"></div>
-        <div class="carousel-dots" id="dotsWrap"></div>
+        <div class="ac-carousel" id="mobileCarousel"></div>
+        <div class="ac-dots" id="dotsWrap"></div>
       </div>
     </div>
   </section>
@@ -1677,7 +1679,7 @@ body.scroll-lock {
   });
 
   // ===== 3D TILT EFFECT =====
-  const desktopCards = document.querySelectorAll('#desktopGrid .anime-card');
+  const desktopCards = document.querySelectorAll('#desktopGrid .ac-card');
   desktopCards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();
@@ -1697,21 +1699,56 @@ body.scroll-lock {
 
   // ===== MOBILE CAROUSEL SETUP =====
   const mobileCarousel = document.getElementById('mobileCarousel');
-  const dots = document.querySelectorAll('.dot');
+  const dotsWrap = document.getElementById('dotsWrap');
   
-  if (mobileCarousel && desktopCards.length) {
-    desktopCards.forEach(card => {
+  if (mobileCarousel && dotsWrap && desktopCards.length) {
+    mobileCarousel.innerHTML = '';
+    dotsWrap.innerHTML = '';
+
+    desktopCards.forEach((card, idx) => {
       const clone = card.cloneNode(true);
+      clone.style.transform = '';
       mobileCarousel.appendChild(clone);
-    });
-    
-    // Scroll dots
-    mobileCarousel.addEventListener('scroll', () => {
-      const idx = Math.round(mobileCarousel.scrollLeft / (mobileCarousel.offsetWidth * 0.75));
-      dots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === idx);
+
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = `ac-dot${idx === 0 ? ' active' : ''}`;
+      dot.setAttribute('aria-label', `Go to card ${idx + 1}`);
+      dot.addEventListener('click', () => {
+        const cards = mobileCarousel.querySelectorAll('.ac-card');
+        const target = cards[idx];
+        if (target) target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       });
+      dotsWrap.appendChild(dot);
     });
+
+    const updateDots = () => {
+      const cards = Array.from(mobileCarousel.querySelectorAll('.ac-card'));
+      if (!cards.length) return;
+
+      const center = mobileCarousel.scrollLeft + mobileCarousel.clientWidth / 2;
+      let activeIndex = 0;
+      let best = Infinity;
+
+      cards.forEach((card, i) => {
+        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+        const diff = Math.abs(cardCenter - center);
+        if (diff < best) {
+          best = diff;
+          activeIndex = i;
+        }
+      });
+
+      dotsWrap.querySelectorAll('.ac-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === activeIndex);
+      });
+    };
+
+    mobileCarousel.addEventListener('scroll', () => {
+      requestAnimationFrame(updateDots);
+    }, { passive: true });
+
+    updateDots();
   }
 })();
 function initMobileStackReveal(cards) {
