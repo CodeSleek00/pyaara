@@ -209,19 +209,25 @@ a {
     </div>
 
     <!-- PRODUCTS -->
-    <div class="products">
-      <div class="grid">
-        <?php foreach ($products as $row): ?>
-          <div class="card">
-            <a href="orders/product_detail.php?id=<?= $row['id'] ?>">
-              <?= htmlspecialchars($row['name']) ?>
-            </a>
-            <span class="price">₹<?= number_format(price_final($row)) ?></span>
-            <img src="orders/uploads/<?= htmlspecialchars($row['image']) ?>">
-          </div>
-        <?php endforeach; ?>
-      </div>
-    </div>
+  <div class="card">
+  <a href="orders/product_detail.php?id=<?= $row['id'] ?>">
+    <?= htmlspecialchars($row['name']) ?>
+  </a>
+
+  <span class="price">₹<?= number_format(price_final($row)) ?></span>
+
+  <img src="orders/uploads/<?= htmlspecialchars($row['image']) ?>">
+
+  <!-- BUTTONS -->
+  <div class="btns">
+    <a href="orders/product_detail.php?id=<?= $row['id'] ?>" class="btn view">View</a>
+    
+    <form action="orders/add_to_cart.php" method="POST">
+      <input type="hidden" name="product_id" value="<?= $row['id'] ?>">
+      <button type="submit" class="btn buy">Buy Now</button>
+    </form>
+  </div>
+</div>
 
   </section>
 
