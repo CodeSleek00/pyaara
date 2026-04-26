@@ -26,6 +26,46 @@ $stmt = $conn->prepare("
 $stmt->bind_param("sii", $page, $limit, $offset);
 $stmt->execute();
 $exclusiveProducts = $stmt->get_result();
+
+// Anime products (used in bottom section)
+$animeProducts = [];
+$animePageA = 'anime.php';
+$animePageB = 'orders/anime.php';
+$animeStmt = $conn->prepare("
+  SELECT id, image, name, original_price, discount_price
+  FROM products
+  WHERE page IN (?, ?)
+  ORDER BY id DESC
+  LIMIT 16
+");
+if ($animeStmt) {
+  $animeStmt->bind_param("ss", $animePageA, $animePageB);
+  if ($animeStmt->execute()) {
+    $animeRes = $animeStmt->get_result();
+    if ($animeRes) {
+      while ($row = $animeRes->fetch_assoc()) $animeProducts[] = $row;
+    } else {
+      // Fallback for environments without mysqlnd (no get_result()).
+      $id = null;
+      $image = null;
+      $name = null;
+      $original = null;
+      $discount = null;
+      if ($animeStmt->bind_result($id, $image, $name, $original, $discount)) {
+        while ($animeStmt->fetch()) {
+          $animeProducts[] = [
+            'id' => $id,
+            'image' => $image,
+            'name' => $name,
+            'original_price' => $original,
+            'discount_price' => $discount,
+          ];
+        }
+      }
+    }
+  }
+  $animeStmt->close();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -1222,6 +1262,141 @@ body.scroll-lock {
       border-radius: 8px;
     }
 
+    /* ========== SECTION 2 – ANIME PRODUCTS (FROM DB) ========== */
+    .ap-section {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.2rem 1.2rem 2.6rem;
+      border-radius: 2rem;
+      background: radial-gradient(ellipse at 30% 20%, rgba(120, 90, 210, 0.18) 0%, rgba(8, 6, 12, 0.95) 72%);
+      border: 1px solid rgba(188, 148, 255, 0.18);
+      box-shadow: 0 28px 44px -22px rgba(0,0,0,0.75), 0 0 0 1px rgba(168, 85, 247, 0.18);
+    }
+
+    .ap-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .ap-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.1rem, 6vw, 3.2rem);
+      letter-spacing: 6px;
+      background: linear-gradient(135deg, #fff 15%, #c28aff 65%, #ffbefd 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .ap-jp {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      color: rgba(255, 230, 0, 0.7);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .ap-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+    }
+
+    .ap-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      padding: 0.95rem;
+      overflow: hidden;
+      transition: transform 0.25s var(--transition-smooth), border-color 0.25s var(--transition-smooth), background 0.25s var(--transition-smooth);
+    }
+
+    .ap-card:hover {
+      transform: translateY(-6px);
+      background: rgba(139, 92, 246, 0.16);
+      border-color: rgba(188, 148, 255, 0.35);
+    }
+
+    .ap-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 0.8rem;
+    }
+
+    .ap-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .ap-name {
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1.2;
+      min-height: 2.4em;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ap-price {
+      margin-top: 0.5rem;
+      color: rgba(255, 230, 0, 0.9);
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .ap-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 0.8rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 14px;
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 2px;
+      text-decoration: none;
+      background: linear-gradient(90deg, var(--yellow), #ffb347);
+      color: #111;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .ap-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+    .ap-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      padding: 2rem 1rem;
+      border: 1px dashed rgba(255,255,255,0.18);
+      border-radius: 18px;
+      background: rgba(0,0,0,0.22);
+    }
+
+    @media (max-width: 1024px) {
+      .ap-grid { grid-template-columns: repeat(3, 1fr); }
+      .ap-jp { display: none; }
+    }
+    @media (max-width: 768px) {
+      .ap-grid { grid-template-columns: repeat(2, 1fr); }
+      .ap-section { padding: 1.7rem 0.9rem 2rem; }
+    }
+
     /* ========== OTHER SECTIONS - modern & cohesive ========== */
     .featured-section {
       background: linear-gradient(125deg, #0f172a 0%, #1e1b4b 100%);
@@ -1502,6 +1677,52 @@ body.scroll-lock {
         <!-- Mobile Carousel (dynamic clone) -->
         <div class="ac-carousel" id="mobileCarousel"></div>
         <div class="ac-dots" id="dotsWrap"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 - Anime Products (from anime.php) -->
+  <section class="content-section" data-section="2">
+    <div class="section-bg"></div>
+    <div class="section-content">
+      <div class="ap-section">
+        <div class="ap-header">
+          <div class="ap-title">ANIME</div>
+          <div class="ap-jp">アニメ・スタイル</div>
+        </div>
+
+        <div class="ap-grid">
+          <?php if (empty($animeProducts)): ?>
+            <div class="ap-empty">
+              <strong>Coming Soon.</strong><br>
+              Add products with <code>page = anime.php</code> in DB.
+            </div>
+          <?php else: ?>
+            <?php foreach ($animeProducts as $row): ?>
+              <?php
+                if (!is_array($row)) continue;
+                $id = (int)($row['id'] ?? 0);
+                $name = htmlspecialchars((string)($row['name'] ?? 'Unnamed'), ENT_QUOTES, 'UTF-8');
+                $img = htmlspecialchars((string)($row['image'] ?? ''), ENT_QUOTES, 'UTF-8');
+                $o = (float)($row['original_price'] ?? 0);
+                $d = (float)($row['discount_price'] ?? 0);
+                $final = ($d > 0 && $d < $o) ? $d : $o;
+              ?>
+              <div class="ap-card">
+                <div class="ap-thumb">
+                  <?php if ($img !== ''): ?>
+                    <img loading="lazy" src="orders/uploads/<?= $img ?>" alt="<?= $name ?>" onerror="this.style.display='none'">
+                  <?php else: ?>
+                    <span style="color:rgba(255,255,255,0.55); font-size:1.6rem;">🎴</span>
+                  <?php endif; ?>
+                </div>
+                <div class="ap-name"><?= $name ?></div>
+                <div class="ap-price">₹<?= number_format($final) ?></div>
+                <a class="ap-btn" href="orders/product_detail.php?id=<?= $id ?>">OPEN</a>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
   </section>
