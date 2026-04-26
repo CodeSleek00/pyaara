@@ -33,6 +33,24 @@ if ($stmt) {
       while ($row = $res->fetch_assoc()) {
         $products[] = $row;
       }
+    } else {
+      // Fallback for environments without mysqlnd (no get_result()).
+      $id = null;
+      $image = null;
+      $name = null;
+      $original = null;
+      $discount = null;
+      if ($stmt->bind_result($id, $image, $name, $original, $discount)) {
+        while ($stmt->fetch()) {
+          $products[] = [
+            'id' => $id,
+            'image' => $image,
+            'name' => $name,
+            'original_price' => $original,
+            'discount_price' => $discount,
+          ];
+        }
+      }
     }
   } else {
     die('Query failed.');
@@ -78,6 +96,12 @@ if ($stmt) {
       pointer-events: none;
       text-align: center;
       background: radial-gradient(circle at 30% 10%, rgba(255,59,111,0.15), rgba(0,0,0,0) 70%);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    body.zone-active .hero {
+      opacity: 0.08;
+      transform: translateY(-14px) scale(0.98);
     }
 
     .hero .main-title {
@@ -134,7 +158,7 @@ if ($stmt) {
       justify-content: center;
       gap: 40px;
       flex-wrap: wrap;
-      z-index: 2;
+      z-index: 30;
       padding: 110px 20px 80px;
       pointer-events: none;
     }
@@ -430,7 +454,7 @@ if ($stmt) {
   <i class="fas fa-hand-peace"></i> <?= count($products) ?> items loaded &nbsp;&nbsp;|&nbsp;&nbsp; scroll → products pop in &nbsp;&nbsp;|&nbsp;&nbsp; scroll past → fade out
 </div>
 
-<script>
+  <script>
   (function() {
     const zone = document.getElementById('dropZone');
     const cards = Array.from(document.querySelectorAll('#products .card'));
@@ -468,17 +492,23 @@ if ($stmt) {
         const entry = entries[0];
         const active = !!entry?.isIntersecting;
         zone.classList.toggle('is-active', active);
+        document.body.classList.toggle('zone-active', active);
         if (active) showProducts();
         else hideProducts();
       };
 
-      const observer = new IntersectionObserver(onIntersect, {
-        root: null,
-        threshold: 0.35,
-        rootMargin: '-15% 0px -25% 0px',
-      });
-
-      observer.observe(zone);
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(onIntersect, {
+          root: null,
+          threshold: 0.35,
+          rootMargin: '-15% 0px -25% 0px',
+        });
+        observer.observe(zone);
+      } else {
+        zone.classList.add('is-active');
+        document.body.classList.add('zone-active');
+        showProducts();
+      }
     }
 
     let ticking = false;
