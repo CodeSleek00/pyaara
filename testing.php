@@ -209,6 +209,22 @@ a {
   margin-top: 5px;
 }
 
+.btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #020008;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
 /* MOBILE */
 @media(max-width:900px){
   .grid{
@@ -253,6 +269,7 @@ a {
               <?php if ($image !== ''): ?>
                 <img loading="lazy" src="orders/uploads/<?= $image ?>" alt="<?= $name ?>">
               <?php endif; ?>
+              <a class="btn" href="orders/product_detail.php?id=<?= $id ?>">Open Product</a>
             </div>
           <?php endforeach; ?>
         <?php endif; ?>
