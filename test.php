@@ -51,6 +51,8 @@ $exclusiveProducts = $stmt->get_result();
   --red2: #ff1a4f;
   --white: #f0ede8;
   --white2: #ffffff;
+  --scene-bg: radial-gradient(circle at 20% 30%, #0d0718, #020008);
+  --scene-bg-solid: #020008;
   --card-w: 210px;
   --card-h: 295px;
   --transition-smooth: cubic-bezier(0.23, 1, 0.32, 1);
@@ -69,14 +71,15 @@ $exclusiveProducts = $stmt->get_result();
   box-sizing: border-box;
 }
 
-html {
+html,
+body {
   scroll-behavior: smooth;
 }
 
 body {
   font-family: 'Rajdhani', sans-serif;
-  background: var(--white2);
-  color: var(--ink);
+  background: var(--scene-bg-solid);
+  color: var(--white2);
   overflow-x: hidden;
   cursor: none;
 
@@ -177,7 +180,19 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: var(--ink);
+  background: var(--scene-bg);
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, rgba(2, 0, 8, 0) 0%, var(--scene-bg-solid) 85%);
+  pointer-events: none;
+  z-index: 4;
 }
 
 /* Background Effects */
@@ -387,6 +402,7 @@ body {
   border-radius: 6px;
   backface-visibility: hidden;
   overflow: hidden;
+ 
 }
 
 /* Card Front */
@@ -681,6 +697,19 @@ body {
 .sections-container {
   position: relative;
   z-index: 1;
+  background: var(--scene-bg);
+}
+
+.sections-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 220px;
+  background: linear-gradient(to bottom, var(--scene-bg-solid) 0%, rgba(2, 0, 8, 0) 100%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .content-section {
@@ -689,6 +718,7 @@ body {
   justify-content: center;
   transition: background 0.5s ease;
   position: relative;
+  z-index: 1;
   overflow: hidden;
   content-visibility: auto;
   contain-intrinsic-size: 900px 1000px;
@@ -700,6 +730,7 @@ body {
   inset: 0;
   z-index: 0;
   transition: all 0.5s ease;
+  background: var(--scene-bg);
 }
 
 .section-bg::before {
@@ -816,7 +847,9 @@ body.scroll-lock {
   .ac-dots {
     display: flex;
   }
-
+  .card-front{
+     height: 125%;
+  }
   .featured-grid,
   .category-grid,
   .testimonials-grid {
@@ -863,8 +896,8 @@ body.scroll-lock {
     /* ========== SECTION 1 – ANIME CARDS (REFINED MOBILE + DESKTOP) ========== */
     .ac-section {
       width: 100%;
-      background: radial-gradient(ellipse at 30% 40%, #1e102a 0%, #08060c 95%);
-      border-radius: 2rem;
+     background: linear-gradient(to bottom, #000000 0%, #110921 95%);
+     
       padding: 2rem 1.2rem 2.5rem;
       box-shadow: 0 30px 40px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(168, 85, 247, 0.25);
       backdrop-filter: blur(2px);
@@ -1437,7 +1470,7 @@ body.scroll-lock {
   
   <!-- SECTION 1 - Anime Cards (Enhanced Mobile Swipe) -->
   <section class="content-section" data-section="1">
-    <div class="section-bg" style="background: radial-gradient(circle at 20% 30%, #0d0718, #020008);"></div>
+    <div class="section-bg"></div>
     <div class="section-content">
       <div class="ac-section">
         <div class="ac-header">
