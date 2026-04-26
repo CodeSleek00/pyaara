@@ -183,14 +183,24 @@ body {
 /* Background Effects */
 .speed-lines {
   position: absolute;
-  inset: 0;
-  opacity: 0.04;
-  background: repeating-conic-gradient(from 0deg at 50% 50%, #fff 0deg 1deg, transparent 1deg 6deg);
+  top: 50%;
+  left: 50%;
+  width: 200vmax;
+  height: 200vmax;
+  opacity: 0.085;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(255, 255, 255, 0.9) 0deg 1.2deg,
+    transparent 1.2deg 4.8deg
+  );
+  transform-origin: center;
   animation: rotateSlow 60s linear infinite;
+  pointer-events: none;
 }
 
 @keyframes rotateSlow {
-  to { transform: rotate(360deg); }
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .halftone {
