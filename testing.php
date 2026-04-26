@@ -48,18 +48,20 @@ function price_final($row) {
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- ANIME FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+JP:wght@300;700&display=swap" rel="stylesheet">
+
 <title>Anime Products</title>
 
 <style>
 body {
   margin: 0;
-  font-family: Arial;
-  background: #0a0a0f;
-  color: white;
+  font-family: 'Noto Sans JP', sans-serif;
   overflow-x: hidden;
 }
 
-/* SECTION WRAPPER */
+/* WRAPPER */
 .wrapper {
   height: 200vh;
 }
@@ -72,17 +74,34 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, #000 0%, #120a25 100%);
+  
+  background: linear-gradient(to bottom, #020008 0%, #ffffff 100%);
   overflow: hidden;
 }
 
+/* MAIN TEXT */
 .hero h1 {
-  font-size: 90px;
-  letter-spacing: 12px;
+  font-family: 'Bangers', cursive;
+  font-size: 100px;
+  letter-spacing: 10px;
+  color: white;
+  text-shadow: 0 0 20px rgba(255,255,255,0.2);
   transition: 0.6s ease;
 }
 
-/* PRODUCTS OVERLAY */
+/* JAPANESE TEXT */
+.jp-text {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  font-size: 28px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 5px;
+}
+
+/* PRODUCTS */
 .products {
   position: absolute;
   top: 0;
@@ -107,9 +126,10 @@ body {
   gap: 20px;
 }
 
-/* CARDS */
+/* CARD */
 .card {
-  background: #111;
+  background: white;
+  color: black;
   padding: 15px;
   border-radius: 15px;
   transform: translateY(60px);
@@ -136,9 +156,13 @@ body {
 .card:nth-child(7){transition-delay:0.7s}
 .card:nth-child(8){transition-delay:0.8s}
 
-/* ACTIVE STATE */
+/* ACTIVE */
 .active .hero h1 {
-  transform: scale(0.6);
+  transform: scale(0.5);
+  opacity: 0;
+}
+
+.active .jp-text {
   opacity: 0;
 }
 
@@ -153,7 +177,7 @@ body {
 }
 
 a {
-  color: #00d4ff;
+  color: black;
   text-decoration: none;
   font-weight: bold;
 }
@@ -179,7 +203,12 @@ a {
   <section class="hero">
     <h1>ANIME</h1>
 
-    <!-- PRODUCTS SAME SCREEN -->
+    <!-- JAPANESE TEXT -->
+    <div class="jp-text">
+      アニメ・スタイル
+    </div>
+
+    <!-- PRODUCTS -->
     <div class="products">
       <div class="grid">
         <?php foreach ($products as $row): ?>
