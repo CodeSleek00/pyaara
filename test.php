@@ -1535,7 +1535,7 @@ body.scroll-lock {
           }
         }
       }, 500);
-    }, 1900);
+    }, 500);
   });
 
   // ===== SCROLL FLIP EFFECT =====
