@@ -27,7 +27,7 @@ $stmt->bind_param("sii", $page, $limit, $offset);
 $stmt->execute();
 $exclusiveProducts = $stmt->get_result();
 
-// Anime products (used in bottom section)
+// Anime products (limit)
 $animeProducts = [];
 $animePageA = 'anime.php';
 $animePageB = 'orders/anime.php';
@@ -36,14 +36,16 @@ $animeStmt = $conn->prepare("
   FROM products
   WHERE page IN (?, ?)
   ORDER BY id DESC
-  LIMIT 16
+  LIMIT 8
 ");
 if ($animeStmt) {
   $animeStmt->bind_param("ss", $animePageA, $animePageB);
   if ($animeStmt->execute()) {
     $animeRes = $animeStmt->get_result();
     if ($animeRes) {
-      while ($row = $animeRes->fetch_assoc()) $animeProducts[] = $row;
+      while ($row = $animeRes->fetch_assoc()) {
+        $animeProducts[] = $row;
+      }
     } else {
       // Fallback for environments without mysqlnd (no get_result()).
       $id = null;
@@ -1263,16 +1265,41 @@ body.scroll-lock {
     }
 
     /* ========== SECTION 2 – ANIME PRODUCTS (FROM DB) ========== */
+    .content-section[data-section="2"] .section-bg {
+      background: linear-gradient(to bottom, #110921 0%, #cfe6ff 55%, #ffffff 100%);
+      opacity: 1;
+    }
+
     .ap-section {
       width: 100%;
       max-width: 1200px;
       margin: 0 auto;
       padding: 2.2rem 1.2rem 2.6rem;
       border-radius: 2rem;
-      background: radial-gradient(ellipse at 30% 20%, rgba(120, 90, 210, 0.18) 0%, rgba(8, 6, 12, 0.95) 72%);
-      border: 1px solid rgba(188, 148, 255, 0.18);
-      box-shadow: 0 28px 44px -22px rgba(0,0,0,0.75), 0 0 0 1px rgba(168, 85, 247, 0.18);
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(37, 99, 235, 0.18);
+      box-shadow: 0 24px 46px -26px rgba(2, 6, 23, 0.28), 0 0 0 1px rgba(255,255,255,0.35);
+      backdrop-filter: blur(8px);
     }
+
+    /* shutter reveal */
+    .ap-section::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(180deg, rgba(17, 9, 33, 0.92) 0%, rgba(207, 230, 255, 0.92) 55%, rgba(255, 255, 255, 0.98) 100%);
+      transform: translateY(0);
+      transition: transform 0.85s var(--transition-smooth);
+      z-index: 0;
+    }
+
+    .content-section.is-active .ap-section::before {
+      transform: translateY(-105%);
+    }
+
+    .ap-section > * { position: relative; z-index: 1; }
 
     .ap-header {
       display: flex;
@@ -1286,7 +1313,7 @@ body.scroll-lock {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(2.1rem, 6vw, 3.2rem);
       letter-spacing: 6px;
-      background: linear-gradient(135deg, #fff 15%, #c28aff 65%, #ffbefd 100%);
+      background: linear-gradient(135deg, #0f172a 15%, #2563eb 70%, #60a5fa 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -1296,7 +1323,7 @@ body.scroll-lock {
       font-family: 'Noto Sans JP', sans-serif;
       font-size: 0.95rem;
       letter-spacing: 3px;
-      color: rgba(255, 230, 0, 0.7);
+      color: rgba(37, 99, 235, 0.85);
       text-align: right;
       white-space: nowrap;
     }
@@ -1308,25 +1335,43 @@ body.scroll-lock {
     }
 
     .ap-card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(37, 99, 235, 0.14);
       border-radius: 18px;
       padding: 0.95rem;
       overflow: hidden;
-      transition: transform 0.25s var(--transition-smooth), border-color 0.25s var(--transition-smooth), background 0.25s var(--transition-smooth);
+      transition: transform 0.25s var(--transition-smooth), border-color 0.25s var(--transition-smooth), background 0.25s var(--transition-smooth), clip-path 0.55s var(--transition-smooth), opacity 0.55s var(--transition-smooth);
+      transform: translateY(22px) scale(0.985);
+      opacity: 0;
+      clip-path: inset(0 0 100% 0 round 18px);
     }
 
+    .content-section.is-active .ap-card {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      clip-path: inset(0 0 0 0 round 18px);
+    }
+
+    .content-section.is-active .ap-card:nth-child(1) { transition-delay: 0.04s; }
+    .content-section.is-active .ap-card:nth-child(2) { transition-delay: 0.08s; }
+    .content-section.is-active .ap-card:nth-child(3) { transition-delay: 0.12s; }
+    .content-section.is-active .ap-card:nth-child(4) { transition-delay: 0.16s; }
+    .content-section.is-active .ap-card:nth-child(5) { transition-delay: 0.20s; }
+    .content-section.is-active .ap-card:nth-child(6) { transition-delay: 0.24s; }
+    .content-section.is-active .ap-card:nth-child(7) { transition-delay: 0.28s; }
+    .content-section.is-active .ap-card:nth-child(8) { transition-delay: 0.32s; }
+
     .ap-card:hover {
-      transform: translateY(-6px);
-      background: rgba(139, 92, 246, 0.16);
-      border-color: rgba(188, 148, 255, 0.35);
+      transform: translateY(-6px) scale(1.01);
+      background: rgba(255,255,255,0.98);
+      border-color: rgba(37, 99, 235, 0.35);
     }
 
     .ap-thumb {
       width: 100%;
       aspect-ratio: 1 / 1;
       border-radius: 14px;
-      background: rgba(0,0,0,0.28);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.10), rgba(255,255,255,0.65));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1342,7 +1387,7 @@ body.scroll-lock {
     }
 
     .ap-name {
-      color: #fff;
+      color: #0f172a;
       font-weight: 700;
       font-size: 0.95rem;
       line-height: 1.2;
@@ -1355,7 +1400,7 @@ body.scroll-lock {
 
     .ap-price {
       margin-top: 0.5rem;
-      color: rgba(255, 230, 0, 0.9);
+      color: rgba(37, 99, 235, 0.95);
       font-weight: 800;
       letter-spacing: 1px;
     }
@@ -1371,8 +1416,8 @@ body.scroll-lock {
       font-family: 'Bebas Neue', sans-serif;
       letter-spacing: 2px;
       text-decoration: none;
-      background: linear-gradient(90deg, var(--yellow), #ffb347);
-      color: #111;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+      color: #fff;
       transition: transform 0.15s ease, filter 0.15s ease;
     }
 
@@ -1381,11 +1426,17 @@ body.scroll-lock {
     .ap-empty {
       grid-column: 1 / -1;
       text-align: center;
-      color: rgba(255,255,255,0.7);
+      color: rgba(15, 23, 42, 0.8);
       padding: 2rem 1rem;
-      border: 1px dashed rgba(255,255,255,0.18);
+      border: 1px dashed rgba(37, 99, 235, 0.22);
       border-radius: 18px;
-      background: rgba(0,0,0,0.22);
+      background: rgba(255,255,255,0.7);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ap-section::before { transition: none; }
+      .ap-card { transition: none; transform: none; clip-path: none; opacity: 1; }
+      .content-section.is-active .ap-card { clip-path: none; }
     }
 
     @media (max-width: 1024px) {
@@ -1681,7 +1732,7 @@ body.scroll-lock {
     </div>
   </section>
 
-  <!-- SECTION 2 - Anime Products (from anime.php) -->
+  <!-- SECTION 2 - Anime Products (from DB) -->
   <section class="content-section" data-section="2">
     <div class="section-bg"></div>
     <div class="section-content">
@@ -1789,15 +1840,15 @@ body.scroll-lock {
         if (!isMobile) {
           initScrollFlip(cards);
         } else {
-          initMobileStackReveal(cards);
+          initMobileStackReveal(cards, hero, stage, prefersReducedMotion);
         }
         
-        // Initialize section effects (defer for perf)
-        if (!isMobile && !prefersReducedMotion) {
+        // Initialize section effects (needed for section enter animations)
+        if (!prefersReducedMotion) {
           if ('requestIdleCallback' in window) {
             requestIdleCallback(() => initSectionEffects(), { timeout: 1500 });
           } else {
-            setTimeout(() => initSectionEffects(), 800);
+            setTimeout(() => initSectionEffects(), 400);
           }
         }
       }, 500);
@@ -1872,6 +1923,7 @@ body.scroll-lock {
         
         // Check if section is in view
         if (viewportCenter >= sectionTop && viewportCenter <= sectionBottom) {
+          section.classList.add('is-active');
           bg.classList.add('active');
           
           // Add glow effect based on scroll position
@@ -1879,6 +1931,7 @@ body.scroll-lock {
           const scale = 1 + Math.sin(progress * Math.PI) * 0.1;
           bg.style.transform = `scale(${scale})`;
         } else {
+          section.classList.remove('is-active');
           bg.classList.remove('active');
           bg.style.transform = 'scale(1)';
         }
@@ -2015,11 +2068,10 @@ body.scroll-lock {
     updateDots();
   }
 })();
-function initMobileStackReveal(cards) {
-  if (!cards.length || !hero) return;
+function initMobileStackReveal(cards, heroEl, stageEl, prefersReducedMotionFlag) {
+  if (!cards.length || !heroEl) return;
   const cardList = Array.from(cards);
-  hero.style.minHeight = '100svh';
-  document.body.classList.add('scroll-lock');
+  heroEl.style.minHeight = '100svh';
 
   cardList.forEach((card) => {
     card.classList.remove('show');
@@ -2029,13 +2081,14 @@ function initMobileStackReveal(cards) {
   let progress = 0;
   let ticking = false;
   let touchY = null;
+  let touchInStage = false;
   const clamp = (v) => Math.min(Math.max(v, 0), 1);
   const setScrollLock = (locked) => {
     document.body.classList.toggle('scroll-lock', locked);
   };
 
   const isHeroActive = () => {
-    const rect = hero.getBoundingClientRect();
+    const rect = heroEl.getBoundingClientRect();
     return rect.top <= 0 && rect.bottom >= window.innerHeight * 0.6;
   };
 
@@ -2043,7 +2096,7 @@ function initMobileStackReveal(cards) {
     const exactIndex = progress * cardList.length;
     const activeIndex = Math.min(Math.floor(exactIndex), cardList.length - 1);
     const stepProgress = exactIndex - activeIndex;
-    const nextReveal = prefersReducedMotion ? (stepProgress > 0.05 ? 1 : 0) : Math.max(0, (stepProgress - 0.12) / 0.5);
+    const nextReveal = prefersReducedMotionFlag ? (stepProgress > 0.05 ? 1 : 0) : Math.max(0, (stepProgress - 0.12) / 0.5);
 
     cardList.forEach((card, i) => {
       const isActive = i === activeIndex;
@@ -2075,8 +2128,14 @@ function initMobileStackReveal(cards) {
       return;
     }
 
-    setScrollLock(true);
-    e.preventDefault();
+    // Only hijack wheel when pointer is over the stage.
+    if (stageEl && e.target && stageEl.contains(e.target)) {
+      setScrollLock(true);
+      e.preventDefault();
+    } else {
+      setScrollLock(false);
+      return;
+    }
     progress = clamp(progress + delta * 0.0009);
     if (!ticking) {
       requestAnimationFrame(updateCards);
@@ -2086,6 +2145,12 @@ function initMobileStackReveal(cards) {
 
   function onTouchStart(e) {
     if (e.touches && e.touches.length) touchY = e.touches[0].clientY;
+    touchInStage = false;
+    if (stageEl && e.touches && e.touches.length) {
+      const t = e.touches[0];
+      const rect = stageEl.getBoundingClientRect();
+      touchInStage = t.clientX >= rect.left && t.clientX <= rect.right && t.clientY >= rect.top && t.clientY <= rect.bottom;
+    }
   }
 
   function onTouchMove(e) {
@@ -2095,6 +2160,10 @@ function initMobileStackReveal(cards) {
     touchY = currentY;
     const inHero = isHeroActive();
     if (!inHero) {
+      setScrollLock(false);
+      return;
+    }
+    if (!touchInStage) {
       setScrollLock(false);
       return;
     }
