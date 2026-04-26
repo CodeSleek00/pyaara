@@ -231,25 +231,33 @@ a {
     </div>
 
     <!-- PRODUCTS -->
-  <div class="card">
-  <a href="orders/product_detail.php?id=<?= $row['id'] ?>">
-    <?= htmlspecialchars($row['name']) ?>
-  </a>
-
-  <span class="price">₹<?= number_format(price_final($row)) ?></span>
-
-  <img src="orders/uploads/<?= htmlspecialchars($row['image']) ?>">
-
-  <!-- BUTTONS -->
-  <div class="btns">
-    <a href="orders/product_detail.php?id=<?= $row['id'] ?>" class="btn view">View</a>
-    
-    <form action="orders/add_to_cart.php" method="POST">
-      <input type="hidden" name="product_id" value="<?= $row['id'] ?>">
-      <button type="submit" class="btn buy">Buy Now</button>
-    </form>
-  </div>
-</div>
+    <div class="products" aria-label="Products">
+      <div class="grid">
+        <?php if (empty($products)): ?>
+          <div class="card" style="opacity:1; transform:none;">
+            <strong>No products found.</strong>
+            <span class="price">Try adding products with page = <code>anime.php</code></span>
+          </div>
+        <?php else: ?>
+          <?php foreach ($products as $row): ?>
+            <?php
+              if (!is_array($row)) continue;
+              $id = (int)($row['id'] ?? 0);
+              $name = htmlspecialchars((string)($row['name'] ?? ''), ENT_QUOTES, 'UTF-8');
+              $image = htmlspecialchars((string)($row['image'] ?? ''), ENT_QUOTES, 'UTF-8');
+              $price = number_format(price_final($row));
+            ?>
+            <div class="card">
+              <a href="orders/product_detail.php?id=<?= $id ?>"><?= $name ?></a>
+              <span class="price">₹<?= $price ?></span>
+              <?php if ($image !== ''): ?>
+                <img loading="lazy" src="orders/uploads/<?= $image ?>" alt="<?= $name ?>">
+              <?php endif; ?>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    </div>
 
   </section>
 
@@ -270,4 +278,3 @@ window.addEventListener("scroll", () => {
 
 </body>
 </html>
-```
