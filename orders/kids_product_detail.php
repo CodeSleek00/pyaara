@@ -42,9 +42,9 @@ $product_sizes = !empty($product['sizes'])
     : $all_sizes;
 
 // ✅ price logic
-$display_price = (!empty($product['discount_price']) && $product['discount_price'] < $product['original_price'])
+$display_price = (!empty($product['discount_price']) && $product['discount_price'] < $product['price'])
     ? $product['discount_price']
-    : $product['original_price'];
+    : $product['price'];
 
 // ✅ related products (same table)
 $related_products = [];
