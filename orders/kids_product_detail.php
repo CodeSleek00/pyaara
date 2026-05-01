@@ -50,7 +50,7 @@ $display_price = (!empty($product['discount_price']) && $product['discount_price
 $related_products = [];
 
 $stmt2 = $conn->prepare("
-    SELECT id, name, image, original_price, discount_price 
+    SELECT id, name, image, price, discount_price 
     FROM kids_products 
     WHERE id != ? 
     ORDER BY RAND() LIMIT 4
