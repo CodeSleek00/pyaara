@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 include 'db_connect.php';
-session_start();
+
 
 $product = null;
 $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
