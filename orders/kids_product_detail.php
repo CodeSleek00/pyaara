@@ -1,13 +1,22 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include 'db_connect.php';
 session_start();
 
 $product = null;
 $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// ✅ ONLY KIDS PRODUCTS FETCH
 if ($product_id > 0) {
-    $stmt = $conn->prepare("SELECT * FROM products WHERE id = ? AND category = 'kids'");
+
+    // ✅ FIX: kids_products table use karo
+    $stmt = $conn->prepare("SELECT * FROM kids_products WHERE id = ?");
+
+    if (!$stmt) {
+        die("SQL Error: " . $conn->error);
+    }
+
     $stmt->bind_param("i", $product_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -15,43 +24,47 @@ if ($product_id > 0) {
     if ($result->num_rows > 0) {
         $product = $result->fetch_assoc();
     }
+
     $stmt->close();
 }
 
-// ❌ AGAR KIDS PRODUCT NA HO → REDIRECT
+// ❌ agar product nahi mila
 if (!$product) {
     header("Location: kids.php");
     exit();
 }
 
-// ✅ SIZES LOGIC SAME
-$all_sizes = ['XXS','XS','S','M','L','XL','XXL'];
+// ✅ sizes
+$all_sizes = ['XS','S','M','L','XL'];
 
 $product_sizes = !empty($product['sizes'])
     ? explode(',', $product['sizes'])
     : $all_sizes;
 
-// PRICE LOGIC SAME
-$display_price = ($product['discount_price'] > 0 && $product['discount_price'] < $product['original_price'])
+// ✅ price logic
+$display_price = (!empty($product['discount_price']) && $product['discount_price'] < $product['original_price'])
     ? $product['discount_price']
     : $product['original_price'];
 
-// ✅ RELATED KIDS PRODUCTS
+// ✅ related products (same table)
 $related_products = [];
-$stmt_related = $conn->prepare("
-    SELECT id, name, image, original_price, discount_price, discount_percent 
-    FROM products 
-    WHERE category = 'kids' AND id != ? 
+
+$stmt2 = $conn->prepare("
+    SELECT id, name, image, original_price, discount_price 
+    FROM kids_products 
+    WHERE id != ? 
     ORDER BY RAND() LIMIT 4
 ");
-$stmt_related->bind_param("i", $product_id);
-$stmt_related->execute();
-$result_related = $stmt_related->get_result();
 
-while ($row = $result_related->fetch_assoc()) {
+$stmt2->bind_param("i", $product_id);
+$stmt2->execute();
+$res2 = $stmt2->get_result();
+
+while ($row = $res2->fetch_assoc()) {
     $related_products[] = $row;
 }
-$stmt_related->close();
+
+$stmt2->close();
 ?>
 
 <!DOCTYPE html>
