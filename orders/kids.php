@@ -63,7 +63,7 @@ if ($products && $products->num_rows > 0) {
   justify-content: center;
 }
     .product-image {
-      position: absolute; width: 100%; height: 100%; object-fit: cover;
+       width: 100%; height: 100%; object-fit: cover;
     }
     .discount-tag {
       position: absolute; top: 12px; right: 12px;
