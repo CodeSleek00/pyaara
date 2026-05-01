@@ -139,7 +139,7 @@ if($row['price'] > 0){
 View
 </a>
 
-<form method="POST" action="add_to_cart.php" style="flex:1;">
+<form method="POST" action="cart.php" style="flex:1;">
 <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
 
 <?php if($row['stock'] > 0): ?>
