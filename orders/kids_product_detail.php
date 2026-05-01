@@ -185,7 +185,7 @@ body {
 <div class="price">
     ₹<?php echo $display_price; ?>
     <?php if($product['discount_price']): ?>
-        <span class="old-price">₹<?php echo $product['original_price']; ?></span>
+        <span class="old-price">₹<?php echo $product['price']; ?></span>
     <?php endif; ?>
 </div>
 
