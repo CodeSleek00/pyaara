@@ -8,8 +8,12 @@ FROM kids_products kp
 LEFT JOIN kids_categories kc ON kp.category_id = kc.id
 ORDER BY kp.id DESC
 ");
-?>
 
+?>
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
