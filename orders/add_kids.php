@@ -3,20 +3,13 @@ include 'db_connect.php';
 
 if(isset($_POST['submit'])){
 
+    $category_id = $_POST['category_id'];
     $name = $_POST['name'];
     $desc = $_POST['description'];
-    $original_price = $_POST['original_price'];
+    $price = $_POST['price'];
     $discount_price = $_POST['discount_price'];
     $age_group = $_POST['age_group'];
     $stock = $_POST['stock'];
-
-    $discount_percent = 0;
-    if($original_price > 0){
-        $discount_percent = (($original_price - $discount_price) / $original_price) * 100;
-    }
-
-    // Page FIXED for kids
-    $page = "kids.php";
 
     // Image Upload
     $image = $_FILES['image']['name'];
@@ -24,13 +17,13 @@ if(isset($_POST['submit'])){
 
     move_uploaded_file($tmp, "uploads/".$image);
 
-    $query = "INSERT INTO products 
-    (name, description, image, original_price, discount_price, discount_percent, page, stock)
+    $query = "INSERT INTO kids_products 
+    (category_id, name, description, image, price, discount_price, age_group, stock)
     VALUES 
-    ('$name','$desc','$image','$original_price','$discount_price','$discount_percent','$page','$stock')";
+    ('$category_id','$name','$desc','$image','$price','$discount_price','$age_group','$stock')";
 
     if($conn->query($query)){
-        echo "<script>alert('Product Added Successfully');</script>";
+        echo "<script>alert('Kids Product Added Successfully');</script>";
     } else {
         echo "Error: ".$conn->error;
     }
@@ -43,10 +36,7 @@ if(isset($_POST['submit'])){
 <title>Add Kids Product</title>
 
 <style>
-body {
-    font-family: Arial;
-    background: #f5f5f5;
-}
+body { font-family: Arial; background:#f5f5f5; }
 
 .container {
     width: 400px;
@@ -56,23 +46,21 @@ body {
     border-radius: 10px;
 }
 
-h2 {
-    text-align: center;
-}
+h2 { text-align:center; }
 
 input, textarea, select {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
+    width:100%;
+    padding:10px;
+    margin:8px 0;
 }
 
 button {
-    width: 100%;
-    padding: 12px;
-    background: black;
-    color: white;
-    border: none;
-    cursor: pointer;
+    width:100%;
+    padding:12px;
+    background:black;
+    color:white;
+    border:none;
+    cursor:pointer;
 }
 </style>
 </head>
@@ -84,11 +72,24 @@ button {
 
 <form method="POST" enctype="multipart/form-data">
 
+<!-- CATEGORY -->
+<select name="category_id" required>
+<option value="">Select Category</option>
+
+<?php
+$cat = $conn->query("SELECT * FROM kids_categories");
+while($row = $cat->fetch_assoc()){
+    echo "<option value='".$row['id']."'>".$row['category_name']." (".$row['age_group'].")</option>";
+}
+?>
+
+</select>
+
 <input type="text" name="name" placeholder="Product Name" required>
 
 <textarea name="description" placeholder="Description" required></textarea>
 
-<input type="number" name="original_price" placeholder="Original Price" required>
+<input type="number" name="price" placeholder="Original Price" required>
 
 <input type="number" name="discount_price" placeholder="Discount Price" required>
 
