@@ -53,8 +53,15 @@ if ($products && $products->num_rows > 0) {
     }
     .product-card:hover { transform: translateY(-5px); }
     .product-image-container {
-      width: 100%; padding-top: 120%; position: relative; background: var(--light-gray);
-    }
+  width: 100%;
+  height: 280px; /* 🔥 fixed height */
+  position: relative;
+  overflow: hidden;
+  background: var(--light-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
     .product-image {
       position: absolute; width: 100%; height: 100%; object-fit: cover;
     }
