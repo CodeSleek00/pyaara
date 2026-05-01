@@ -146,7 +146,7 @@ if($row['price'] > 0){
 
 <div class="product-actions">
 
-<a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Buy Now</a>
+<a href="kids_product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Buy Now</a>
 
 <form method="POST" action="add_to_cart.php" style="flex:1;">
 <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
