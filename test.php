@@ -1850,33 +1850,41 @@ body.scroll-lock {
   </div>
 
 </section>
-<!-- ================= Exclusive Section ================= -->
-<section class="max-w-[1400px] mx-auto px-4 mt-16">
+<section class="bg-gradient-to-b from-red-500 to-yellow-400 py-10 md:py-14">
 
-  <!-- Header -->
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl md:text-3xl font-bold">
-      Exclusive Collection
-    </h2>
+  <div class="max-w-[1400px] mx-auto px-4">
 
-    <a href="orders/exclusive.php"
-       class="text-red-600 font-semibold flex items-center gap-2 hover:underline">
-      More Products <i class="fa fa-arrow-right text-sm"></i>
-    </a>
-  </div>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl md:text-3xl font-bold text-white">
+        Exclusive Collection
+      </h2>
 
-  <!-- Products Wrapper -->
-  <div class="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory
-              md:grid md:grid-cols-4 md:gap-6 md:overflow-visible">
+      <a href="orders/exclusive.php"
+         class="text-white font-semibold flex items-center gap-2 hover:underline">
+        More Products <i class="fa fa-arrow-right text-sm"></i>
+      </a>
+    </div>
 
-    <?php if ($exclusiveProducts && $exclusiveProducts->num_rows > 0): ?>
-      <?php while ($row = $exclusiveProducts->fetch_assoc()): ?>
+    <!-- Products Wrapper -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+
+      <?php
+      include 'temp_db.php';
+
+      $exclusiveProducts = $conn->query("
+          SELECT * FROM products 
+          WHERE page = 'exclusive.php'
+          ORDER BY RAND()
+          LIMIT 4
+      ");
+
+      if ($exclusiveProducts && $exclusiveProducts->num_rows > 0):
+        while ($row = $exclusiveProducts->fetch_assoc()):
+      ?>
 
         <!-- Card -->
-        <div class="min-w-[75%] sm:min-w-[55%] md:min-w-0
-                    bg-white rounded-2xl shadow-sm
-                    hover:shadow-lg hover:-translate-y-1
-                    transition duration-300 snap-start">
+        <div class="bg-white rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition duration-300">
 
           <!-- Image -->
           <div class="relative aspect-[4/5] bg-gray-100 rounded-t-2xl overflow-hidden">
@@ -1891,9 +1899,9 @@ body.scroll-lock {
             <!-- Discount Badge -->
             <?php if (!empty($row['discount_price']) && $row['discount_price'] < $row['original_price']): ?>
               <span class="absolute top-3 right-3
-                           bg-red-500 text-white
+                           bg-black/70 text-white
                            text-xs font-semibold
-                           px-3 py-1 rounded-full shadow">
+                           px-3 py-1 rounded-full">
                 <?php echo (int)$row['discount_percent']; ?>% OFF
               </span>
             <?php endif; ?>
@@ -1903,12 +1911,10 @@ body.scroll-lock {
           <!-- Info -->
           <div class="p-4">
 
-            <!-- Product Name -->
             <h3 class="text-sm font-semibold line-clamp-2 mb-2">
               <?php echo htmlspecialchars($row['name']); ?>
             </h3>
 
-            <!-- Price -->
             <div class="mb-3">
               <?php if (!empty($row['discount_price']) && $row['discount_price'] < $row['original_price']): ?>
                 
@@ -1929,10 +1935,9 @@ body.scroll-lock {
               <?php endif; ?>
             </div>
 
-            <!-- Button -->
             <a href="orders/product_detail.php?id=<?php echo $row['id']; ?>"
                class="block text-center
-                      bg-red-600 hover:bg-red-700
+                      bg-black hover:bg-gray-900
                       text-white py-2 rounded-lg
                       text-sm font-semibold transition">
               Buy Now
@@ -1941,23 +1946,23 @@ body.scroll-lock {
           </div>
 
         </div>
-        <!-- Card End -->
 
-      <?php endwhile; ?>
+      <?php 
+        endwhile;
+      else:
+      ?>
 
-    <?php else: ?>
+        <p class="text-white text-center col-span-4">
+          No exclusive products available right now.
+        </p>
 
-      <!-- No Products -->
-      <p class="text-gray-500 text-center col-span-4">
-        No exclusive products available right now.
-      </p>
+      <?php endif; ?>
 
-    <?php endif; ?>
+    </div>
 
   </div>
 
-</section>
-<script>
+</section><script>
   (function() {
   // Cache DOM elements
   const cursor = document.getElementById('cursor');
