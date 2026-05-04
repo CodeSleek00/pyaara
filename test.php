@@ -84,6 +84,44 @@ if ($animeStmt) {
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bangers&family=Noto+Sans+JP:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="images/Pyaara Circle.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Add these meta tags -->
+    <meta name="description" content="Pyaara - Premium quality anime and exclusive t-shirts for men and women. Shop our latest collections with great discounts and free shipping on orders over $50.">
+    <meta name="keywords" content="anime t-shirts, exclusive t-shirts, men's fashion, women's fashion, oversized t-shirts, F1 racing t-shirts, Indian clothing brand">
+    <meta name="author" content="Pyaara">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Pyaara - Premium Quality T-Shirts & Apparel">
+    <meta property="og:description" content="Shop the latest collection of anime and exclusive t-shirts for men and women at Pyaara.">
+    <meta property="og:image" content="https://pyaara.in/images/Pyaara-Site-Svg.svg">
+    <meta property="og:url" content="https://pyaara.in">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pyaara - Premium Quality T-Shirts & Apparel">
+    <meta name="twitter:description" content="Shop the latest collection of anime and exclusive t-shirts for men and women at Pyaara.">
+    <meta name="twitter:image" content="https://pyaara.in.com/images/Pyaara-Site-Svg.svg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://pyaara.in" />
+        
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 /* ===== RESET & VARIABLES ===== */
@@ -1603,6 +1641,179 @@ body.scroll-lock {
   <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
 
+  <!-- Header Section -->
+  <header>
+    <!-- Desktop Search Bar -->
+    <section class="search">
+      <img src="images/Pyaara Site Svg.svg" alt="Logo" class="logo" />
+      <form action="search_results.php" method="GET" style="display: flex; gap: 10px; width: 80%;" >
+  <input type="search" name="query" placeholder="Search..." required>
+  <button type="submit" class="search-button" >
+    <i class="fa fa-search"></i>
+  </button>
+</form>
+      </button>
+      <a href="orders/cart.php"><img width="48" height="48" src="https://img.icons8.com/pulsar-line/48/FA5252/fast-cart.png" alt="fast-cart"/></a>
+     <div id="navbar">
+    <div id="nav-right">
+      <div class="account-menu">
+        <span class="account-icon">
+          <img width="50" height="50" src="https://img.icons8.com/pulsar-line/96/FA5252/user.png" alt="user"/>
+        </span>
+        <div class="account-dropdown">
+          <a href="signup.html" id="signupLink">Signup</a>
+          <a href="login.html" id="loginLink">Login</a>
+          <a href="orders/search_order.php">Track Order </a>
+          <a href="profile.php" id="profileLink" style="display:none;">My Profile</a>
+          <a href="logout.php" id="logoutLink" style="display:none;">Logout</a>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+    </section>
+<!-- Mobile Header with only Logo -->
+<header class="mobile-header-logo-only" >
+  <!-- Centered Logo -->
+  <img src="images/Pyaara Site Svg.svg" alt="Logo" class="logo" height="330px" style="margin: 0 auto;" />
+  
+  <!-- Search Icon on Right -->
+   <a href="search_results.php">
+  <img width="22" height="22" src="https://img.icons8.com/metro/52/1A1A1A/search.png" alt="search" style="position: absolute; right: 10px; top:15px" /></a>
+</header>
+    <!-- Navigation -->
+    <section class="nav">
+      <!-- Mobile Menu Button -->
+      <div class="menu-toggle"></div>
+
+      <!-- Desktop Navigation -->
+      <nav class="nav-container">
+        <ul>
+          <li><a href="index.php">Home</a></li>
+          <li class="dropdown">
+            <a href="#">Categories</a>
+            <div class="dropdown-content">
+               <a href="orders/anime.php">Anime</a>
+              <a href="orders/exclusive.php">Exclusive</a>
+              <a href="orders/womens.php">Women's</a>
+              <a href="#">F1 racing (Coming Soon)</a>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a href="#">Men's</a>
+            <div class="dropdown-content">
+              <a href="orders/exclusive.php">Exclusive</a>
+              <a href="orders/anime.php">Anime</a>
+              <a href="orders/round.php"> Half Sleeves T-shirt</a>
+              <a href="orders/full.php"> Full Sleeves T-shirt</a>
+              <a href="orders/polo.php">Premium Polo T-shirt</a>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a href="#">Women's</a>
+            <div class="dropdown-content">
+               <a href="orders/cutie.php">Cutiesssss</a>
+              <a href="orders/exclusive.php">Exclusive</a>
+              <a href="orders/classic_women.php">Half Sleeves T-shirt </a>
+              <a href="orders/Crop_Top.php">Crop Top</a>
+              <a href="orders/Cropped_Hoodies.php">Cropped Hoodies</a>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a href="#">Unisex</a>
+            <div class="dropdown-content">
+               <a href="orders/Acid_Washed.php">Acid Washed Oversized Tee </a>
+              <a href="orders/hoodies.php">Hoodies</a>
+              <a href="orders/sweatshirt.php">Sweatshirt </a>
+              <a href="orders/Joggers.php">Unisex Joggers</a>
+            
+            </div>
+          </li>
+          <li><a href="orders/oversized.php">Oversized</a></li>
+          <li><a href="orders/anime.php">Anime</a></li>
+          <li><a href="orders/offer.php">Offer's</a></li>
+          <li><a href="orders/order_history.php">My Orders</a></li>
+        </ul>
+      </nav>
+
+      <!-- Mobile Navigation Sidebar -->
+      <nav class="mobile-nav">
+        <ul>
+          <li><a href="index.php">Home</a></li>
+          <li class="mobile-dropdown">
+            <a href="#">Categories</a>
+            <div class="mobile-dropdown-content">
+              <a href="orders/anime.php">Anime</a>
+              <a href="orders/exclusive.php">Exclusive</a>
+              <a href="orders/womens.php">Women's</a>
+              <a href="#">F1 racing (Coming Soon)</a>
+            </div>
+          </li>
+          <li class="mobile-dropdown">
+            <a href="#">Men's</a>
+            <div class="mobile-dropdown-content">
+               <a href="orders/exclusive.php">Exclusive</a>
+              <a href="orders/anime.php">Anime</a>
+              <a href="orders/round.php"> Half Sleeves T-shirt</a>
+              <a href="orders/full.php"> Full Sleeves T-shirt</a>
+              <a href="orders/polo.php">Premium Polo T-shirt</a>
+            </div>
+          </li>
+          <li class="mobile-dropdown">
+            <a href="#">Women's</a>
+            <div class="mobile-dropdown-content">
+              <a href="orders/cutie.php">Cutiesssss</a>
+              <a href="orders/exclusive.php">Exclusive</a>
+              <a href="orders/classic_women.php">Half Sleeves T-shirt </a>
+              <a href="orders/Crop_Top.php">Crop Top</a>
+              <a href="orders/Cropped_Hoodies.php">Cropped Hoodies</a>
+            </div>
+          </li>
+           <li class="mobile-dropdown">
+            <a href="#">Unisex</a>
+            <div class="mobile-dropdown-content">
+               <a href="orders/Acid_Washed.php">Acid Washed Oversized Tee </a>
+              <a href="orders/hoodies.php">Hoodies</a>
+              <a href="orders/sweatshirt.php">Sweatshirt </a>
+              <a href="orders/Joggers.php">Unisex Joggers</a>
+            
+            </div>
+          </li>
+          <li><a href="orders/oversized.php">Oversized</a></li>
+          <li><a href="orders/offer.php">Offer's</a></li>
+          <li><a href="orders/search_order.php">Delivery Status</a></li>
+        </ul>
+      </nav>
+
+      <!-- Mobile Footer Menu -->
+      <div class="mobile-footer-menu">
+        <a href="#" class="footer-menu-item">
+          <div class="menu-toggle footer-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span>Menu</span>
+        </a>
+        <a href="index.php" class="footer-menu-item">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        <a href="orders/cart.php" class="footer-menu-item">
+          <i class="fas fa-shopping-cart"></i>
+          <span>Cart</span>
+        </a>
+        <a href="orders/order_history.php" class="footer-menu-item">
+            <i class="fa-solid fa-list"></i> 
+            <span>My Orders</span>
+        </a>
+        <a href="user.php" class="footer-menu-item">
+          <i class="fas fa-user"></i>
+          <span>Account</span>
+        </a>
+      </div>
+    </section>
+</header>
 <!-- MAIN CONTENT -->
 <div id="main" style="display: none;">
   <!-- HERO SECTION -->
@@ -1962,7 +2173,23 @@ body.scroll-lock {
 
   </div>
 
-</section><script>
+</section>
+
+  <script>
+       // Check session via cookie
+    fetch('session_check.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.loggedIn) {
+          document.getElementById('signupLink').style.display = 'none';
+          document.getElementById('loginLink').style.display = 'none';
+          document.getElementById('profileLink').style.display = 'block';
+          document.getElementById('logoutLink').style.display = 'block';
+        }
+      });
+  </script>
+  <script src="script.js"></script>
+<script>
   (function() {
   // Cache DOM elements
   const cursor = document.getElementById('cursor');
