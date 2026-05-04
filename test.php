@@ -69,6 +69,17 @@ if ($animeStmt) {
   $animeStmt->close();
 }
 ?>
+<?php
+include 'db.php';
+
+/* Fetch 4 random exclusive products */
+$exclusiveProducts = $conn->query("
+    SELECT * FROM products 
+    WHERE page = 'exclusive.php'
+    ORDER BY RAND()
+    LIMIT 4
+");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
