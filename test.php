@@ -80,6 +80,9 @@ if ($animeStmt) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="design/style.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bangers&family=Noto+Sans+JP:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -1780,6 +1783,73 @@ body.scroll-lock {
   </section>
 
 
+<!-- SECTION START -->
+<section class="bg-gradient-to-b from-white via-rose-300 to-red-500 py-10 md:py-14">
+
+  <div class="max-w-7xl mx-auto px-4 md:px-8">
+
+    <!-- Heading -->
+    <h2 class="font-extrabold text-black text-center 
+               text-xl md:text-3xl tracking-[0.15em] mb-6 md:mb-10 uppercase">
+      TRENDING CATEGORIES
+    </h2>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+
+      <!-- Big Left -->
+      <a href="orders/offer.php" class="relative rounded-3xl overflow-hidden md:row-span-2 group">
+        <img src="images/model.jpeg" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+        <div class="absolute bottom-4 md:bottom-6 right-4 md:right-6 text-white font-bold text-lg md:text-2xl text-shadow text-right">
+          F1 Racing
+        </div>
+      </a>
+
+      <!-- Exclusive -->
+      <a href="orders/exclusive.php" class="relative rounded-3xl overflow-hidden group">
+        <img src="images/model 11.jpeg" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+        <div class="absolute bottom-4 md:bottom-6 right-4 md:right-6 text-white font-bold text-lg md:text-2xl text-shadow">
+          Exclusive
+        </div>
+      </a>
+
+      <!-- Oversized -->
+      <a href="orders/oversized.php" class="relative rounded-3xl overflow-hidden group">
+        <img src="images/model 12.jpeg" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+        <div class="absolute bottom-4 md:bottom-6 right-4 md:right-6 text-white font-bold text-lg md:text-2xl text-shadow text-right leading-tight">
+          OVERSIZED<br/>T-SHIRTS
+        </div>
+      </a>
+
+      <!-- Big Right -->
+      <a href="orders/cutie.php" class="relative rounded-3xl overflow-hidden md:row-span-2 group">
+        <img src="images/model(2).jpeg" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+        <div class="absolute bottom-4 md:bottom-6 right-4 md:right-6 text-white font-bold text-lg md:text-2xl text-shadow text-right leading-tight">
+          HALF SLEEVE<br/>T-SHIRTS
+        </div>
+      </a>
+
+      <!-- Casual -->
+      <a href="orders/offer.php" class="relative rounded-3xl overflow-hidden group">
+        <img src="images/model 13.jpeg" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+        <div class="absolute bottom-4 md:bottom-6 right-4 md:right-6 text-white font-bold text-lg md:text-2xl text-shadow">
+          CASUAL
+        </div>
+      </a>
+
+      <!-- Anime -->
+      <a href="orders/anime.php" class="relative rounded-3xl overflow-hidden group">
+        <img src="images/model 14.jpeg" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+        <div class="absolute bottom-4 md:bottom-6 right-4 md:right-6 text-white font-bold text-lg md:text-2xl text-shadow text-right leading-tight">
+          ANIME<br/>BASED
+        </div>
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
 <script>
   (function() {
   // Cache DOM elements
