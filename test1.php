@@ -1,137 +1,135 @@
+<?php
+include 'temp_db.php'; // your database connection file
+
+// Random 5 Exclusive Products
+$sql = "SELECT * FROM products 
+        WHERE category = 'exclusive' 
+        ORDER BY RAND() 
+        LIMIT 5";
+
+$exclusiveProducts = $conn->query($sql);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>AnimeVerse | 3D Stands & Premium Showcase</title>
-  <!-- Google Fonts + smooth reset -->
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <style>
-  
-  </style>
+  <title>Exclusive Collection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body>
 
-  
-<script>
-  (function() {
-    // ===== 1. Mobile Carousel Setup with smooth dots & cloning
-    const desktopGrid = document.getElementById('desktopGrid');
-    const mobileCarousel = document.getElementById('mobileCarousel');
-    const dotsWrap = document.getElementById('dotsWrap');
-    if (mobileCarousel && desktopGrid) {
-      const originalCards = Array.from(desktopGrid.querySelectorAll('.anime-card'));
-      mobileCarousel.innerHTML = '';
-      // clone cards for carousel
-      originalCards.forEach(card => {
-        const cloneCard = card.cloneNode(true);
-        // remove any event listener conflicts but keep structure
-        cloneCard.classList.add('carousel-card-clone');
-        mobileCarousel.appendChild(cloneCard);
-      });
-      
-      // generate dots dynamically based on clone count
-      const total = originalCards.length;
-      dotsWrap.innerHTML = '';
-      for (let i = 0; i < total; i++) {
-        const dot = document.createElement('div');
-        dot.classList.add('dot');
-        if (i === 0) dot.classList.add('active');
-        dot.setAttribute('data-index', i);
-        dot.addEventListener('click', () => {
-          if (mobileCarousel) {
-            const cardWidth = mobileCarousel.querySelector('.anime-card')?.offsetWidth || 260;
-            const gap = 16;
-            const scrollPosition = i * (cardWidth + gap);
-            mobileCarousel.scrollTo({ left: scrollPosition, behavior: 'smooth' });
-          }
-        });
-        dotsWrap.appendChild(dot);
-      }
-      
-      // sync dots on scroll
-      function updateDots() {
-        const carouselRect = mobileCarousel;
-        if (!carouselRect) return;
-        const scrollLeft = carouselRect.scrollLeft;
-        const cards = Array.from(mobileCarousel.querySelectorAll('.anime-card'));
-        if (cards.length === 0) return;
-        const cardWidth = cards[0].offsetWidth;
-        const gap = parseFloat(getComputedStyle(mobileCarousel).gap) || 16;
-        const itemWidth = cardWidth + gap;
-        let activeIndex = Math.round(scrollLeft / itemWidth);
-        activeIndex = Math.min(Math.max(activeIndex, 0), cards.length - 1);
-        const dots = dotsWrap.querySelectorAll('.dot');
-        dots.forEach((dot, idx) => {
-          dot.classList.toggle('active', idx === activeIndex);
-        });
-      }
-      
-      mobileCarousel.addEventListener('scroll', () => { requestAnimationFrame(updateDots); });
-      window.addEventListener('resize', () => { updateDots(); });
-      setTimeout(updateDots, 100);
-    }
+<body class="bg-gray-50">
 
-    // ===== 2. DESKTOP 3D TILT (Only for desktop media)
-    function initDesktopTilt() {
-      const cards = document.querySelectorAll('#desktopGrid .anime-card');
-      if (window.innerWidth <= 768) return;
-      cards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          const cx = rect.width / 2;
-          const cy = rect.height / 2;
-          let rotY = ((x - cx) / cx) * 6;
-          let rotX = -((y - cy) / cy) * 5;
-          rotY = Math.min(Math.max(rotY, -8), 8);
-          rotX = Math.min(Math.max(rotX, -6), 6);
-          card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-        });
-        card.addEventListener('mouseleave', () => {
-          card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
-        });
-      });
-    }
-    initDesktopTilt();
-    window.addEventListener('resize', () => { initDesktopTilt(); });
-    
-    // 3. small fix for character 3d images fallback
-    const charDivs = document.querySelectorAll('.character-3d');
-    charDivs.forEach(div => {
-      const bgImg = div.style.backgroundImage;
-      if (!bgImg || bgImg === 'none' || bgImg === '') {
-        div.style.backgroundImage = "url('https://i.imgur.com/placeholder.png')";
-        div.style.backgroundSize = 'cover';
-      }
-    });
-    
-    // 4. Mobile tap improvements: optional prevent double hover weirdness
-    if ('ontouchstart' in window) {
-      document.querySelectorAll('.anime-card').forEach(card => {
-        card.addEventListener('touchstart', function(e) {
-          // just light feedback no 3D transform
-          this.style.transform = 'scale(0.98)';
-          setTimeout(() => { this.style.transform = ''; }, 150);
-        });
-      });
-    }
-    
-    // 5. smooth newsletter subscription simulation (just UI)
-    const subBtn = document.querySelector('.newsletter-btn');
-    if (subBtn) {
-      subBtn.addEventListener('click', (e) => {
-        const input = document.querySelector('.newsletter-input');
-        if (input && input.value.trim() !== '') {
-          alert('✨ Thanks! You’re now part of the inner circle.');
-          input.value = '';
-        } else {
-          alert('Please enter a valid email to get epic updates.');
-        }
-      });
-    }
-  })();
-</script>
+<!-- ================= Exclusive Section ================= -->
+<section class="max-w-[1400px] mx-auto px-4 mt-16">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl md:text-3xl font-bold">
+      Exclusive Collection
+    </h2>
+
+    <a href="orders/exclusive.php"
+       class="text-red-600 font-semibold flex items-center gap-2 hover:underline">
+      More Products <i class="fa fa-arrow-right text-sm"></i>
+    </a>
+  </div>
+
+  <!-- Products Wrapper -->
+  <div class="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory
+              md:grid md:grid-cols-4 md:gap-6 md:overflow-visible">
+
+    <?php if ($exclusiveProducts && $exclusiveProducts->num_rows > 0): ?>
+      
+      <?php while ($row = $exclusiveProducts->fetch_assoc()): ?>
+
+        <!-- Card -->
+        <div class="min-w-[75%] sm:min-w-[55%] md:min-w-0
+                    bg-white rounded-2xl shadow-sm
+                    hover:shadow-lg hover:-translate-y-1
+                    transition duration-300 snap-start">
+
+          <!-- Image -->
+          <div class="relative aspect-[4/5] bg-gray-100 rounded-t-2xl overflow-hidden">
+
+            <a href="orders/product_detail.php?id=<?php echo $row['id']; ?>">
+              <img
+                src="orders/uploads/<?php echo htmlspecialchars($row['image']); ?>"
+                alt="<?php echo htmlspecialchars($row['name']); ?>"
+                class="w-full h-full object-cover hover:scale-105 transition duration-300">
+            </a>
+
+            <!-- Discount Badge -->
+            <?php if (!empty($row['discount_price']) && $row['discount_price'] < $row['original_price']): ?>
+              <span class="absolute top-3 right-3
+                           bg-red-500 text-white
+                           text-xs font-semibold
+                           px-3 py-1 rounded-full shadow">
+                <?php echo (int)$row['discount_percent']; ?>% OFF
+              </span>
+            <?php endif; ?>
+
+          </div>
+
+          <!-- Info -->
+          <div class="p-4">
+
+            <h3 class="text-sm font-semibold line-clamp-2 mb-2">
+              <?php echo htmlspecialchars($row['name']); ?>
+            </h3>
+
+            <div class="mb-3">
+              <?php if (!empty($row['discount_price']) && $row['discount_price'] < $row['original_price']): ?>
+                
+                <span class="text-red-600 font-bold text-lg">
+                  ₹<?php echo number_format($row['discount_price']); ?>
+                </span>
+
+                <span class="text-gray-400 text-sm line-through ml-1">
+                  ₹<?php echo number_format($row['original_price']); ?>
+                </span>
+
+              <?php else: ?>
+
+                <span class="text-red-600 font-bold text-lg">
+                  ₹<?php echo number_format($row['original_price']); ?>
+                </span>
+
+              <?php endif; ?>
+            </div>
+
+            <a href="orders/product_detail.php?id=<?php echo $row['id']; ?>"
+               class="block text-center
+                      bg-red-600 hover:bg-red-700
+                      text-white py-2 rounded-lg
+                      text-sm font-semibold transition">
+              Buy Now
+            </a>
+
+          </div>
+
+        </div>
+
+      <?php endwhile; ?>
+
+    <?php else: ?>
+
+      <p class="text-gray-500 text-center col-span-4">
+        No exclusive products available right now.
+      </p>
+
+    <?php endif; ?>
+
+  </div>
+
+</section>
+<!-- ================= Section End ================= -->
+
 </body>
 </html>
