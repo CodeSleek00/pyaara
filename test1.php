@@ -109,3 +109,18 @@
   </div>
 
 </section>
+<script>
+  window.addEventListener('DOMContentLoaded', function()) {
+    constproductCards = document.querySelectorAll('.product');
+    productCards.forEach(card => {
+      card.addEventListener('click', function() {
+        const productId = this.getAttribute('data-id');
+        window.location.href = `orders/product_detail.php?id=${productId}`;
+      });
+    });
+      function chatbot () {
+        window.open('chatbot.php', AbortController.signal);
+        
+      }
+  }
+</script>
