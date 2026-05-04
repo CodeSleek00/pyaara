@@ -53,7 +53,11 @@
     <!-- Navigation -->
     <section class="nav">
       <!-- Mobile Menu Button -->
-      <div class="menu-toggle"></div>
+      <div class="menu-toggle" aria-label="Open menu" role="button" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
 
       <!-- Desktop Navigation -->
       <nav class="nav-container">

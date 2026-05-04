@@ -1685,7 +1685,11 @@ body.scroll-lock {
     <!-- Navigation -->
     <section class="nav">
       <!-- Mobile Menu Button -->
-      <div class="menu-toggle"></div>
+      <div class="menu-toggle" aria-label="Open menu" role="button" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
 
       <!-- Desktop Navigation -->
       <nav class="nav-container">
@@ -2175,6 +2179,133 @@ body.scroll-lock {
   </div>
 
 </section>
+  <!-- Hero Section -->
+  <div class="w-full bg-[#d83f40] py-6 md:py-8 flex justify-center items-center">
+    <h1
+      class="text-white text-center text-2xl md:text-3xl leading-tight font-semibold max-w-[320px] sm:max-w-[380px] md:max-w-3xl"
+    >
+      Made In India, For The World
+    </h1>
+  </div>
+  
+  <!-- Customers Section -->
+  <div class="bg-white py-4 md:py-6 flex justify-center">
+    <h2
+      class="text-[#222222] text-xl md:text-2xl font-semibold max-w-[620px] sm:max-w-[680px] md:max-w-3xl text-center"
+    >
+      Over Thousand Of Happy Customers
+    </h2>
+  </div>
+  
+  <!-- Accordion Container -->
+  <div class="bg-gray-00 px-4 py-6 max-w-[100%] md:max-w-3xl mx-auto md:px-8 md:py-8">
+    <!-- Contact Accordion -->
+    <div class="accordion-item border-b border-gray-300 pb-3 mb-3">
+      <button
+        class="w-full flex justify-between items-center text-lg md:text-xl font-semibold text-[#222222] cursor-pointer select-none hover:text-[#d83f40] transition-colors"
+        aria-expanded="false"
+        aria-controls="panel1"
+        id="accordion1"
+        type="button"
+      >
+        <span>Let's get in touch</span>
+        <i class="fas fa-chevron-down transition-transform duration-200 text-sm"></i>
+      </button>
+      <div
+        id="panel1"
+        class="accordion-content overflow-hidden max-h-0 opacity-0 mt-2 text-sm md:text-base font-normal text-gray-600"
+        aria-labelledby="accordion1"
+      >
+        <p class="mb-1"><i class="fas fa-envelope mr-2 text-[#d83f40] text-xs"></i> Email: pyaara001@gmail.com</p>
+        <p><i class="fas fa-headset mr-2 text-[#d83f40] text-xs"></i> Support: pyaara001@gmail.com</p>
+        <p><i class="fas fa-phone mr-2 text-[#d83f40] text-xs"></i> <a href="tel:+917839460427">Contact: +91-7839460427</a></p>
+
+        <p><i></i></p>
+      </div>
+    </div>
+
+    <!-- Address Accordion -->
+    <div class="accordion-item border-b border-gray-300 pb-3 mb-3">
+      <button
+        class="w-full flex justify-between items-center text-base md:text-lg font-bold text-[#222222] cursor-pointer select-none hover:text-[#d83f40] transition-colors"
+        aria-expanded="false"
+        aria-controls="panel2"
+        id="accordion2"
+        type="button"
+      >
+        <span>ADDRESS</span>
+        <i class="fas fa-chevron-down transition-transform duration-200 text-sm"></i>
+      </button>
+      <div
+        id="panel2"
+        class="accordion-content overflow-hidden max-h-0 opacity-0 mt-2 text-sm md:text-base font-normal text-gray-600"
+        aria-labelledby="accordion2"
+      >
+        <p class="mb-1"><i class="fas fa-map-marker-alt mr-2 text-[#d83f40] text-xs"></i> Suraksha Enclave, Udyan-2, Eldeco, Lucknow-226029</p>
+        <p class="mb-1 pl-6"></p>
+      </div>
+    </div>
+
+    <!-- Company Accordion -->
+    <div class="accordion-item border-b border-gray-300 pb-3 mb-3">
+      <button
+        class="w-full flex justify-between items-center text-base md:text-lg font-bold text-[#222222] cursor-pointer select-none hover:text-[#d83f40] transition-colors"
+        aria-expanded="false"
+        aria-controls="panel3"
+        id="accordion3"
+        type="button"
+      >
+        <span>COMPANY</span>
+        <i class="fas fa-chevron-down transition-transform duration-200 text-sm"></i>
+      </button>
+      <div
+        id="panel3"
+        class="accordion-content overflow-hidden max-h-0 opacity-0 mt-2 text-sm md:text-base font-normal text-gray-600"
+        aria-labelledby="accordion3"
+      >
+        <p class="mb-1 hover:text-[#d83f40] transition-colors cursor-pointer"><i class="fas fa-info-circle mr-2 text-[#d83f40] text-xs"></i><a href="policies/aboutus.php"> About Us</a>  </p>
+      </div>
+    </div>
+
+    <!-- More Info Accordion -->
+    <div class="accordion-item pb-3 mb-3">
+      <button
+        class="w-full flex justify-between items-center text-base md:text-lg font-bold text-[#222222] cursor-pointer select-none hover:text-[#d83f40] transition-colors"
+        aria-expanded="false"
+        aria-controls="panel4"
+        id="accordion4"
+        type="button"
+      >
+        <span>MORE INFO</span>
+        <i class="fas fa-chevron-down transition-transform duration-200 text-sm"></i>
+      </button>
+      <div
+        id="panel4"
+        class="accordion-content overflow-hidden max-h-0 opacity-0 mt-2 space-y-1 text-sm md:text-base font-normal text-gray-600"
+        aria-labelledby="accordion4"
+      >
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/privacy_policy.php"><i class="fas fa-shield-alt mr-2 text-[#d83f40] text-xs"></i> Privacy Policy</p></a>
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/term_&_condition.php"><i class="fas fa-file-contract mr-2 text-[#d83f40] text-xs"></i> Terms &amp; Condition</p></a>
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/shipping_policy.php"><i class="fas fa-truck mr-2 text-[#d83f40] text-xs"></i> Shipping Policy</p></a>
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/return&refund_policy.php"><i class="fas fa-truck mr-2 text-[#d83f40] text-xs"></i> Return & Refund Policy</p></a>
+        <p class="hover:text-[#d83f40] transition-colors cursor-pointer"><a href="policies/contactus.php"><i class="fas fa-shield-alt mr-2 text-[#d83f40] text-xs"></i> Contact Us</p></a>
+      </div>
+    </div><!-- Scroll to Top Button -->
+  <button
+    aria-label="Scroll to top"
+    class="fixed bottom-4 right-4 w-10 h-10 rounded-full bg-[#d83f40] flex justify-center items-center text-white text-lg shadow-lg hover:bg-[#c13738] transition-colors"
+    id="scrollToTop"
+  >
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
+
+    <!-- Copyright -->
+    <p class="mt-6 text-sm md:text-base font-normal text-[#222222] text-center md:text-left">
+      Copyright © 2025 Pyaara. All rights reserved. <br>Design and Created by CodeSleek</p>
+     <br><br>
+  </div>
+  
 
   <script>
        // Check session via cookie
