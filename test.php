@@ -2766,6 +2766,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+document.getElementById('scrollToTop').addEventListener
 </script>
 
 
